@@ -24,5 +24,5 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(tauri::generate_handler![connect_to_server, get_keys])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .expect("error while running redis GUI application");
 }
