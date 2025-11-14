@@ -1,4 +1,4 @@
-name: publish
+name: "publish"
 
 on:
     workflow_dispatch:
@@ -6,7 +6,7 @@ on:
         branches: [main]
 
 permissions:
-    contents: write # Global—fixes token issues
+    contents: write
 
 jobs:
     publish-tauri:
@@ -14,27 +14,30 @@ jobs:
             fail-fast: false
             matrix:
                 include:
+                    # macOS universal (x64 + arm64 in one build)
                     - platform: macos-latest
-                      target: aarch64-apple-darwin,x86_64-apple-darwin # Universal
+                      target: aarch64-apple-darwin,x86_64-apple-darwin
                       args: ""
+                    # Linux
                     - platform: ubuntu-22.04
                       target: ""
                       args: ""
+                    # Windows (NSIS for .exe)
                     - platform: windows-latest
                       target: ""
-                      args: "--bundles nsis" # Avoids WiX MSI issues
+                      args: "--bundles nsis"
         runs-on: ${{ matrix.platform }}
 
         steps:
             - uses: actions/checkout@v4
               with:
-                  fetch-depth: 0
+                  fetch-depth: 0 # For version/tag ops
 
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
                   node-version: lts/*
-                  cache: yarn
+                  cache: yarn # Or 'npm'/'pnpm' if you use those
 
             - name: Install frontend deps
               run: yarn install --frozen-lockfile
@@ -44,7 +47,7 @@ jobs:
               with:
                   targets: ${{ matrix.target }}
 
-            - name: Install Ubuntu deps
+            - name: Install Ubuntu deps (v1 or v2)
               if: matrix.platform == 'ubuntu-22.04'
               run: |
                   sudo apt-get update
@@ -55,19 +58,14 @@ jobs:
                     patchelf
 
             - name: Build & Release
-              uses: tauri-apps/tauri-action@v2
+              uses: tauri-apps/tauri-action@v1 # <-- The fix: v1, not v2
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                  tagName: app-v__VERSION__
-                  releaseName: App v__VERSION__
+                  tagName: app-v__VERSION__ # Auto-replaces with Cargo.toml version
+                  releaseName: "App v__VERSION__"
                   releaseBody: |
                       ## Release Notes
-                      - Full changelog in repo.
-                      - Updater: https://github.com/${{ github.repository }}/releases/download/app-v__VERSION__/latest.json
-                  draft: false
-                  prerelease: false
-                  args: ${{ matrix.args }}
-                  includeUpdaterJson: true
-                  updaterJsonPreferNsis: true
-                  updaterJsonKeepUniversal: true
+                      See assets below for downloads.
+
+                      **Updater endpoint** (add to `tauri.conf.json`):
