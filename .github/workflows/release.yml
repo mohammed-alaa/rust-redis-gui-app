@@ -79,8 +79,6 @@ jobs:
                   releaseBody: "Draft release – will be published automatically"
                   draft: true # ← Create as draft
                   args: ${{ matrix.args }}
-                  includeUpdaterJson: true
-                  includeSignatures: true
                   updaterJsonPreferNsis: true
                   updaterJsonKeepUniversal: true
 
