@@ -3,7 +3,7 @@ name: publish
 on:
     workflow_dispatch:
     push:
-        branches: [release]
+        branches: [main]
 
 permissions:
     contents: write # Global—fixes token issues
