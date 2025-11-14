@@ -75,15 +75,34 @@ jobs:
               with:
                   tagName: app-v__VERSION__ # Auto-replaces with Cargo.toml version
                   releaseName: "Redis GUI v__VERSION__"
-                  releaseBody: |
-                      ## Release Notes
-                      See assets below for downloads.
-
-                  draft: false # true = draft for manual publish
-                  prerelease: false
+                  releaseBody: "Draft release – will be published automatically"
+                  draft: true # ← Create as draft
                   args: ${{ matrix.args }}
-                  # Updater essentials (now signed!)
-                  includeUpdaterJson: true # Uploads latest.json + variants
-                  includeSignatures: true # Uploads .sig files (verified with pubkey)
-                  updaterJsonPreferNsis: true # Windows .exe priority
-                  updaterJsonKeepUniversal: true # macOS universal in JSON
+                  includeUpdaterJson: true
+                  includeSignatures: true
+                  updaterJsonPreferNsis: true
+                  updaterJsonKeepUniversal: true
+
+    publish-draft:
+        needs: publish-tauri
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/github-script@v7
+              with:
+                  script: |
+                      const draft = await github.rest.repos.listReleases({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      }).then(res => res.data.find(r => r.draft));
+
+                      if (draft) {
+                      await github.rest.repos.updateRelease({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          release_id: draft.id,
+                          draft: false,
+                          body: draft.body,  // ← Uses release-drafter's notes
+                          tag_name: draft.tag_name,
+                          name: draft.name,
+                      });
+                      }
