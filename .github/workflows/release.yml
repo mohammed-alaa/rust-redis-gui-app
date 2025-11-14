@@ -19,15 +19,12 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                    # macOS universal (x64 + arm64 in one build)
                     - platform: macos-latest
                       target: aarch64-apple-darwin,x86_64-apple-darwin
                       args: ""
-                    # Linux
                     - platform: ubuntu-22.04
                       target: ""
                       args: ""
-                    # Windows (NSIS for .exe)
                     - platform: windows-latest
                       target: ""
                       args: "--bundles nsis"
@@ -36,13 +33,13 @@ jobs:
         steps:
             - uses: actions/checkout@v4
               with:
-                  fetch-depth: 0 # For version/tag ops
+                  fetch-depth: 0
 
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
                   node-version: lts/*
-                  cache: yarn # Or 'npm'/'pnpm' if you use those
+                  cache: yarn
 
             - name: Install frontend deps
               run: yarn install --frozen-lockfile
@@ -74,11 +71,13 @@ jobs:
                   TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
                   TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
               with:
-                  tagName: app-v__VERSION__ # Auto-replaces with Cargo.toml version
+                  tagName: app-v__VERSION__
                   releaseName: "Redis GUI v__VERSION__"
                   releaseBody: "Draft release – will be published automatically"
-                  draft: true # ← Create as draft
+                  draft: true
+                  prerelease: false
                   args: ${{ matrix.args }}
+                  includeUpdaterJson: true
                   updaterJsonPreferNsis: true
                   updaterJsonKeepUniversal: true
 
@@ -90,18 +89,18 @@ jobs:
               with:
                   script: |
                       const draft = await github.rest.repos.listReleases({
-                      owner: context.repo.owner,
-                      repo: context.repo.repo,
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
                       }).then(res => res.data.find(r => r.draft));
 
                       if (draft) {
-                      await github.rest.repos.updateRelease({
+                        await github.rest.repos.updateRelease({
                           owner: context.repo.owner,
                           repo: context.repo.repo,
                           release_id: draft.id,
                           draft: false,
-                          body: draft.body,  // ← Uses release-drafter's notes
+                          body: draft.body,
                           tag_name: draft.tag_name,
                           name: draft.name,
-                      });
+                        });
                       }
