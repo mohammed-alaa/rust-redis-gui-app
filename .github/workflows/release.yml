@@ -70,4 +70,11 @@ jobs:
                       ## Release Notes
                       See assets below for downloads.
 
-                      **Updater endpoint** (add to `tauri.conf.json`):
+                  draft: false # true = draft for manual publish
+                  prerelease: false
+                  args: ${{ matrix.args }}
+                  # Updater essentials (now signed!)
+                  includeUpdaterJson: true # Uploads latest.json + variants
+                  includeSignatures: true # Uploads .sig files (verified with pubkey)
+                  updaterJsonPreferNsis: true # Windows .exe priority
+                  updaterJsonKeepUniversal: true # macOS universal in JSON
