@@ -52,6 +52,7 @@ jobs:
               with:
                   targets: ${{ matrix.target }}
                   components: clippy
+                  working-directory: src-tauri
 
             - name: Install Ubuntu deps
               if: matrix.platform == 'ubuntu-22.04'
