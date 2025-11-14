@@ -1,83 +1,73 @@
-name: "publish"
+name: publish
 
 on:
     workflow_dispatch:
     push:
-        branches:
-            - main
+        branches: [release]
 
-concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
-    cancel-in-progress: true
+permissions:
+    contents: write # Global—fixes token issues
 
 jobs:
-    build-binaries:
+    publish-tauri:
         strategy:
             fail-fast: false
             matrix:
-                platform:
-                    - os: ubuntu-latest
-                      rust_target: x86_64-unknown-linux-gnu
-                    - os: macos-latest
-                      rust_target: x86_64-apple-darwin
-                    - os: macos-latest
-                      rust_target: aarch64-apple-darwin
-                    - os: windows-latest
-                      rust_target: x86_64-pc-windows-msvc
+                include:
+                    - platform: macos-latest
+                      target: aarch64-apple-darwin,x86_64-apple-darwin # Universal
+                      args: ""
+                    - platform: ubuntu-22.04
+                      target: ""
+                      args: ""
+                    - platform: windows-latest
+                      target: ""
+                      args: "--bundles nsis" # Avoids WiX MSI issues
+        runs-on: ${{ matrix.platform }}
 
-        runs-on: ${{ matrix.platform.os }}
         steps:
-            - uses: actions/checkout@v2
-
-            - name: setup node
-              uses: actions/setup-node@v1
+            - uses: actions/checkout@v4
               with:
-                  node-version: 20
+                  fetch-depth: 0
 
-            - name: "Setup Rust"
-              uses: actions-rs/toolchain@v1
+            - name: Setup Node
+              uses: actions/setup-node@v4
               with:
-                  default: true
-                  override: true
-                  profile: minimal
-                  toolchain: stable
-                  target: ${{ matrix.platform.rust_target }}
+                  node-version: lts/*
+                  cache: yarn
 
-            - uses: Swatinem/rust-cache@v2
+            - name: Install frontend deps
+              run: yarn install --frozen-lockfile
 
-            - name: install dependencies (ubuntu only)
-              if: matrix.platform == 'ubuntu-latest'
+            - name: Install Rust
+              uses: dtolnay/rust-toolchain@stable
+              with:
+                  targets: ${{ matrix.target }}
+
+            - name: Install Ubuntu deps
+              if: matrix.platform == 'ubuntu-22.04'
               run: |
                   sudo apt-get update
-                  sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
+                  sudo apt-get install -y \
+                    libwebkit2gtk-4.1-dev \
+                    libappindicator3-dev \
+                    librsvg2-dev \
+                    patchelf
 
-            - uses: JonasKruckenberg/tauri-build@v1.2.2
-              id: tauri_build
-              with:
-                  target: ${{ matrix.platform.rust_target }}
-
-            # The artifacts output can now be used to upload the artifacts
-            - uses: actions/upload-artifact@v4
-              with:
-                  name: artifacts
-                  path: "${{ join(fromJSON(steps.tauri_build.outputs.artifacts), '\n') }}"
-
-    publish:
-        needs: build-binaries
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v2
-            # Download the previously uploaded artifacts
-            - uses: actions/download-artifact@v4
-              id: download
-              with:
-                  name: artifacts
-                  path: artifacts
-            # And create a release with the artifacts attached
-            - name: "create release"
-              uses: softprops/action-gh-release@master
+            - name: Build & Release
+              uses: tauri-apps/tauri-action@v2
               env:
-                  GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
+                  tagName: app-v__VERSION__
+                  releaseName: App v__VERSION__
+                  releaseBody: |
+                      ## Release Notes
+                      - Full changelog in repo.
+                      - Updater: https://github.com/${{ github.repository }}/releases/download/app-v__VERSION__/latest.json
                   draft: false
-                  files: ./artifacts/**/*
+                  prerelease: false
+                  args: ${{ matrix.args }}
+                  includeUpdaterJson: true
+                  updaterJsonPreferNsis: true
+                  updaterJsonKeepUniversal: true
