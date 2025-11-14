@@ -1,5 +1,7 @@
 {
 	"name": "redis-gui",
+	"description": "Desktop app built in Rust to connect to Redis servers",
+	"author": "Mohamed Alaa",
 	"private": true,
 	"version": "0.1.0",
 	"type": "module",
