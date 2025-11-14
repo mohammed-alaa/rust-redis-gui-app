@@ -58,7 +58,7 @@ jobs:
                     patchelf
 
             - name: Build & Release
-              uses: tauri-apps/tauri-action@v1 # <-- The fix: v1, not v2
+              uses: tauri-apps/tauri-action@v0
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
