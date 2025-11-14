@@ -51,8 +51,9 @@ jobs:
               uses: dtolnay/rust-toolchain@stable
               with:
                   targets: ${{ matrix.target }}
+                  components: clippy
 
-            - name: Install Ubuntu deps (v1 or v2)
+            - name: Install Ubuntu deps
               if: matrix.platform == 'ubuntu-22.04'
               run: |
                   sudo apt-get update
@@ -61,6 +62,9 @@ jobs:
                     libappindicator3-dev \
                     librsvg2-dev \
                     patchelf
+
+            - name: Run Clippy
+              run: cargo clippy -- -D warnings
 
             - name: Build & Release
               uses: tauri-apps/tauri-action@v0
