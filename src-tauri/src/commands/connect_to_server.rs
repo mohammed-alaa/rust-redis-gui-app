@@ -33,5 +33,5 @@ pub fn connect_to_server(
     }
 
     state.set_redis_client(Some(client));
-    return Ok(());
+    Ok(())
 }
