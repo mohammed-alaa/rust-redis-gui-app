@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAddServer } from "../composables/useAddServer";
+import { Button } from "@components/ui/button";
 
 const emits = defineEmits(["server-added"]);
 const { form, error, isLoading, onSubmit } = useAddServer(() =>
@@ -8,7 +9,7 @@ const { form, error, isLoading, onSubmit } = useAddServer(() =>
 </script>
 
 <template>
-	<div class="grid place-items-center p-4 h-screen bg-blue-950 text-white">
+	<div class="grid place-items-center p-4 h-screen">
 		<form class="grid gap-4" @submit.prevent="onSubmit">
 			{{ error }}
 			<div class="grid grid-cols-2 items-center">
@@ -41,13 +42,9 @@ const { form, error, isLoading, onSubmit } = useAddServer(() =>
 				/>
 			</div>
 
-			<button
-				type="submit"
-				class="block w-full border"
-				:disabled="isLoading"
-			>
+			<Button type="submit" :disabled="isLoading">
 				{{ isLoading ? "Connecting..." : "Connect" }}
-			</button>
+			</Button>
 		</form>
 	</div>
 </template>
