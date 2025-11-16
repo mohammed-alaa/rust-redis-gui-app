@@ -23,10 +23,10 @@ const { isLoading, genericError, form, onSubmit } = useAddServer(() =>
 
 			<FormField bails name="name" v-slot="{ componentField }">
 				<FormItem>
-					<FormLabel for="name">Name</FormLabel>
+					<FormLabel>Name</FormLabel>
 					<FormControl>
 						<Input
-							id="name"
+							type="text"
 							placeholder="Example: local server"
 							v-bind="componentField"
 						/>
@@ -36,10 +36,10 @@ const { isLoading, genericError, form, onSubmit } = useAddServer(() =>
 			</FormField>
 			<FormField bails name="host" v-slot="{ componentField }">
 				<FormItem>
-					<FormLabel for="host">Host</FormLabel>
+					<FormLabel>Host</FormLabel>
 					<FormControl>
 						<Input
-							id="host"
+							type="text"
 							placeholder="Example: 127.0.0.1"
 							v-bind="componentField"
 						/>
@@ -49,10 +49,9 @@ const { isLoading, genericError, form, onSubmit } = useAddServer(() =>
 			</FormField>
 			<FormField bails name="port" v-slot="{ componentField }">
 				<FormItem>
-					<FormLabel for="port">Port</FormLabel>
+					<FormLabel>Port</FormLabel>
 					<FormControl>
 						<Input
-							id="port"
 							type="number"
 							placeholder="Example: 6379"
 							v-bind="componentField"
