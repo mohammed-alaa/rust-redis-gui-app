@@ -2,4 +2,4 @@ pub mod app_state;
 pub mod database;
 
 pub use app_state::AppState;
-pub use database::database::Database;
+pub use database::Database;
