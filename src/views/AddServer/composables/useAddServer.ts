@@ -5,18 +5,23 @@ import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
 
-export function useAddServer(onSuccess: Function) {
+export function useAddServer(
+	onSuccess: (values: typeof DEFAULT_SERVER) => void,
+) {
 	const isLoading = ref(false);
 	const genericError = ref("");
 	const formSchema = toTypedSchema(
 		z.object({
-			name: z.string()
+			name: z
+				.string()
 				.min(2, "Name must be at least 2 characters")
 				.max(50, "Name must not exceed 50 characters"),
-			host: z.string()
+			host: z
+				.string()
 				.min(2, "Host must be at least 2 characters")
 				.max(50, "Host must not exceed 50 characters"),
-			port: z.number()
+			port: z
+				.number()
 				.min(1, "Port must be at least 1")
 				.max(65535, "Port must not exceed 65535"),
 		}),
@@ -33,7 +38,7 @@ export function useAddServer(onSuccess: Function) {
 		try {
 			await invoke(COMMANDS.ADD_SERVER, values);
 
-			onSuccess();
+			onSuccess(values);
 		} catch (_error: any) {
 			genericError.value = _error;
 		} finally {

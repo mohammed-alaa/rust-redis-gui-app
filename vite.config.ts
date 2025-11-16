@@ -43,6 +43,7 @@ export default defineConfig(() => ({
 			"@modules": resolve(__dirname, "./src/modules"),
 			"@utils": resolve(__dirname, "./src/utils"),
 			"@views": resolve(__dirname, "./src/views"),
+			"@stores": resolve(__dirname, "./src/stores"),
 		},
 	},
 }));
