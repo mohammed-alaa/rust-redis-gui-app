@@ -31,6 +31,6 @@ impl Database {
     }
 
     pub fn db_file_path(base_path: &Path) -> PathBuf {
-        base_path.join("database.db").to_path_buf()
+        base_path.join("database.db")
     }
 }
