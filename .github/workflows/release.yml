@@ -74,7 +74,7 @@ jobs:
                   tagName: app-v__VERSION__
                   releaseName: "Redis GUI v__VERSION__"
                   releaseBody: "Draft release – will be published automatically"
-                  draft: true
+                  releaseDraft: false
                   prerelease: false
                   args: ${{ matrix.args }}
                   includeUpdaterJson: true
@@ -88,19 +88,19 @@ jobs:
             - uses: actions/github-script@v7
               with:
                   script: |
-                      const draft = await github.rest.repos.listReleases({
+                      const releaseDraft = await github.rest.repos.listReleases({
                         owner: context.repo.owner,
                         repo: context.repo.repo,
-                      }).then(res => res.data.find(r => r.draft));
+                      }).then(res => res.data.find(r => r.releaseDraft));
 
-                      if (draft) {
+                      if (releaseDraft) {
                         await github.rest.repos.updateRelease({
                           owner: context.repo.owner,
                           repo: context.repo.repo,
-                          release_id: draft.id,
-                          draft: false,
-                          body: draft.body,
-                          tag_name: draft.tag_name,
-                          name: draft.name,
+                          release_id: releaseDraft.id,
+                          releaseDraft: false,
+                          body: releaseDraft.body,
+                          tag_name: releaseDraft.tag_name,
+                          name: releaseDraft.name,
                         });
                       }
