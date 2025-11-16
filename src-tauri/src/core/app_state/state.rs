@@ -24,4 +24,10 @@ impl AppState {
     pub fn get_redis_client(&self) -> Option<&Client> {
         self.redis_client.as_ref()
     }
+
+    // Temp: temprorary ignore dead code until functionalities are implemented
+    #[allow(dead_code)]
+    pub fn get_db_connection(&self) -> Option<&Database> {
+        self.db_connection.as_ref()
+    }
 }
