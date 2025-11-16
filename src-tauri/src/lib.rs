@@ -1,8 +1,9 @@
 mod commands;
 mod core;
+mod models;
 mod utils;
 
-use commands::{connect_to_server, get_keys};
+use commands::{add_server, connect_to_server, get_keys, get_servers};
 use core::{AppState, Database};
 use std::sync::Mutex;
 use tauri::{Builder, Manager};
@@ -25,7 +26,12 @@ pub fn run() {
         })
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
-        .invoke_handler(tauri::generate_handler![connect_to_server, get_keys])
+        .invoke_handler(tauri::generate_handler![
+            connect_to_server,
+            get_keys,
+            add_server,
+            get_servers
+        ])
         .run(tauri::generate_context!())
         .expect("error while running redis GUI application");
 }
