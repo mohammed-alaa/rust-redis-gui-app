@@ -64,7 +64,7 @@ const { isLoading, genericError, form, onSubmit } = useAddServer(() =>
 			<Button
 				type="submit"
 				class="cursor-pointer"
-				:disabled="isLoading || !form.meta.value.valid"
+				:disabled="isLoading || !form.meta.valid"
 			>
 				{{ isLoading ? "Connecting..." : "Connect" }}
 			</Button>
