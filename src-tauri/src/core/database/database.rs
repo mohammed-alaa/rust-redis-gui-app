@@ -20,14 +20,7 @@ impl Database {
             OpenFlags::SQLITE_OPEN_CREATE | OpenFlags::SQLITE_OPEN_READ_WRITE,
         );
 
-        if db_connection.is_err() {
-            match db_connection.err() {
-                Some(err) => return Err(err.to_string()),
-                None => return Err("Unknown error".to_string()),
-            }
-        }
-
-        let mut db_connection = db_connection.unwrap();
+        let mut db_connection = db_connection.map_err(|e| e.to_string())?;
         embedded::migrations::runner()
             .run(&mut db_connection)
             .map_err(|e| e.to_string())?;

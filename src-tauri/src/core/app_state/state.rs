@@ -20,6 +20,7 @@ impl AppState {
         self.db_connection = db_connection;
     }
 
+    /// Returns a reference to the Client if present.
     pub fn get_redis_client(&self) -> Option<&Client> {
         self.redis_client.as_ref()
     }
