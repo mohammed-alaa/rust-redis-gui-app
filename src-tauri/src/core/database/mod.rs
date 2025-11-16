@@ -9,25 +9,31 @@ mod embedded {
 
 #[derive(Debug)]
 pub struct Database {
-    _connection: Connection,
+    // Temp: temprorary ignore dead code until functionalities are implemented
+    #[allow(dead_code)]
+    connection: Connection,
 }
 
 impl Database {
     pub fn new(path: &Path) -> Result<Self, String> {
         println!("Database Path: {:?}", path);
-        let db_connection = Connection::open_with_flags(
+        let connection = Connection::open_with_flags(
             path,
             OpenFlags::SQLITE_OPEN_CREATE | OpenFlags::SQLITE_OPEN_READ_WRITE,
         );
 
-        let mut db_connection = db_connection.map_err(|e| e.to_string())?;
+        let mut connection = connection.map_err(|e| e.to_string())?;
         embedded::migrations::runner()
-            .run(&mut db_connection)
+            .run(&mut connection)
             .map_err(|e| e.to_string())?;
 
-        Ok(Self {
-            _connection: db_connection,
-        })
+        Ok(Self { connection })
+    }
+
+    // Temp: temprorary ignore dead code until functionalities are implemented
+    #[allow(dead_code)]
+    pub fn get_connection(&self) -> &Connection {
+        &self.connection
     }
 
     pub fn db_file_path(base_path: &Path) -> PathBuf {
