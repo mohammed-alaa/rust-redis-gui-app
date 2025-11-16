@@ -20,13 +20,14 @@ impl AppState {
         self.db_connection = db_connection;
     }
 
-    /// Returns a cloned Client if present.
-    pub fn get_redis_client(&self) -> Option<Client> {
-        self.redis_client.as_ref().cloned()
+    /// Returns a reference to the Client if present.
+    pub fn get_redis_client(&self) -> Option<&Client> {
+        self.redis_client.as_ref()
     }
 
-    /// Returns a reference to the Client if present.
-    pub fn get_redis_client_ref(&self) -> Option<&Client> {
-        self.redis_client.as_ref()
+    // Temp: temporary ignore dead code until functionalities are implemented
+    #[allow(dead_code)]
+    pub fn get_db_connection(&self) -> Option<&Database> {
+        self.db_connection.as_ref()
     }
 }
