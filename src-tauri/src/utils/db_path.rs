@@ -10,7 +10,7 @@ pub fn get_db_base_dir(app: &App, is_dev: bool) -> Result<PathBuf, String> {
             env::current_dir().map_err(|e| format!("Failed to get current directory: {}", e))?;
         Ok(Path::new(&current_dir)
             .parent()
-            .ok_or("Current directory has no parent")?
+            .ok_or("Failed to determine database directory: current directory has no parent")?
             .to_path_buf())
     } else {
         app.path()
