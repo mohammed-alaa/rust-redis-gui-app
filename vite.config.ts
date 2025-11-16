@@ -42,6 +42,7 @@ export default defineConfig(() => ({
 			"@constants": resolve(__dirname, "./src/constants"),
 			"@modules": resolve(__dirname, "./src/modules"),
 			"@utils": resolve(__dirname, "./src/utils"),
+			"@views": resolve(__dirname, "./src/views"),
 		},
 	},
 }));

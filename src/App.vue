@@ -24,6 +24,7 @@ checkFor();
 </script>
 
 <template>
+	<router-view />
 	<template v-if="isConnected">
 		<template v-if="isLoadingKeys">
 			<p>Loading keys...</p>
