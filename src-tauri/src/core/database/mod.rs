@@ -9,7 +9,7 @@ mod embedded {
 
 #[derive(Debug)]
 pub struct Database {
-    // Temp: temprorary ignore dead code until functionalities are implemented
+    // Temp: temporary ignore dead code until functionalities are implemented
     #[allow(dead_code)]
     connection: Connection,
 }
@@ -30,7 +30,7 @@ impl Database {
         Ok(Self { connection })
     }
 
-    // Temp: temprorary ignore dead code until functionalities are implemented
+    // Temp: temporary ignore dead code until functionalities are implemented
     #[allow(dead_code)]
     pub fn get_connection(&self) -> &Connection {
         &self.connection
