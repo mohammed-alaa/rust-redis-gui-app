@@ -4,6 +4,11 @@ version = "0.1.0"
 description = "Desktop app built in Rust to connect to Redis servers"
 authors = ["Mohamed Alaa"]
 edition = "2021"
+license = "MIT"
+repository = "https://github.com/mohammed-alaa/rust-redis-gui-app"
+readme = "../README.md"
+keywords = ["redis", "gui", "desktop", "rust", "vue", "typescript"]
+categories = ["gui", "database", "redis", "desktop"]
 
 [lib]
 name = "redis_gui_lib"
