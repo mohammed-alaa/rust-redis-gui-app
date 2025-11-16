@@ -38,7 +38,6 @@ export function useAddServer(onSuccess: Function) {
 	return {
 		form,
 		isLoading,
-		formSchema,
 		genericError,
 
 		onSubmit: form.handleSubmit(submit),
