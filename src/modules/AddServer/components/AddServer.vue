@@ -34,7 +34,7 @@ const { isLoading, genericError, form, onSubmit } = useAddServer(() =>
 					<FormMessage />
 				</FormItem>
 			</FormField>
-			<FormField name="host" v-slot="{ componentField }">
+			<FormField bails name="host" v-slot="{ componentField }">
 				<FormItem>
 					<FormLabel for="host">Host</FormLabel>
 					<FormControl>
@@ -47,7 +47,7 @@ const { isLoading, genericError, form, onSubmit } = useAddServer(() =>
 					<FormMessage />
 				</FormItem>
 			</FormField>
-			<FormField name="port" v-slot="{ componentField }">
+			<FormField bails name="port" v-slot="{ componentField }">
 				<FormItem>
 					<FormLabel for="port">Port</FormLabel>
 					<FormControl>
@@ -64,7 +64,7 @@ const { isLoading, genericError, form, onSubmit } = useAddServer(() =>
 			<Button
 				type="submit"
 				class="cursor-pointer"
-				:disabled="isLoading || !form.meta.valid"
+				:disabled="isLoading || !form.meta.value.valid"
 			>
 				{{ isLoading ? "Connecting..." : "Connect" }}
 			</Button>
