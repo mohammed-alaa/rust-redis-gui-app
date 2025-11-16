@@ -1,6 +1,6 @@
 mod commands;
 mod state;
-mod utils;
+// mod utils;
 
 use commands::{connect_to_server, get_keys};
 use state::AppState;
