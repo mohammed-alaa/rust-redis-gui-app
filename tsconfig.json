@@ -1,5 +1,6 @@
 {
 	"compilerOptions": {
+		"baseUrl": ".",
 		"target": "ES2020",
 		"useDefineForClassFields": true,
 		"module": "ESNext",
@@ -24,7 +25,8 @@
 			"@components/*": ["./src/components/*"],
 			"@constants": ["./src/constants"],
 			"@modules/*": ["./src/modules/*"],
-			"@composables": ["./src/composables"]
+			"@composables": ["./src/composables"],
+			"@utils/*": ["./src/utils/*"]
 		}
 	},
 	"include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],

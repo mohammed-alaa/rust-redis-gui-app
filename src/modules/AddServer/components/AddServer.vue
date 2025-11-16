@@ -1,53 +1,72 @@
 <script setup lang="ts">
 import { useAddServer } from "../composables/useAddServer";
+import { Button } from "@components/ui/button";
+import { Input } from "@components/ui/input";
+import {
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@components/ui/form";
 
 const emits = defineEmits(["server-added"]);
-const { form, error, isLoading, onSubmit } = useAddServer(() =>
+const { isLoading, genericError, form, onSubmit } = useAddServer(() =>
 	emits("server-added"),
 );
 </script>
 
 <template>
-	<div class="grid place-items-center p-4 h-screen bg-blue-950 text-white">
-		<form class="grid gap-4" @submit.prevent="onSubmit">
-			{{ error }}
-			<div class="grid grid-cols-2 items-center">
-				<label for="name">Name:</label>
-				<input
-					id="name"
-					type="text"
-					class="border"
-					v-model="form.name"
-				/>
-			</div>
+	<div class="grid place-items-center p-4 h-screen">
+		<form @submit.prevent="onSubmit">
+			{{ genericError }}
 
-			<div class="grid grid-cols-2 items-center">
-				<label for="host">Host:</label>
-				<input
-					id="host"
-					type="text"
-					class="border"
-					v-model="form.host"
-				/>
-			</div>
-
-			<div class="grid grid-cols-2 items-center">
-				<label for="port">Port:</label>
-				<input
-					id="port"
-					type="number"
-					class="border"
-					v-model.number="form.port"
-				/>
-			</div>
-
-			<button
+			<FormField bails name="name" v-slot="{ componentField }">
+				<FormItem>
+					<FormLabel>Name</FormLabel>
+					<FormControl>
+						<Input
+							type="text"
+							placeholder="Example: local server"
+							v-bind="componentField"
+						/>
+					</FormControl>
+					<FormMessage />
+				</FormItem>
+			</FormField>
+			<FormField bails name="host" v-slot="{ componentField }">
+				<FormItem>
+					<FormLabel>Host</FormLabel>
+					<FormControl>
+						<Input
+							type="text"
+							placeholder="Example: 127.0.0.1"
+							v-bind="componentField"
+						/>
+					</FormControl>
+					<FormMessage />
+				</FormItem>
+			</FormField>
+			<FormField bails name="port" v-slot="{ componentField }">
+				<FormItem>
+					<FormLabel>Port</FormLabel>
+					<FormControl>
+						<Input
+							type="number"
+							placeholder="Example: 6379"
+							v-bind="componentField"
+						/>
+					</FormControl>
+					<FormMessage />
+				</FormItem>
+			</FormField>
+			<Button
 				type="submit"
-				class="block w-full border"
-				:disabled="isLoading"
+				class="cursor-pointer"
+				:disabled="isLoading || !form.meta.value.valid"
 			>
 				{{ isLoading ? "Connecting..." : "Connect" }}
-			</button>
+			</Button>
 		</form>
 	</div>
 </template>
