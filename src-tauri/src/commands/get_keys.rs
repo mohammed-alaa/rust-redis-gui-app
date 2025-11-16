@@ -1,4 +1,4 @@
-use crate::state::AppState;
+use crate::core::app_state::AppState;
 use redis::TypedCommands;
 use std::sync::Mutex;
 use tauri::State;
