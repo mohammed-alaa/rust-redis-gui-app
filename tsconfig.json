@@ -26,7 +26,8 @@
 			"@constants": ["./src/constants"],
 			"@modules/*": ["./src/modules/*"],
 			"@composables": ["./src/composables"],
-			"@utils/*": ["./src/utils/*"]
+			"@utils/*": ["./src/utils/*"],
+			"@views/*": ["./src/views/*"]
 		}
 	},
 	"include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],
