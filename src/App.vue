@@ -1,10 +1,26 @@
 <script setup lang="ts">
+import { check } from "@tauri-apps/plugin-updater";
 import { storeToRefs } from "pinia";
 import { useStore } from "./Store";
 import { AddServer } from "@modules/AddServer";
 
+async function checkFor() {
+	// Disable update check in development mode
+	if (!import.meta.env.PROD) {
+		return;
+	}
+
+	try {
+		const updateResponse = await check();
+		console.log("updateResponse", updateResponse);
+	} catch (error) {
+		console.error("Error checking for updates:", error);
+	}
+}
+
 const store = useStore();
 const { isConnected, isLoadingKeys, keys, filter } = storeToRefs(store);
+checkFor();
 </script>
 
 <template>

@@ -1,8 +1,8 @@
 use std::time::Duration;
-
+use tauri::AppHandle;
 use tauri_plugin_updater::UpdaterExt;
 
-pub async fn update(app: tauri::AppHandle) -> tauri_plugin_updater::Result<()> {
+pub async fn update(app: AppHandle) -> tauri_plugin_updater::Result<()> {
     if let Some(update) = app
         .updater_builder()
         .timeout(Duration::from_secs(20))
