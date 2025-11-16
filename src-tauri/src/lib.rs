@@ -4,7 +4,7 @@ mod utils;
 
 use commands::{connect_to_server, get_keys};
 use core::{AppState, Database};
-use std::{env, sync::Mutex};
+use std::sync::Mutex;
 use tauri::{Builder, Manager};
 use utils::get_db_base_dir;
 
