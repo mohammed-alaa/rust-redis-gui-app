@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { check } from "@tauri-apps/plugin-updater";
+import { RouterView } from "vue-router";
 
 async function checkFor() {
 	// Disable update check in development mode
