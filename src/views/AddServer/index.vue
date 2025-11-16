@@ -13,7 +13,7 @@ const { isLoading, genericError, form, onSubmit } = useAddServer((values) => {
 });
 
 function goBack() {
-	router.back();
+	router.push({ name: 'home' });
 }
 </script>
 
