@@ -10,9 +10,15 @@ export function useAddServer(onSuccess: Function) {
 	const genericError = ref("");
 	const formSchema = toTypedSchema(
 		z.object({
-			name: z.string().min(2).max(50),
-			host: z.string().min(2).max(50),
-			port: z.number().min(1).max(65535),
+			name: z.string()
+				.min(2, "Name must be at least 2 characters")
+				.max(50, "Name must not exceed 50 characters"),
+			host: z.string()
+				.min(2, "Host must be at least 2 characters")
+				.max(50, "Host must not exceed 50 characters"),
+			port: z.number()
+				.min(1, "Port must be at least 1")
+				.max(65535, "Port must not exceed 65535"),
 		}),
 	);
 
