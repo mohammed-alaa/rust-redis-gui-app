@@ -18,7 +18,7 @@ const { isLoading, genericError, form, onSubmit } = useAddServer(() =>
 
 <template>
 	<div class="grid place-items-center p-4 h-screen">
-		<form @submit.prevent="onSubmit()">
+		<form @submit.prevent="onSubmit">
 			{{ genericError }}
 
 			<FormField bails name="name" v-slot="{ componentField }">
