@@ -2,16 +2,17 @@ use super::Model;
 use crate::core::Database;
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use time::{format_description::well_known::Rfc3339, OffsetDateTime};
 use uuid::Uuid;
 
-#[derive(Default, Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Server {
-    id: String,
+    id: Uuid,
     name: String,
     address: String,
     port: u16,
-    created_at: String,
-    updated_at: String,
+    created_at: OffsetDateTime,
+    updated_at: OffsetDateTime,
 }
 
 impl Server {
@@ -29,6 +30,19 @@ impl Server {
     }
 }
 
+impl Default for Server {
+    fn default() -> Self {
+        Self {
+            id: Uuid::nil(),
+            name: String::new(),
+            address: String::new(),
+            port: 0,
+            created_at: OffsetDateTime::now_utc(),
+            updated_at: OffsetDateTime::now_utc(),
+        }
+    }
+}
+
 impl Model for Server {
     fn table_name() -> &'static str {
         "servers"
@@ -40,14 +54,14 @@ impl Model for Server {
         let mut stmt = db
             .get_connection()
             .prepare(&sql)
-            .map_err(|e| e.to_string())?;
+            .map_err(|e| format!("Failed to prepare statement: {}", e))?;
 
         let servers_iter = stmt
             .query_map([], Self::from_row)
-            .map_err(|e| e.to_string())?;
+            .map_err(|e| format!("Failed to query servers: {}", e))?;
 
         let servers: Result<Vec<Self>, _> = servers_iter.collect();
-        servers.map_err(|e| e.to_string())
+        servers.map_err(|e| format!("Failed to fetch servers: {}", e))
     }
 
     fn create(&self, db: &Database) -> Result<Self, String>
@@ -55,7 +69,7 @@ impl Model for Server {
         Self: Sized,
     {
         let mut _self = self.clone();
-        _self.id = Uuid::now_v7().to_string();
+        _self.id = Uuid::now_v7();
         _self.save(db)?;
         Ok(_self)
     }
@@ -66,7 +80,7 @@ impl Model for Server {
     {
         let sql = format!("DELETE FROM {} WHERE id = ?", Self::table_name());
         db.get_connection()
-            .execute(&sql, [&self.id])
+            .execute(&sql, [&self.id.to_string()])
             .map(|_| true)
             .map_err(|e| e.to_string())
     }
@@ -104,8 +118,13 @@ impl Model for Server {
     }
 
     fn from_row(row: &rusqlite::Row) -> Result<Self, rusqlite::Error> {
+        let id_str: String = row.get("id")?;
+        let id = Uuid::parse_str(&id_str).map_err(|e| {
+            rusqlite::Error::FromSqlConversionFailure(0, rusqlite::types::Type::Text, Box::new(e))
+        })?;
+
         Ok(Self {
-            id: row.get("id")?,
+            id,
             name: row.get("name")?,
             address: row.get("address")?,
             port: row.get("port")?,
@@ -116,12 +135,12 @@ impl Model for Server {
 
     fn to_db_values(&self) -> Vec<String> {
         vec![
-            self.id.clone(),
+            self.id.to_string(),
             self.name.clone(),
             self.address.clone(),
             self.port.to_string(),
-            self.created_at.clone(),
-            self.updated_at.clone(),
+            self.created_at.format(&Rfc3339).unwrap(),
+            self.updated_at.format(&Rfc3339).unwrap(),
         ]
     }
 }
@@ -147,13 +166,12 @@ impl Eq for Server {}
 impl Clone for Server {
     fn clone(&self) -> Self {
         Self {
-            // TODO: check if generating new id is necessary
-            id: self.id.clone(),
+            id: self.id,
             name: self.name.clone(),
             address: self.address.clone(),
             port: self.port,
-            created_at: self.created_at.clone(),
-            updated_at: self.updated_at.clone(),
+            created_at: self.created_at,
+            updated_at: self.updated_at,
         }
     }
 }
