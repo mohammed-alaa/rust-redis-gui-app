@@ -3128,6 +3128,7 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-opener",
  "tauri-plugin-updater",
+ "time",
  "uuid",
 ]
 
@@ -3309,7 +3310,9 @@ dependencies = [
  "fallible-streaming-iterator",
  "hashlink",
  "libsqlite3-sys",
+ "serde_json",
  "smallvec",
+ "time",
 ]
 
 [[package]]
