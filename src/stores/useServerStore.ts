@@ -1,39 +1,46 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { useGetKeys, useLoading } from "@composables";
-import { COMMANDS } from "@constants";
-import { invoke } from "@tauri-apps/api/core";
-
-interface TServer {
-	name: string;
-	address: string;
-	port: number;
-}
+import { ServerService } from "@services/ServerService";
 
 export const useServerStore = defineStore("server-store", () => {
-	const isConnected = ref(false);
+	const serverService = new ServerService();
 	const servers = ref<TServer[]>([]);
 
 	const { keys, filter, isLoading: isLoadingKeys, getKeys } = useGetKeys();
 	const { isLoading, withLoading } = useLoading();
 
-	async function addServer(server: TServer) {
-		servers.value.push(server);
+	async function addServer(values: TServerFormFields) {
+		try {
+			const server = await withLoading(() =>
+				serverService.addServer(values),
+			);
+			servers.value.push(server);
+
+			return Promise.resolve(server);
+		} catch (error: any) {
+			return Promise.reject(error);
+		}
 	}
 
 	async function getServers() {
-		const _servers = await withLoading<TServer[]>(
-			invoke(COMMANDS.GET_SERVERS),
-		);
-
-		console.log(_servers);
+		const _servers = await withLoading(serverService.getServers);
 		servers.value = _servers;
+
+		return Promise.resolve(_servers);
 	}
 
-	getServers();
+	function init() {
+		getServers();
+	}
+
+	function $reset() {
+		servers.value = [];
+	}
 
 	return {
-		isConnected,
+		isLoading,
+
 		servers,
 		keys,
 		filter,
@@ -41,5 +48,8 @@ export const useServerStore = defineStore("server-store", () => {
 
 		getKeys,
 		addServer,
+		getServers,
+		init,
+		$reset,
 	};
 });

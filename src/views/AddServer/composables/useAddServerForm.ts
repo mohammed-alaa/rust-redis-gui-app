@@ -1,14 +1,12 @@
-import { ref } from "vue";
-import { invoke } from "@tauri-apps/api/core";
-import { COMMANDS, DEFAULT_SERVER } from "@constants";
+import { computed, ref } from "vue";
+import { DEFAULT_SERVER } from "@constants";
 import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
+import { useServerStore } from "@stores/useServerStore";
+import { storeToRefs } from "pinia";
 
-export function useAddServer(
-	onSuccess: (values: typeof DEFAULT_SERVER) => void,
-) {
-	const isLoading = ref(false);
+export function useAddServerForm() {
 	const genericError = ref("");
 	const formSchema = toTypedSchema(
 		z.object({
@@ -31,25 +29,27 @@ export function useAddServer(
 		validationSchema: formSchema,
 		initialValues: { ...DEFAULT_SERVER },
 	});
+	const serverStore = useServerStore();
+	const { isLoading } = storeToRefs(serverStore);
 
-	async function submit(values: typeof DEFAULT_SERVER) {
+	const isFormValid = computed(() => form.meta.value.valid);
+
+	async function submit(values: TServerFormFields) {
 		genericError.value = "";
-		isLoading.value = true;
-		try {
-			await invoke(COMMANDS.ADD_SERVER, values);
 
-			onSuccess(values);
+		try {
+			await serverStore.addServer(values);
+			return Promise.resolve();
 		} catch (_error: any) {
 			genericError.value = _error;
-		} finally {
-			isLoading.value = false;
 		}
 	}
 
 	return {
 		form,
-		isLoading,
 		genericError,
+		isLoading,
+		isFormValid,
 
 		onSubmit: form.handleSubmit(submit),
 	};
