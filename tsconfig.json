@@ -28,7 +28,8 @@
 			"@composables": ["./src/composables"],
 			"@utils/*": ["./src/utils/*"],
 			"@views/*": ["./src/views/*"],
-			"@stores/*": ["./src/stores/*"]
+			"@stores/*": ["./src/stores/*"],
+			"@services/*": ["./src/services/*"]
 		}
 	},
 	"include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],
