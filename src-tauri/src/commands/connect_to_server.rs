@@ -7,13 +7,13 @@ use tauri::State;
 pub fn connect_to_server(
     state: State<'_, Mutex<AppState>>,
     name: String,
-    host: String,
+    address: String,
     port: u16,
 ) -> Result<(), String> {
-    println!("Name: {}, Host: {}, Port: {}", name, host, port);
+    println!("Name: {}, Address: {}, Port: {}", name, address, port);
 
     let mut state = state.lock().unwrap();
-    let client = Client::open(format!("redis://{}:{}", host, port));
+    let client = Client::open(format!("redis://{}:{}", address, port));
 
     if client.is_err() {
         return Err(format!(

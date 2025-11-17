@@ -40,9 +40,9 @@ withDefaults(
 				<FormMessage />
 			</FormItem>
 		</FormField>
-		<FormField bails name="host" v-slot="{ componentField }">
+		<FormField bails name="address" v-slot="{ componentField }">
 			<FormItem>
-				<FormLabel>Host</FormLabel>
+				<FormLabel>Address</FormLabel>
 				<FormControl>
 					<Input
 						type="text"
