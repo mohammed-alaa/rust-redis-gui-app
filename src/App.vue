@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { check } from "@tauri-apps/plugin-updater";
+import { onUnmounted } from "vue";
 import { RouterView } from "vue-router";
+import { check } from "@tauri-apps/plugin-updater";
+import { useServerStore } from "@stores/useServerStore";
+
+const serverStore = useServerStore();
+serverStore.init();
 
 async function checkFor() {
 	// Disable update check in development mode
@@ -17,6 +22,10 @@ async function checkFor() {
 }
 
 checkFor();
+
+onUnmounted(() => {
+	serverStore.$reset();
+});
 </script>
 
 <template>
