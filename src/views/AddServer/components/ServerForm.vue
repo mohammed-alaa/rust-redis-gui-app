@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { FormContext } from "vee-validate";
 import { Button } from "@components/ui/button";
 import { Input } from "@components/ui/input";
 import {
@@ -14,7 +13,7 @@ defineEmits(["submit"]);
 withDefaults(
 	defineProps<{
 		isLoading: boolean;
-		form: FormContext<Record<string, any>>;
+		isFormValid: boolean;
 		genericError?: string;
 	}>(),
 	{
@@ -40,9 +39,9 @@ withDefaults(
 				<FormMessage />
 			</FormItem>
 		</FormField>
-		<FormField bails name="host" v-slot="{ componentField }">
+		<FormField bails name="address" v-slot="{ componentField }">
 			<FormItem>
-				<FormLabel>Host</FormLabel>
+				<FormLabel>Address</FormLabel>
 				<FormControl>
 					<Input
 						type="text"
@@ -69,7 +68,7 @@ withDefaults(
 		<Button
 			type="submit"
 			class="cursor-pointer"
-			:disabled="isLoading || !form.meta.value.valid"
+			:disabled="isLoading || !isFormValid"
 		>
 			{{ isLoading ? "Connecting..." : "Connect" }}
 		</Button>

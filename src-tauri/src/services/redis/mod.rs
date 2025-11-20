@@ -1,19 +1,9 @@
-use crate::AppState;
+use crate::models::Server;
 use redis::Client;
-use std::{sync::Mutex, time::Duration};
-use tauri::State;
+use std::time::Duration;
 
-#[tauri::command]
-pub fn connect_to_server(
-    state: State<'_, Mutex<AppState>>,
-    name: String,
-    host: String,
-    port: u16,
-) -> Result<(), String> {
-    println!("Name: {}, Host: {}, Port: {}", name, host, port);
-
-    let mut state = state.lock().unwrap();
-    let client = Client::open(format!("redis://{}:{}", host, port));
+pub fn test_connection(server: &Server) -> Result<(), String> {
+    let client = Client::open(format!("redis://{}:{}", server.address, server.port));
 
     if client.is_err() {
         return Err(format!(
@@ -32,6 +22,5 @@ pub fn connect_to_server(
         ));
     }
 
-    state.set_redis_client(Some(client));
     Ok(())
 }

@@ -13,12 +13,12 @@ const { servers } = storeToRefs(serverStore);
 
 		<div class="grid grid-cols-1 gap-4">
 			<template
-				v-for="(server, index) in servers"
-				:key="`servers-server-${server.name}-${index}`"
+				v-for="server in servers"
+				:key="`servers-server-${server.id}`"
 			>
 				<div class="card">
 					<h2>{{ server.name }}</h2>
-					<p>{{ server.host }}:{{ server.port }}</p>
+					<p>{{ server.address }}:{{ server.port }}</p>
 				</div>
 			</template>
 		</div>

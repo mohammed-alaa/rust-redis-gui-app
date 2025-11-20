@@ -12,6 +12,8 @@ impl AppState {
         Self::default()
     }
 
+    // Temp: temporary ignore dead code until functionalities are implemented
+    #[allow(dead_code)]
     pub fn set_redis_client(&mut self, client: Option<Client>) {
         self.redis_client = client;
     }
