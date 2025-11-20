@@ -17,7 +17,7 @@ export const useServerStore = defineStore("server-store", () => {
 			);
 			servers.value.push(server);
 
-			return Promise.resolve(server);
+			return server;
 		} catch (error: any) {
 			return Promise.reject(error);
 		}
@@ -27,7 +27,7 @@ export const useServerStore = defineStore("server-store", () => {
 		const _servers = await withLoading(serverService.getServers);
 		servers.value = _servers;
 
-		return Promise.resolve(_servers);
+		return _servers;
 	}
 
 	function init() {
