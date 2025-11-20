@@ -2,7 +2,6 @@ import { COMMANDS } from "@constants";
 import { invoke } from "@tauri-apps/api/core";
 
 export class ServerService {
-	constructor() {}
 
 	async addServer(values: TServerFormFields) {
 		try {
