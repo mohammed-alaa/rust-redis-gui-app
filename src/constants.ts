@@ -14,7 +14,7 @@ export const COMMANDS = {
 	 */
 	GET_KEYS: "get_keys",
 	/**
-	 * Get servers from the server.
+	 * Retrieve the list of configured servers.
 	 */
 	GET_SERVERS: "get_servers",
 };
