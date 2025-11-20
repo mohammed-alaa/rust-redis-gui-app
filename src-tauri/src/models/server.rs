@@ -5,7 +5,7 @@ use std::fmt;
 use time::{format_description::well_known::Rfc3339, OffsetDateTime};
 use uuid::Uuid;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Eq, Clone)]
 pub struct Server {
     pub id: Uuid,
     pub name: String,
@@ -158,20 +158,5 @@ impl fmt::Display for Server {
 impl PartialEq for Server {
     fn eq(&self, other: &Self) -> bool {
         self.id == other.id
-    }
-}
-
-impl Eq for Server {}
-
-impl Clone for Server {
-    fn clone(&self) -> Self {
-        Self {
-            id: self.id,
-            name: self.name.clone(),
-            address: self.address.clone(),
-            port: self.port,
-            created_at: self.created_at,
-            updated_at: self.updated_at,
-        }
     }
 }
