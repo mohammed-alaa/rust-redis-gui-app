@@ -24,10 +24,14 @@ export const useServerStore = defineStore("server-store", () => {
 	}
 
 	async function getServers() {
-		const _servers = await withLoading(serverService.getServers);
-		servers.value = _servers;
+		try {
+			const _servers = await withLoading(serverService.getServers);
+			servers.value = _servers;
 
-		return _servers;
+			return _servers;
+		} catch (error: any) {
+			console.error("Error fetching servers:", error);
+		}
 	}
 
 	function init() {
