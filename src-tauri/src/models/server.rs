@@ -7,12 +7,12 @@ use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Server {
-    id: Uuid,
-    name: String,
-    address: String,
-    port: u16,
-    created_at: OffsetDateTime,
-    updated_at: OffsetDateTime,
+    pub id: Uuid,
+    pub name: String,
+    pub address: String,
+    pub port: u16,
+    pub created_at: OffsetDateTime,
+    pub updated_at: OffsetDateTime,
 }
 
 impl Server {
