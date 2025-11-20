@@ -17,8 +17,10 @@ function goToHomePage() {
 }
 
 async function onSubmit(event: Event) {
-	await onAddServerFormSubmit(event);
-	goToHomePage();
+	try {
+		await onAddServerFormSubmit(event);
+		goToHomePage();
+	} catch (_) {}
 }
 </script>
 

@@ -42,6 +42,7 @@ export function useAddServerForm() {
 			return Promise.resolve();
 		} catch (_error: any) {
 			genericError.value = _error;
+			return Promise.reject(_error);
 		}
 	}
 
