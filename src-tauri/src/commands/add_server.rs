@@ -23,9 +23,7 @@ pub fn add_server(
     let server = Server::from_payload(name, address, port);
     test_connection(&server)?;
 
-    let server = server
+    server
         .create(db_connection.unwrap())
-        .map_err(|err| format!("Failed to create server: {}", err));
-
-    Ok(server.unwrap())
+        .map_err(|err| format!("Failed to create server: {}", err))
 }
