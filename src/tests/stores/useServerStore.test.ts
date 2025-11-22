@@ -79,12 +79,10 @@ describe("useServerStore", () => {
 			});
 			const serverStore = useServerStore();
 
-			try {
-				await serverStore.addServer(serverFormFields);
-			} catch (error) {
-				expect(error).toBe(errorMessage);
-				expect(serverStore.servers).toEqual([]);
-			}
+			expect(serverStore.servers).toEqual([]);
+			expect(serverStore.addServer(serverFormFields)).rejects.toThrow(
+				errorMessage,
+			);
 		});
 	});
 });
