@@ -42,32 +42,34 @@ serverStore.getServers().catch((error) => toast.error(error as string));
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				<template
-					v-for="server in servers"
-					:key="`servers-server-${server.id}`"
-				>
-					<TableRow
-						class="cursor-pointer"
-						@click="onOpenServer(server.id)"
+				<TableEmpty :colspan="3" v-if="isLoading || !servers.length">
+					<template v-if="isLoading">
+						<p>Loading servers...</p>
+					</template>
+					<template v-else>
+						<p>No servers found.</p>
+					</template>
+				</TableEmpty>
+				<template v-else>
+					<template
+						v-for="server in servers"
+						:key="`servers-server-${server.id}`"
 					>
-						<TableCell class="font-medium">
-							{{ server.name }}
-						</TableCell>
-						<TableCell>
-							{{ server.address }}:{{ server.port }}
-						</TableCell>
-						<TableCell> </TableCell>
-					</TableRow>
+						<TableRow
+							class="cursor-pointer"
+							@click="onOpenServer(server.id)"
+						>
+							<TableCell class="font-medium">
+								{{ server.name }}
+							</TableCell>
+							<TableCell>
+								{{ server.address }}:{{ server.port }}
+							</TableCell>
+							<TableCell> </TableCell>
+						</TableRow>
+					</template>
 				</template>
 			</TableBody>
-			<TableEmpty :colspan="3" v-if="isLoading || !servers.length">
-				<template v-if="isLoading">
-					<p>Loading servers...</p>
-				</template>
-				<template v-else>
-					<p>No servers found.</p>
-				</template>
-			</TableEmpty>
 			<TableFooter>
 				<TableRow>
 					<TableCell colspan="100%" class="text-center">
