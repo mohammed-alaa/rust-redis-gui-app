@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import { useServerStore } from "@stores/useServerStore";
 import { Button } from "@components/ui/button";
 import { onBeforeUnmount } from "vue";
+import { toast } from "vue-sonner";
 
 const router = useRouter();
 const serverStore = useServerStore();
@@ -14,7 +15,9 @@ function onGoHome() {
 }
 
 onBeforeUnmount(() => {
-	serverStore.closeServer();
+	serverStore.closeServer().catch(() => {
+		toast.error("Failed to close the server connection");
+	});
 });
 </script>
 
