@@ -1,28 +1,69 @@
-name: Branch-based PR Labeler
+name: PR Auto Labeler
 
 on:
-  pull_request_target:
-    types: [opened, synchronize, reopened]
+    pull_request_target:
+        types: [opened, synchronize, reopened]
 
 permissions:
-  pull-requests: write
+    contents: read
+    pull-requests: write
 
 jobs:
-  label-by-branch:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Add labels based on branch prefix
-        uses: actions/labeler@v6
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          sync-labels: true
-          configuration: |
-            feature:
-              head-branch:
-                - "^feat(/.*|$)"
-                - "^feature(/.*|$)"
-            
-            hotfix:
-              head-branch:
-                - "^hotfix(/.*|$)"
-                - "^fix(/.*|$)"
+    label:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Automatic labeling
+              uses: actions/labeler@v6
+              with:
+                  repo-token: ${{ secrets.GITHUB_TOKEN }}
+                  sync-labels: true
+                  configuration: |
+                      # Rust files
+                      rust:
+                        - changed-files: '**/*.rs'
+
+                      # JavaScript / TypeScript
+                      javascript:
+                        - changed-files:
+                            - any-glob-to-any-file:
+                                - '**/*.js'
+                                - '**/*.ts'
+
+                      # Vue
+                      ui:
+                        - changed-files: '**/*.vue'
+
+                      # Build / config files
+                      configuration:
+                        - changed-files:
+                            - any-glob-to-any-file:
+                                - 'vite.config.ts'
+                                - 'vitest.config.ts'
+                                - 'tsconfig.*.json'
+                                - 'tauri.conf.json'
+
+                      # Dependency files
+                      dependencies:
+                        - changed-files:
+                            - any-glob-to-any-file:
+                                - 'package.json'
+                                - 'yarn.lock'
+                                - 'Cargo.toml'
+                                - 'Cargo.lock'
+
+                      # Test files
+                      tests:
+                        - changed-files:
+                            - any-glob-to-any-file:
+                                - 'src/tests/**/*'
+
+                      # Branch prefixes
+                      feature:
+                        head-branch:
+                          - '^feat(/.*|$)'
+                          - '^feature(/.*|$)'
+
+                      hotfix:
+                        head-branch:
+                          - '^hotfix(/.*|$)'
+                          - '^fix(/.*|$)'
