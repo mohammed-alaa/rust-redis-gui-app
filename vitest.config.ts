@@ -19,7 +19,7 @@ export default defineConfig((configEnv) =>
 							environment: "jsdom",
 							include: [
 								...defaultInclude,
-								"src/tests/unit/**/*.test.ts",
+								"src/tests/**/*.test.ts",
 							],
 							exclude: [...defaultExclude, "src-tauri/**/*"],
 						},
