@@ -11,4 +11,12 @@ export const COMMANDS = {
 	 * Retrieve the list of configured servers.
 	 */
 	GET_SERVERS: "get_servers",
+	/**
+	 * Open a connection to the specified server.
+	 */
+	OPEN_SERVER: "open_server",
+	/**
+	 * Close the connection to the specified server.
+	 */
+	CLOSE_SERVER: "close_server",
 };
