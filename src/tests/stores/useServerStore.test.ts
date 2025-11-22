@@ -1,33 +1,10 @@
-import {
-	beforeEach,
-	expect,
-	describe,
-	it,
-	beforeAll,
-	afterEach,
-	vi,
-} from "vitest";
-import { randomFillSync, randomUUID } from "crypto";
+import { beforeEach, expect, describe, it, afterEach, vi } from "vitest";
 import { setActivePinia, createPinia } from "pinia";
 import { useServerStore } from "@stores/useServerStore";
 import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
 import { COMMANDS } from "@constants";
 
 describe("useServerStore", () => {
-	beforeAll(() => {
-		Object.defineProperty(window, "crypto", {
-			value: {
-				// @ts-ignore
-				getRandomValues: (buffer) => {
-					return randomFillSync(buffer);
-				},
-				randomUUID: () => {
-					return randomUUID();
-				},
-			},
-		});
-	});
-
 	beforeEach(() => {
 		setActivePinia(createPinia());
 	});
@@ -50,7 +27,7 @@ describe("useServerStore", () => {
 				name: "Test Server",
 				address: "localhost",
 				port: 6379,
-				id: window.crypto.randomUUID(),
+				id: "server-1231",
 				created_at: new Date(),
 				updated_at: new Date(),
 			};
@@ -89,7 +66,7 @@ describe("useServerStore", () => {
 
 		const server: TServer = {
 			...newServer,
-			id: window.crypto.randomUUID(),
+			id: "server-awd12",
 			created_at: new Date(),
 			updated_at: new Date(),
 		};
