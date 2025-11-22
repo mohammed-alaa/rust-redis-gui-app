@@ -4,6 +4,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { ServerService } from "@services/ServerService";
 import { COMMANDS } from "@constants";
 
+vi.mock("@tauri-apps/api/core", { spy: true });
+
 describe("ServerService", () => {
 	afterEach(() => {
 		clearMocks();
