@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
 import { useServerStore } from "@stores/useServerStore";
+import { toast } from "vue-sonner";
 import { Button } from "@components/ui/button";
 import {
 	Table,
@@ -14,13 +16,23 @@ import {
 } from "@components/ui/table";
 
 const serverStore = useServerStore();
+const router = useRouter();
 const { servers, isLoading } = storeToRefs(serverStore);
 
-serverStore.getServers();
+async function onOpenServer(serverId: TServer["id"]) {
+	try {
+		await serverStore.openServer(serverId);
+		router.push({ name: "server" });
+	} catch (error) {
+		toast.error(error as string);
+	}
+}
+
+serverStore.getServers().catch((error) => toast.error(error as string));
 </script>
 
 <template>
-	<div class="w-screen h-screen p-4">
+	<div class="p-4">
 		<Table>
 			<TableHeader>
 				<TableRow>
@@ -34,7 +46,10 @@ serverStore.getServers();
 					v-for="server in servers"
 					:key="`servers-server-${server.id}`"
 				>
-					<TableRow>
+					<TableRow
+						class="cursor-pointer"
+						@click="onOpenServer(server.id)"
+					>
 						<TableCell class="font-medium">
 							{{ server.name }}
 						</TableCell>
