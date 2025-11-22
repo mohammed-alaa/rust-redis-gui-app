@@ -14,7 +14,11 @@ permissions:
     actions: write
 
 jobs:
+    test:
+        uses: ./.github/workflows/test-frontend.yml
+
     publish-tauri:
+        needs: test
         strategy:
             fail-fast: false
             matrix:
@@ -28,6 +32,7 @@ jobs:
                     - platform: windows-latest
                       target: ""
                       args: "--bundles nsis"
+
         runs-on: ${{ matrix.platform }}
 
         steps:
@@ -99,8 +104,5 @@ jobs:
                           repo: context.repo.repo,
                           release_id: draft.id,
                           draft: false,
-                          body: draft.body,
-                          tag_name: draft.tag_name,
-                          name: draft.name,
                         });
                       }
