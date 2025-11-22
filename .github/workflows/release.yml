@@ -10,8 +10,8 @@ on:
         branches: [main]
 
 permissions:
-    contents: write
-    actions: write
+    contents: read
+    actions: read
 
 jobs:
     test:
