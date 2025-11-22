@@ -39,7 +39,7 @@ export const useServerStore = defineStore("server-store", () => {
 			return;
 		}
 
-		await ServerService.closeServer(activeServer.value.id);
+		await ServerService.closeServer();
 		activeServer.value = null;
 	}
 

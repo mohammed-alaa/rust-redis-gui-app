@@ -70,9 +70,7 @@ describe("ServerService", () => {
 			}
 		});
 
-		await expect(ServerService.closeServer(server.id)).resolves.toBe(null);
-		expect(invoke).toHaveBeenCalledWith(COMMANDS.CLOSE_SERVER, {
-			id: server.id,
-		});
+		await expect(ServerService.closeServer()).resolves.toBe(null);
+		expect(invoke).toHaveBeenCalledWith(COMMANDS.CLOSE_SERVER);
 	});
 });

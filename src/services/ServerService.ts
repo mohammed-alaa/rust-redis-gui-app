@@ -14,7 +14,7 @@ export class ServerService {
 		return invoke<TServer>(COMMANDS.OPEN_SERVER, { id });
 	}
 
-	static closeServer(id: TServer["id"]): Promise<void> {
-		return invoke<void>(COMMANDS.CLOSE_SERVER, { id });
+	static closeServer(): Promise<void> {
+		return invoke<void>(COMMANDS.CLOSE_SERVER);
 	}
 }
