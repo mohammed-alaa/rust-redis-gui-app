@@ -4,33 +4,26 @@ import { useGetKeys, useLoading } from "@composables";
 import { ServerService } from "@services/ServerService";
 
 export const useServerStore = defineStore("server-store", () => {
-	const serverService = new ServerService();
 	const servers = ref<TServer[]>([]);
 
 	const { keys, filter, isLoading: isLoadingKeys, getKeys } = useGetKeys();
 	const { isLoading, withLoading } = useLoading();
 
-	async function addServer(values: TServerFormFields) {
-		try {
-			const server = await withLoading(() =>
-				serverService.addServer(values),
-			);
-			servers.value.push(server);
-
-			return server;
-		} catch (error: any) {
-			return Promise.reject(error);
-		}
+	async function addServer(values: TServerFormFields): Promise<TServer> {
+		const server = await ServerService.addServer(values);
+		servers.value.push(server);
+		return server;
 	}
 
-	async function getServers() {
+	async function getServers(): Promise<TServer[]> {
 		try {
-			const _servers = await withLoading(serverService.getServers);
+			const _servers = await withLoading(ServerService.getServers);
 			servers.value = _servers;
 
 			return _servers;
 		} catch (error: any) {
 			console.error("Error fetching servers:", error);
+			return [];
 		}
 	}
 

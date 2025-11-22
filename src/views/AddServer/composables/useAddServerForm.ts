@@ -1,10 +1,10 @@
 import { computed, ref } from "vue";
-import { DEFAULT_SERVER } from "@constants";
 import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
+import { DEFAULT_SERVER } from "@constants";
 import { useServerStore } from "@stores/useServerStore";
-import { storeToRefs } from "pinia";
+import { useLoading } from "@composables";
 
 export function useAddServerForm() {
 	const genericError = ref("");
@@ -25,12 +25,12 @@ export function useAddServerForm() {
 		}),
 	);
 
+	const serverStore = useServerStore();
+	const { isLoading, withLoading } = useLoading();
 	const form = useForm<typeof DEFAULT_SERVER>({
 		validationSchema: formSchema,
 		initialValues: { ...DEFAULT_SERVER },
 	});
-	const serverStore = useServerStore();
-	const { isLoading } = storeToRefs(serverStore);
 
 	const isFormValid = computed(() => form.meta.value.valid);
 
@@ -38,8 +38,7 @@ export function useAddServerForm() {
 		genericError.value = "";
 
 		try {
-			await serverStore.addServer(values);
-			return Promise.resolve();
+			return await withLoading(() => serverStore.addServer(values));
 		} catch (_error: any) {
 			genericError.value = _error;
 			return Promise.reject(_error);
