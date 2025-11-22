@@ -2,7 +2,7 @@ import { beforeEach, expect, describe, it, afterEach, vi } from "vitest";
 import { setActivePinia, createPinia } from "pinia";
 import { useServerStore } from "@stores/useServerStore";
 import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
-import { COMMANDS, DEFAULT_SERVER } from "@constants";
+import { COMMANDS } from "@constants";
 import { useAddServerForm } from "@views/AddServer/composables/useAddServerForm";
 import { nextTick, defineComponent } from "vue";
 import { mount, flushPromises } from "@vue/test-utils";
@@ -32,7 +32,9 @@ describe("useAddServerForm", () => {
 			const wrapper = mount(TestComponent);
 			const { form, genericError, isLoading, isFormValid } = wrapper.vm;
 
-			expect(form.values).toEqual(DEFAULT_SERVER);
+			expect(form.values).toEqual(
+				useServerFactory().initialServer().serverFormFields,
+			);
 			expect(genericError).toBe("");
 			expect(isLoading).toBe(false);
 			expect(isFormValid).toBe(true);
@@ -50,7 +52,9 @@ describe("useAddServerForm", () => {
 			const wrapper = mount(TestComponent);
 			const { form } = wrapper.vm;
 
-			expect(form.values).toEqual(DEFAULT_SERVER);
+			expect(form.values).toEqual(
+				useServerFactory().initialServer().serverFormFields,
+			);
 			wrapper.unmount();
 		});
 	});
@@ -450,7 +454,7 @@ describe("useAddServerForm", () => {
 			const submitPromise = wrapper.vm.onSubmit();
 
 			await flushPromises();
-			await vi.waitFor(() => {
+			vi.waitFor(() => {
 				expect(wrapper.vm.isLoading).toBe(true);
 			});
 

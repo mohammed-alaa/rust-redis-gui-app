@@ -2,7 +2,6 @@ import { computed, ref } from "vue";
 import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
-import { DEFAULT_SERVER } from "@constants";
 import { useServerStore } from "@stores/useServerStore";
 import { useLoading } from "@composables";
 
@@ -27,9 +26,13 @@ export function useAddServerForm() {
 
 	const serverStore = useServerStore();
 	const { isLoading, withLoading } = useLoading();
-	const form = useForm<typeof DEFAULT_SERVER>({
+	const form = useForm<TServerFormFields>({
 		validationSchema: formSchema,
-		initialValues: { ...DEFAULT_SERVER },
+		initialValues: {
+			name: "",
+			address: "",
+			port: 0,
+		},
 	});
 
 	const isFormValid = computed(() => form.meta.value.valid);

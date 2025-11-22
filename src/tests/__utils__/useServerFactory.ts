@@ -28,8 +28,22 @@ export function useServerFactory() {
 			serverFormFields,
 		};
 	}
+
+	function initialServer() {
+		const serverFormFields: TServerFormFields = {
+			name: "",
+			address: "",
+			port: 0,
+		};
+
+		return {
+			serverFormFields,
+		};
+	}
+
 	return {
 		validServer,
 		invalidServer,
+		initialServer,
 	};
 }
