@@ -23,8 +23,6 @@ describe("useAddServerForm", () => {
 	afterEach(() => {
 		clearMocks();
 		vi.clearAllMocks();
-		server = {} as TServer;
-		serverFormFields = {} as TServerFormFields;
 	});
 
 	describe("initialization", () => {
