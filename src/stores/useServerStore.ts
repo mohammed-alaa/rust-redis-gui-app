@@ -47,6 +47,7 @@ export const useServerStore = defineStore("server-store", () => {
 
 	function $reset() {
 		servers.value = [];
+		activeServer.value = null;
 	}
 
 	return {
