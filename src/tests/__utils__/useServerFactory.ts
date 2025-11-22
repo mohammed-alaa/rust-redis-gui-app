@@ -39,7 +39,7 @@ export function useServerFactory() {
 		const serverFormFields: TServerFormFields = {
 			name: "",
 			address: "",
-			port: 0,
+			port: 1,
 		};
 
 		return {

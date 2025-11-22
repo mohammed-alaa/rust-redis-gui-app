@@ -31,7 +31,7 @@ export function useAddServerForm() {
 		initialValues: {
 			name: "",
 			address: "",
-			port: 0,
+			port: 1,
 		},
 	});
 
