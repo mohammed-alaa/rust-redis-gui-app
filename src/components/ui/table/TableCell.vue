@@ -2,9 +2,15 @@
 import type { HTMLAttributes } from "vue";
 import { cn } from "@utils/shadcnUtils";
 
-const props = defineProps<{
-	class?: HTMLAttributes["class"];
-}>();
+const props = withDefaults(
+	defineProps<{
+		class?: HTMLAttributes["class"];
+		colspan?: number | "100%";
+	}>(),
+	{
+		colspan: 1,
+	},
+);
 </script>
 
 <template>
@@ -16,6 +22,7 @@ const props = defineProps<{
 				props.class,
 			)
 		"
+		:colspan="props.colspan"
 	>
 		<slot />
 	</td>

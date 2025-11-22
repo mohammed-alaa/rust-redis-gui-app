@@ -8,7 +8,7 @@ import TableRow from "./TableRow.vue";
 const props = withDefaults(
 	defineProps<{
 		class?: HTMLAttributes["class"];
-		colspan?: number;
+		colspan?: number | "100%";
 	}>(),
 	{
 		colspan: 1,
