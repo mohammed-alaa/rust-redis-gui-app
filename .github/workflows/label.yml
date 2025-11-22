@@ -20,7 +20,9 @@ jobs:
                   configuration: |
                       # Rust files
                       rust:
-                        - changed-files: '**/*.rs'
+                        - changed-files:
+                            - any-glob-to-any-file:
+                                - '**/*.rs'
 
                       # JavaScript / TypeScript
                       javascript:
