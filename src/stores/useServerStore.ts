@@ -25,7 +25,7 @@ export const useServerStore = defineStore("server-store", () => {
 	}
 
 	async function openServer(id: TServer["id"]) {
-		if (activeServer.value?.id === id) {
+		if (isConnected.value && activeServer.value!.id === id) {
 			return activeServer.value;
 		}
 
