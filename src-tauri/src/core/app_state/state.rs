@@ -12,14 +12,9 @@ impl AppState {
         Self::default()
     }
 
-    // Temp: temporary ignore dead code until functionalities are implemented
-    #[allow(dead_code)]
+    /// Sets the current Redis Client
     pub fn set_redis_client(&mut self, client: Option<Client>) {
         self.redis_client = client;
-    }
-
-    pub fn set_db_connection(&mut self, db_connection: Option<Database>) {
-        self.db_connection = db_connection;
     }
 
     /// Returns a reference to the Client if present.
@@ -27,8 +22,12 @@ impl AppState {
         self.redis_client.as_ref()
     }
 
-    // Temp: temporary ignore dead code until functionalities are implemented
-    #[allow(dead_code)]
+    /// Sets the Database connection.
+    pub fn set_db_connection(&mut self, db_connection: Option<Database>) {
+        self.db_connection = db_connection;
+    }
+
+    /// Returns a reference to the Database connection if present.
     pub fn get_db_connection(&self) -> Option<&Database> {
         self.db_connection.as_ref()
     }
