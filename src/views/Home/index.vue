@@ -60,7 +60,7 @@ serverStore.getServers().catch((error) => toast.error(error as string));
 					</TableRow>
 				</template>
 			</TableBody>
-			<TableEmpty v-if="isLoading || !servers.length">
+			<TableEmpty :colspan="3" v-if="isLoading || !servers.length">
 				<template v-if="isLoading">
 					<p>Loading servers...</p>
 				</template>
