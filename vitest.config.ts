@@ -1,3 +1,4 @@
+import { resolve } from "path";
 import {
 	defineConfig,
 	mergeConfig,
@@ -28,7 +29,7 @@ export default defineConfig((configEnv) =>
 			},
 			resolve: {
 				alias: {
-					"@test-utils": "/src/tests/__utils__",
+					"@test-utils": resolve(__dirname, "/src/tests/__utils__"),
 				},
 			},
 		}),
