@@ -6,9 +6,13 @@ import { COMMANDS } from "@constants";
 import { useServerFactory } from "@test-utils/useServerFactory";
 
 describe("useServerStore", () => {
-	const { server, serverFormFields } = useServerFactory().validServer();
+	let server: TServer;
+	let serverFormFields: TServerFormFields;
 
 	beforeEach(() => {
+		const factory = useServerFactory().validServer();
+		server = factory.server;
+		serverFormFields = factory.serverFormFields;
 		setActivePinia(createPinia());
 	});
 

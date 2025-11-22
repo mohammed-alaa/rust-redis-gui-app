@@ -1,4 +1,4 @@
-import { expect, describe, it, afterEach, vi } from "vitest";
+import { expect, describe, it, afterEach, vi, beforeEach } from "vitest";
 import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
 import { invoke } from "@tauri-apps/api/core";
 import { ServerService } from "@services/ServerService";
@@ -8,7 +8,14 @@ import { useServerFactory } from "@test-utils/useServerFactory";
 vi.mock("@tauri-apps/api/core", { spy: true });
 
 describe("ServerService", () => {
-	const { serverFormFields, server } = useServerFactory().validServer();
+	let server: TServer;
+	let serverFormFields: TServerFormFields;
+
+	beforeEach(() => {
+		const factory = useServerFactory().validServer();
+		server = factory.server;
+		serverFormFields = factory.serverFormFields;
+	});
 
 	afterEach(() => {
 		clearMocks();
