@@ -9,15 +9,22 @@ import { mount, flushPromises } from "@vue/test-utils";
 import { useServerFactory } from "@test-utils/useServerFactory";
 
 describe("useAddServerForm", () => {
-	const { server, serverFormFields } = useServerFactory().validServer();
+	let server: TServer;
+	let serverFormFields: TServerFormFields;
 
 	beforeEach(() => {
+		const validServer = useServerFactory().validServer();
+		server = validServer.server;
+		serverFormFields = validServer.serverFormFields;
+
 		setActivePinia(createPinia());
 	});
 
 	afterEach(() => {
 		clearMocks();
 		vi.clearAllMocks();
+		server = {} as TServer;
+		serverFormFields = {} as TServerFormFields;
 	});
 
 	describe("initialization", () => {
