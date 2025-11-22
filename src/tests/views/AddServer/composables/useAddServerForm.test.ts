@@ -371,12 +371,12 @@ describe("useAddServerForm", () => {
 
 			try {
 				await onSubmit();
-			} catch {
-				// Expected error
-			}
-			await nextTick();
+			} catch {}
 
-			expect(wrapper.vm.genericError).toBe(errorMessage);
+			vi.waitFor(() => {
+				expect(wrapper.vm.genericError).toBe(errorMessage);
+			});
+
 			wrapper.unmount();
 		});
 
