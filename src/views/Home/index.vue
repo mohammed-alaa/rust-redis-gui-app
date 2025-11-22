@@ -57,7 +57,7 @@ serverStore.getServers();
 				<TableRow>
 					<TableCell colspan="100%" class="text-center">
 						<RouterLink :to="{ name: 'add-server' }">
-							<Button>Add Server</Button>
+							<Button class="cursor-pointer">Add Server</Button>
 						</RouterLink>
 					</TableCell>
 				</TableRow>
