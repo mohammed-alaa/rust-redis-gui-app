@@ -33,7 +33,9 @@ jobs:
 
                       # Vue
                       ui:
-                        - changed-files: '**/*.vue'
+                        - changed-files:
+                            - any-glob-to-any-file:
+                                - '**/*.vue'
 
                       # Build / config files
                       configuration:
