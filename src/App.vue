@@ -3,9 +3,9 @@ import { onUnmounted } from "vue";
 import { RouterView } from "vue-router";
 import { check } from "@tauri-apps/plugin-updater";
 import { useServerStore } from "@stores/useServerStore";
+import { Toaster } from "@components/ui/sonner";
 
 const serverStore = useServerStore();
-serverStore.init();
 
 async function checkFor() {
 	// Disable update check in development mode
@@ -21,13 +21,23 @@ async function checkFor() {
 	}
 }
 
-checkFor();
-
 onUnmounted(() => {
 	serverStore.$reset();
 });
+
+checkFor();
+serverStore.init();
 </script>
 
 <template>
 	<router-view />
+
+	<Toaster
+		rich-colors
+		close-button
+		dir="auto"
+		theme="system"
+		position="bottom-center"
+		:duration="8000"
+	/>
 </template>
