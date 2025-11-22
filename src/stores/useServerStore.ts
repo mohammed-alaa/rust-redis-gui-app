@@ -27,9 +27,7 @@ export const useServerStore = defineStore("server-store", () => {
 		}
 	}
 
-	function init() {
-		getServers();
-	}
+	function init() {}
 
 	function $reset() {
 		servers.value = [];
