@@ -44,7 +44,7 @@ jobs:
                                 - 'vite.config.ts'
                                 - 'vitest.config.ts'
                                 - 'tsconfig.*.json'
-                                - 'tauri.conf.json'
+                                - 'src-tauri/tauri.conf.json'
 
                       # Dependency files
                       dependencies:
