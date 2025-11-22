@@ -32,7 +32,6 @@ jobs:
                     - platform: windows-latest
                       target: ""
                       args: "--bundles nsis"
-
         runs-on: ${{ matrix.platform }}
 
         steps:
@@ -104,5 +103,8 @@ jobs:
                           repo: context.repo.repo,
                           release_id: draft.id,
                           draft: false,
+                          body: draft.body,
+                          tag_name: draft.tag_name,
+                          name: draft.name,
                         });
                       }
