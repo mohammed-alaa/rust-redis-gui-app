@@ -2,19 +2,11 @@ import { COMMANDS } from "@constants";
 import { invoke } from "@tauri-apps/api/core";
 
 export class ServerService {
-	async addServer(values: TServerFormFields): Promise<TServer> {
-		try {
-			return await invoke<TServer>(COMMANDS.ADD_SERVER, values);
-		} catch (error) {
-			return Promise.reject(error);
-		}
+	static async addServer(values: TServerFormFields): Promise<TServer> {
+		return await invoke<TServer>(COMMANDS.ADD_SERVER, values);
 	}
 
-	async getServers(): Promise<TServer[]> {
-		try {
-			return await invoke<TServer[]>(COMMANDS.GET_SERVERS);
-		} catch (error) {
-			return Promise.reject(error);
-		}
+	static async getServers(): Promise<TServer[]> {
+		return await invoke<TServer[]>(COMMANDS.GET_SERVERS);
 	}
 }
