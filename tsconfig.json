@@ -29,7 +29,8 @@
 			"@utils/*": ["./src/utils/*"],
 			"@views/*": ["./src/views/*"],
 			"@stores/*": ["./src/stores/*"],
-			"@services/*": ["./src/services/*"]
+			"@services/*": ["./src/services/*"],
+			"@test-utils/*": ["./src/tests/__utils__/*"]
 		}
 	},
 	"include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],

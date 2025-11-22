@@ -3,51 +3,35 @@ import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
 import { invoke } from "@tauri-apps/api/core";
 import { ServerService } from "@services/ServerService";
 import { COMMANDS } from "@constants";
+import { useServerFactory } from "@test-utils/useServerFactory";
 
 vi.mock("@tauri-apps/api/core", { spy: true });
 
 describe("ServerService", () => {
+	const { serverFormFields, server } = useServerFactory().validServer();
+
 	afterEach(() => {
 		clearMocks();
 		vi.clearAllMocks();
 	});
 
 	it("can add server", async () => {
-		const serverFields: TServerFormFields = {
-			name: "Local Redis",
-			address: "127.0.0.1",
-			port: 6379,
-		};
-
-		const server: TServer = {
-			...serverFields,
-			id: "some-unique-id",
-			created_at: new Date(),
-			updated_at: new Date(),
-		};
-
 		mockIPC((cmd) => {
 			if (cmd === COMMANDS.ADD_SERVER) {
 				return server;
 			}
 		});
 
-		await expect(ServerService.addServer(serverFields)).resolves.toEqual(
-			server,
+		await expect(
+			ServerService.addServer(serverFormFields),
+		).resolves.toEqual(server);
+		expect(invoke).toHaveBeenCalledWith(
+			COMMANDS.ADD_SERVER,
+			serverFormFields,
 		);
-		expect(invoke).toHaveBeenCalledWith(COMMANDS.ADD_SERVER, serverFields);
 	});
 
 	it("can get server", async () => {
-		const server: TServer = {
-			name: "Local Redis",
-			address: "127.0.0.1",
-			port: 6379,
-			id: "some-unique-id",
-			created_at: new Date(),
-			updated_at: new Date(),
-		};
-
 		mockIPC((cmd) => {
 			if (cmd === COMMANDS.GET_SERVERS) {
 				return Array.from({ length: 1 }, () => server);

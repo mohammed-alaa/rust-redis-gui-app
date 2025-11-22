@@ -3,8 +3,11 @@ import { setActivePinia, createPinia } from "pinia";
 import { useServerStore } from "@stores/useServerStore";
 import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
 import { COMMANDS } from "@constants";
+import { useServerFactory } from "@test-utils/useServerFactory";
 
 describe("useServerStore", () => {
+	const { server, serverFormFields } = useServerFactory().validServer();
+
 	beforeEach(() => {
 		setActivePinia(createPinia());
 	});
@@ -23,14 +26,6 @@ describe("useServerStore", () => {
 
 	describe("get servers", () => {
 		it("fetches servers correctly", async () => {
-			const server: TServer = {
-				name: "Test Server",
-				address: "localhost",
-				port: 6379,
-				id: "server-1231",
-				created_at: new Date(),
-				updated_at: new Date(),
-			};
 			mockIPC((cmd) => {
 				if (cmd === COMMANDS.GET_SERVERS) {
 					return Array.from({ length: 1 }, () => server);
@@ -58,19 +53,6 @@ describe("useServerStore", () => {
 	});
 
 	describe("add server", () => {
-		const newServer: TServerFormFields = {
-			name: "Test Server",
-			address: "localhost",
-			port: 6379,
-		};
-
-		const server: TServer = {
-			...newServer,
-			id: "server-awd12",
-			created_at: new Date(),
-			updated_at: new Date(),
-		};
-
 		it("adds a server correctly", async () => {
 			mockIPC((cmd) => {
 				if (cmd === COMMANDS.ADD_SERVER) {
@@ -79,25 +61,26 @@ describe("useServerStore", () => {
 			});
 			const serverStore = useServerStore();
 
-			const addedServer = await serverStore.addServer(newServer);
+			const addedServer = await serverStore.addServer(serverFormFields);
 			expect(serverStore.servers).toContainEqual(server);
 			expect(addedServer).toEqual(server);
 		});
 
 		it("handles errors when adding a server", async () => {
+			const errorMessage = "Failed to add server";
 			mockIPC((cmd) => {
 				if (cmd === COMMANDS.ADD_SERVER) {
-					return Promise.reject("Failed to add server");
+					return Promise.reject(errorMessage);
 				}
 			});
 			const serverStore = useServerStore();
 
 			try {
-				await serverStore.addServer(newServer);
+				await serverStore.addServer(serverFormFields);
 			} catch (error) {
-				expect(error).toBe("Failed to add server");
+				expect(error).toBe(errorMessage);
+				expect(serverStore.servers).toEqual([]);
 			}
-			expect(serverStore.servers).toEqual([]);
 		});
 	});
 });

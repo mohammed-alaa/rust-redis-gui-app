@@ -26,6 +26,11 @@ export default defineConfig((configEnv) =>
 					},
 				],
 			},
+			resolve: {
+				alias: {
+					"@test-utils": "/src/tests/__utils__",
+				},
+			},
 		}),
 	),
 );

@@ -6,8 +6,11 @@ import { COMMANDS, DEFAULT_SERVER } from "@constants";
 import { useAddServerForm } from "@views/AddServer/composables/useAddServerForm";
 import { nextTick, defineComponent } from "vue";
 import { mount, flushPromises } from "@vue/test-utils";
+import { useServerFactory } from "@test-utils/useServerFactory";
 
 describe("useAddServerForm", () => {
+	const { server, serverFormFields } = useServerFactory().validServer();
+
 	beforeEach(() => {
 		setActivePinia(createPinia());
 	});
@@ -276,23 +279,10 @@ describe("useAddServerForm", () => {
 	});
 
 	describe("form submission", () => {
-		const validServerData: TServerFormFields = {
-			name: "Test Server",
-			address: "localhost",
-			port: 6379,
-		};
-
-		const mockServerResponse: TServer = {
-			...validServerData,
-			id: "some-id",
-			created_at: new Date(),
-			updated_at: new Date(),
-		};
-
 		it("submits valid form data successfully", async () => {
 			mockIPC((cmd) => {
 				if (cmd === COMMANDS.ADD_SERVER) {
-					return mockServerResponse;
+					return server;
 				}
 			});
 
@@ -306,9 +296,9 @@ describe("useAddServerForm", () => {
 			const wrapper = mount(TestComponent);
 			const { form, onSubmit, genericError } = wrapper.vm;
 
-			form.setFieldValue("name", validServerData.name);
-			form.setFieldValue("address", validServerData.address);
-			form.setFieldValue("port", validServerData.port);
+			form.setFieldValue("name", serverFormFields.name);
+			form.setFieldValue("address", serverFormFields.address);
+			form.setFieldValue("port", serverFormFields.port);
 
 			await onSubmit();
 			await nextTick();
@@ -320,7 +310,7 @@ describe("useAddServerForm", () => {
 		it("calls serverStore.addServer with correct values", async () => {
 			mockIPC((cmd) => {
 				if (cmd === COMMANDS.ADD_SERVER) {
-					return mockServerResponse;
+					return server;
 				}
 			});
 
@@ -336,14 +326,14 @@ describe("useAddServerForm", () => {
 			const serverStore = useServerStore();
 			const addServerSpy = vi.spyOn(serverStore, "addServer");
 
-			form.setFieldValue("name", validServerData.name);
-			form.setFieldValue("address", validServerData.address);
-			form.setFieldValue("port", validServerData.port);
+			form.setFieldValue("name", serverFormFields.name);
+			form.setFieldValue("address", serverFormFields.address);
+			form.setFieldValue("port", serverFormFields.port);
 
 			await onSubmit();
 			await nextTick();
 
-			expect(addServerSpy).toHaveBeenCalledWith(validServerData);
+			expect(addServerSpy).toHaveBeenCalledWith(serverFormFields);
 			wrapper.unmount();
 		});
 
@@ -365,9 +355,9 @@ describe("useAddServerForm", () => {
 			const wrapper = mount(TestComponent);
 			const { form, onSubmit } = wrapper.vm;
 
-			form.setFieldValue("name", validServerData.name);
-			form.setFieldValue("address", validServerData.address);
-			form.setFieldValue("port", validServerData.port);
+			form.setFieldValue("name", serverFormFields.name);
+			form.setFieldValue("address", serverFormFields.address);
+			form.setFieldValue("port", serverFormFields.port);
 
 			try {
 				await onSubmit();
@@ -398,9 +388,9 @@ describe("useAddServerForm", () => {
 			const wrapper = mount(TestComponent);
 			const { form, onSubmit } = wrapper.vm;
 
-			form.setFieldValue("name", validServerData.name);
-			form.setFieldValue("address", validServerData.address);
-			form.setFieldValue("port", validServerData.port);
+			form.setFieldValue("name", serverFormFields.name);
+			form.setFieldValue("address", serverFormFields.address);
+			form.setFieldValue("port", serverFormFields.port);
 
 			await expect(onSubmit()).rejects.toBe(errorMessage);
 			wrapper.unmount();
@@ -409,7 +399,7 @@ describe("useAddServerForm", () => {
 		it("clears genericError before submission", async () => {
 			mockIPC((cmd) => {
 				if (cmd === COMMANDS.ADD_SERVER) {
-					return mockServerResponse;
+					return server;
 				}
 			});
 
@@ -426,9 +416,9 @@ describe("useAddServerForm", () => {
 			// Set an initial error
 			wrapper.vm.genericError = "Previous error";
 
-			form.setFieldValue("name", validServerData.name);
-			form.setFieldValue("address", validServerData.address);
-			form.setFieldValue("port", validServerData.port);
+			form.setFieldValue("name", serverFormFields.name);
+			form.setFieldValue("address", serverFormFields.address);
+			form.setFieldValue("port", serverFormFields.port);
 
 			await onSubmit();
 			await nextTick();
@@ -441,7 +431,7 @@ describe("useAddServerForm", () => {
 			mockIPC((cmd) => {
 				if (cmd === COMMANDS.ADD_SERVER) {
 					return new Promise((resolve) => {
-						setTimeout(() => resolve(mockServerResponse), 100);
+						setTimeout(() => resolve(server), 100);
 					});
 				}
 			});
@@ -473,22 +463,9 @@ describe("useAddServerForm", () => {
 
 	describe("integration with serverStore", () => {
 		it("adds server to store after successful submission", async () => {
-			const validServerData: TServerFormFields = {
-				name: "Integration Test Server",
-				address: "192.168.1.1",
-				port: 6380,
-			};
-
-			const mockServerResponse: TServer = {
-				...validServerData,
-				id: "some-id",
-				created_at: new Date(),
-				updated_at: new Date(),
-			};
-
 			mockIPC((cmd) => {
 				if (cmd === COMMANDS.ADD_SERVER) {
-					return mockServerResponse;
+					return server;
 				}
 			});
 
@@ -503,24 +480,18 @@ describe("useAddServerForm", () => {
 			const { form, onSubmit } = wrapper.vm;
 			const serverStore = useServerStore();
 
-			form.setFieldValue("name", validServerData.name);
-			form.setFieldValue("address", validServerData.address);
-			form.setFieldValue("port", validServerData.port);
+			form.setFieldValue("name", serverFormFields.name);
+			form.setFieldValue("address", serverFormFields.address);
+			form.setFieldValue("port", serverFormFields.port);
 
 			await onSubmit();
 			await nextTick();
 
-			expect(serverStore.servers).toContainEqual(mockServerResponse);
+			expect(serverStore.servers).toContainEqual(server);
 			wrapper.unmount();
 		});
 
 		it("does not add server to store when submission fails", async () => {
-			const validServerData: TServerFormFields = {
-				name: "Failed Server",
-				address: "192.168.1.2",
-				port: 6381,
-			};
-
 			mockIPC((cmd) => {
 				if (cmd === COMMANDS.ADD_SERVER) {
 					return Promise.reject("Server error");
@@ -538,9 +509,9 @@ describe("useAddServerForm", () => {
 			const { form, onSubmit } = wrapper.vm;
 			const serverStore = useServerStore();
 
-			form.setFieldValue("name", validServerData.name);
-			form.setFieldValue("address", validServerData.address);
-			form.setFieldValue("port", validServerData.port);
+			form.setFieldValue("name", serverFormFields.name);
+			form.setFieldValue("address", serverFormFields.address);
+			form.setFieldValue("port", serverFormFields.port);
 
 			try {
 				await onSubmit();
