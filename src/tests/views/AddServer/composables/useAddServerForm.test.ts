@@ -373,7 +373,7 @@ describe("useAddServerForm", () => {
 				await onSubmit();
 			} catch {}
 
-			vi.waitFor(() => {
+			await vi.waitFor(() => {
 				expect(wrapper.vm.genericError).toBe(errorMessage);
 			});
 
