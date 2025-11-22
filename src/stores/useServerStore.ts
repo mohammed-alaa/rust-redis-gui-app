@@ -1,12 +1,14 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
-import { useGetKeys, useLoading } from "@composables";
+import { computed, ref } from "vue";
+import { useLoading } from "@composables";
 import { ServerService } from "@services/ServerService";
 
 export const useServerStore = defineStore("server-store", () => {
+	const activeServer = ref<TServer | null>(null);
 	const servers = ref<TServer[]>([]);
 
-	const { keys, filter, isLoading: isLoadingKeys, getKeys } = useGetKeys();
+	const isConnected = computed(() => null !== activeServer.value);
+
 	const { isLoading, withLoading } = useLoading();
 
 	async function addServer(values: TServerFormFields): Promise<TServer> {
@@ -16,15 +18,29 @@ export const useServerStore = defineStore("server-store", () => {
 	}
 
 	async function getServers(): Promise<TServer[]> {
-		try {
-			const _servers = await withLoading(ServerService.getServers);
-			servers.value = _servers;
+		const _servers = await withLoading(ServerService.getServers);
+		servers.value = _servers;
 
-			return _servers;
-		} catch (error: any) {
-			console.error("Error fetching servers:", error);
-			return [];
+		return _servers;
+	}
+
+	async function openServer(id: TServer["id"]) {
+		if (activeServer.value?.id === id) {
+			return activeServer.value;
 		}
+
+		const _server = await ServerService.openServer(id);
+		activeServer.value = _server;
+		return _server;
+	}
+
+	async function closeServer() {
+		if (!activeServer.value) {
+			return;
+		}
+
+		await ServerService.closeServer(activeServer.value.id);
+		activeServer.value = null;
 	}
 
 	function init() {}
@@ -34,16 +50,15 @@ export const useServerStore = defineStore("server-store", () => {
 	}
 
 	return {
-		isLoading,
-
 		servers,
-		keys,
-		filter,
-		isLoadingKeys,
+		activeServer,
+		isLoading,
+		isConnected,
 
-		getKeys,
 		addServer,
 		getServers,
+		openServer,
+		closeServer,
 		init,
 		$reset,
 	};
