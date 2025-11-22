@@ -52,8 +52,8 @@ jobs:
                             - any-glob-to-any-file:
                                 - 'package.json'
                                 - 'yarn.lock'
-                                - 'Cargo.toml'
-                                - 'Cargo.lock'
+                                - 'src-tauri/Cargo.toml'
+                                - 'src-tauri/Cargo.lock'
 
                       # Test files
                       tests:
