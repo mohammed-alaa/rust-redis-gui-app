@@ -1,7 +1,13 @@
 export function useServerFactory() {
+	function reandomString(length: number) {
+		return Math.random()
+			.toString(36)
+			.substring(2, 2 + length);
+	}
+
 	function validServer() {
 		const serverFormFields: TServerFormFields = {
-			name: "Local Redis" + Math.random().toString(36).slice(2),
+			name: "Local Redis" + reandomString(5),
 			address: "127.0.0.1",
 			port: 6379,
 		};
@@ -10,7 +16,7 @@ export function useServerFactory() {
 			serverFormFields,
 			server: {
 				...serverFormFields,
-				id: Math.random().toString(36).substring(2, 15),
+				id: reandomString(20),
 				created_at: new Date(),
 				updated_at: new Date(),
 			} as TServer,
