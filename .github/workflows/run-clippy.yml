@@ -1,0 +1,26 @@
+name: "Rust Clippy"
+
+on:
+    workflow_call:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+    workflow_dispatch:
+
+jobs:
+    clippy:
+        name: Run Clippy
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install Rust
+              uses: dtolnay/rust-toolchain@stable
+              with:
+                  components: clippy
+
+            - name: Run Clippy
+              run: cargo clippy --all-targets --all-features -- -D warnings
+              working-directory: src-tauri
