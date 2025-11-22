@@ -11,7 +11,8 @@
 		"preview": "vite preview",
 		"tauri": "tauri",
 		"app:dev": "tauri dev",
-		"app:build": "tauri build"
+		"app:build": "tauri build",
+		"test": "vitest"
 	},
 	"dependencies": {
 		"@tauri-apps/api": "^2",
@@ -36,6 +37,8 @@
 		"@tauri-apps/cli": "^2",
 		"@types/node": "^24.10.1",
 		"@vitejs/plugin-vue": "^6.0.2",
+		"@vue/test-utils": "^2.4.6",
+		"jsdom": "^27.2.0",
 		"tailwindcss": "^4.1.17",
 		"typescript": "~5.9.3",
 		"vite": "^7.2.2",
