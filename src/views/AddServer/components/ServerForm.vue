@@ -23,8 +23,18 @@ withDefaults(
 </script>
 
 <template>
-	<form class="flex flex-col gap-4" @submit.prevent="$emit('submit')">
-		{{ genericError }}
+	<form
+		data-testid="add-server-form"
+		class="flex flex-col gap-4"
+		@submit.prevent="$emit('submit')"
+	>
+		<p
+			data-testid="add-server-form-generic-error"
+			class="text-red-600"
+			v-if="genericError"
+		>
+			{{ genericError }}
+		</p>
 
 		<FormField bails name="name" v-slot="{ componentField }">
 			<FormItem>
@@ -33,10 +43,11 @@ withDefaults(
 					<Input
 						type="text"
 						placeholder="Example: local server"
+						data-testid="add-server-form-name-field"
 						v-bind="componentField"
 					/>
 				</FormControl>
-				<FormMessage />
+				<FormMessage data-testid="add-server-form-name-field-error" />
 			</FormItem>
 		</FormField>
 		<FormField bails name="address" v-slot="{ componentField }">
@@ -46,10 +57,13 @@ withDefaults(
 					<Input
 						type="text"
 						placeholder="Example: 127.0.0.1"
+						data-testid="add-server-form-address-field"
 						v-bind="componentField"
 					/>
 				</FormControl>
-				<FormMessage />
+				<FormMessage
+					data-testid="add-server-form-address-field-error"
+				/>
 			</FormItem>
 		</FormField>
 		<FormField bails name="port" v-slot="{ componentField }">
@@ -59,16 +73,18 @@ withDefaults(
 					<Input
 						type="number"
 						placeholder="Example: 6379"
+						data-testid="add-server-form-port-field"
 						v-bind="componentField"
 					/>
 				</FormControl>
-				<FormMessage />
+				<FormMessage data-testid="add-server-form-port-field-error" />
 			</FormItem>
 		</FormField>
 		<Button
 			type="submit"
 			class="cursor-pointer"
 			:disabled="isLoading || !isFormValid"
+			data-testid="add-server-form-submit-button"
 		>
 			{{ isLoading ? "Connecting..." : "Connect" }}
 		</Button>
