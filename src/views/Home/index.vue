@@ -57,7 +57,10 @@ serverStore.getServers().catch((error) => toast.error(error as string));
 					>
 						<TableRow
 							class="cursor-pointer"
+							tabindex="0"
 							@click="onOpenServer(server.id)"
+							@keydown.enter="onOpenServer(server.id)"
+							:aria-label="`Connect to ${server.name}`"
 						>
 							<TableCell class="font-medium">
 								{{ server.name }}
