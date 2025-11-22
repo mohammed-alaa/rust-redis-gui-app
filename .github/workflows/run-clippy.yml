@@ -1,0 +1,39 @@
+name: "Rust Clippy"
+
+on:
+    workflow_call:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    actions: read
+
+jobs:
+    clippy:
+        name: Run Clippy
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install Ubuntu deps
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y \
+                    libwebkit2gtk-4.1-dev \
+                    libappindicator3-dev \
+                    librsvg2-dev \
+                    patchelf
+
+            - name: Install Rust
+              uses: dtolnay/rust-toolchain@stable
+              with:
+                  components: clippy
+
+            - name: Run Clippy
+              run: cargo clippy --all-targets -- -D warnings
+              working-directory: src-tauri
