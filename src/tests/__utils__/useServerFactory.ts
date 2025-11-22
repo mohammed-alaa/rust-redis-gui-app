@@ -1,7 +1,7 @@
 export function useServerFactory() {
 	function validServer() {
 		const serverFormFields: TServerFormFields = {
-			name: "Local Redis" + Math.random().toString(36).substring(7),
+			name: "Local Redis" + Math.random().toString(36).slice(2),
 			address: "127.0.0.1",
 			port: 6379,
 		};
