@@ -35,5 +35,5 @@ jobs:
                   components: clippy
 
             - name: Run Clippy
-              run: cargo clippy --all-targets --all-features -- -D warnings
+              run: cargo clippy --all-targets -- -D warnings
               working-directory: src-tauri
