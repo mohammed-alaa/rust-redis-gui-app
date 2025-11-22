@@ -25,8 +25,14 @@ export const useServerStore = defineStore("server-store", () => {
 	}
 
 	async function openServer(id: TServer["id"]) {
+		// If already connected to this server, return it
 		if (isConnected.value && activeServer.value!.id === id) {
 			return activeServer.value;
+		}
+
+		// Close current connection if exists
+		if (isConnected.value) {
+			await closeServer();
 		}
 
 		const _server = await ServerService.openServer(id);
