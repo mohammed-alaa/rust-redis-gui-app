@@ -37,3 +37,10 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running redis GUI application");
 }
+
+#[cfg(test)]
+mod tests {
+    mod common;
+
+    pub use common::*;
+}
