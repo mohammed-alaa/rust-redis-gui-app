@@ -18,6 +18,10 @@ export default defineConfig((configEnv) =>
 						},
 					},
 				],
+				coverage: {
+					provider: "v8",
+					include: ["src/**/*.ts", "src/**/*.vue"],
+				},
 			},
 			resolve: {
 				alias: {
