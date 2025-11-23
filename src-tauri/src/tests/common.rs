@@ -20,9 +20,9 @@ pub async fn run_redis_container(port: u16) -> (String, u16, ContainerAsync<Gene
         .await
         .expect("Failed to start Redis");
 
-    return (
-        container.get_host().await.unwrap().to_string().clone(),
+    (
+        container.get_host().await.unwrap().to_string(),
         container.get_host_port_ipv4(port).await.unwrap(),
         container,
-    );
+    )
 }
