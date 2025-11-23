@@ -401,7 +401,7 @@ describe("useAddServerForm", () => {
 				await onSubmit();
 			} catch {}
 
-			vi.waitFor(() => {
+			void vi.waitFor(() => {
 				expect(wrapper.vm.genericError).toBe(errorMessage);
 			});
 
@@ -509,7 +509,7 @@ describe("useAddServerForm", () => {
 			const submitPromise = wrapper.vm.onSubmit();
 
 			await flushPromises();
-			vi.waitFor(() => {
+			void vi.waitFor(() => {
 				expect(wrapper.vm.isLoading).toBe(true);
 			});
 

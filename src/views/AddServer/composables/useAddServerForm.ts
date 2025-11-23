@@ -42,9 +42,9 @@ export function useAddServerForm() {
 
 		try {
 			return withLoading(() => serverStore.addServer(values));
-		} catch (_error: any) {
-			genericError.value = _error;
-			return Promise.reject(_error);
+		} catch (error: any) {
+			genericError.value = error;
+			return Promise.reject(error);
 		}
 	}
 
