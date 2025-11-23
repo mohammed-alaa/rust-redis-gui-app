@@ -18,7 +18,9 @@ export const useServerStore = defineStore("server-store", () => {
 	}
 
 	async function getServers(): Promise<TServer[]> {
-		const _servers = await withLoading(() => ServerService.getServers());
+		const _servers = await withLoading(async () =>
+			ServerService.getServers(),
+		);
 		servers.value = _servers;
 
 		return _servers;

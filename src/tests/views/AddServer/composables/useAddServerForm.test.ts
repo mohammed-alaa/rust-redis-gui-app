@@ -368,7 +368,7 @@ describe("useAddServerForm", () => {
 
 		it("sets genericError when submission fails", async () => {
 			const errorMessage = "Failed to add server";
-			mockIPC((cmd) => {
+			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.ADD_SERVER) {
 					return Promise.reject(errorMessage);
 				}
@@ -410,7 +410,7 @@ describe("useAddServerForm", () => {
 
 		it("rejects promise when submission fails", async () => {
 			const errorMessage = "Failed to add server";
-			mockIPC((cmd) => {
+			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.ADD_SERVER) {
 					return Promise.reject(errorMessage);
 				}
@@ -484,7 +484,7 @@ describe("useAddServerForm", () => {
 		});
 
 		it("updates isLoading during submission", async () => {
-			mockIPC((cmd) => {
+			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.ADD_SERVER) {
 					return new Promise((resolve) => {
 						setTimeout(
@@ -562,7 +562,7 @@ describe("useAddServerForm", () => {
 		});
 
 		it("does not add server to store when submission fails", async () => {
-			mockIPC((cmd) => {
+			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.ADD_SERVER) {
 					return Promise.reject("Server error");
 				}
