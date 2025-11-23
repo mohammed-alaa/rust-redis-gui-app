@@ -1,9 +1,5 @@
 name: "Public App Update"
 
-concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
-    cancel-in-progress: true
-
 on:
     workflow_dispatch:
     push:
@@ -17,13 +13,13 @@ jobs:
     frontend-tests:
         uses: ./.github/workflows/test-frontend.yml
 
-    clippy:
-        uses: ./.github/workflows/run-clippy.yml
+    rust-tests:
+        uses: ./.github/workflows/test-rust.yml
 
     publish-tauri:
         needs:
             - frontend-tests
-            - clippy
+            - rust-tests
         strategy:
             fail-fast: false
             matrix:
