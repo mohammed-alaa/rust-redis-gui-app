@@ -21,7 +21,7 @@ impl Serialize for AppError {
 
 impl std::fmt::Display for AppError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", *self as i32)
+        write!(f, "{}", *self as u16)
     }
 }
 
