@@ -58,9 +58,10 @@ serverStore.getServers().catch((error) => toast.error(error as string));
 						<TableRow
 							class="cursor-pointer"
 							tabindex="0"
+							aria-role="button"
+							:aria-label="`Connect to ${server.name}`"
 							@click="onOpenServer(server.id)"
 							@keydown.enter="onOpenServer(server.id)"
-							:aria-label="`Connect to ${server.name}`"
 						>
 							<TableCell class="font-medium">
 								{{ server.name }}
@@ -77,7 +78,7 @@ serverStore.getServers().catch((error) => toast.error(error as string));
 				<TableRow>
 					<TableCell colspan="100%" class="text-center">
 						<RouterLink :to="{ name: 'add-server' }">
-							<Button class="cursor-pointer">Add Server</Button>
+							<Button>Add Server</Button>
 						</RouterLink>
 					</TableCell>
 				</TableRow>
