@@ -48,4 +48,29 @@ describe("ServerService", () => {
 		await expect(ServerService.getServers()).resolves.toEqual([server]);
 		expect(invoke).toHaveBeenCalledWith(COMMANDS.GET_SERVERS);
 	});
+
+	it("can open server", async () => {
+		mockIPC((cmd) => {
+			if (cmd === COMMANDS.OPEN_SERVER) {
+				return server;
+			}
+		});
+
+		await expect(ServerService.openServer(server.id)).resolves.toEqual(
+			server,
+		);
+		expect(invoke).toHaveBeenCalledWith(COMMANDS.OPEN_SERVER, {
+			id: server.id,
+		});
+	});
+	it("can close server", async () => {
+		mockIPC((cmd) => {
+			if (cmd === COMMANDS.CLOSE_SERVER) {
+				return null;
+			}
+		});
+
+		await expect(ServerService.closeServer()).resolves.toBe(null);
+		expect(invoke).toHaveBeenCalledWith(COMMANDS.CLOSE_SERVER);
+	});
 });

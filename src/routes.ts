@@ -11,4 +11,9 @@ export default [
 		path: "/add-server",
 		component: () => import("@views/AddServer/index.vue"),
 	},
+	{
+		name: "server",
+		path: "/server",
+		component: () => import("@views/Server/index.vue"),
+	},
 ] as RouteRecordRaw[];

@@ -2,7 +2,7 @@ use crate::models::Server;
 use redis::Client;
 use std::time::Duration;
 
-pub fn test_connection(server: &Server) -> Result<(), String> {
+pub fn test_connection(server: &Server) -> Result<Client, String> {
     let client = Client::open(format!("redis://{}:{}", server.address, server.port));
 
     if client.is_err() {
@@ -22,5 +22,5 @@ pub fn test_connection(server: &Server) -> Result<(), String> {
         ));
     }
 
-    Ok(())
+    Ok(client)
 }
