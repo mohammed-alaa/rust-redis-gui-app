@@ -45,7 +45,7 @@ describe("AddServer Page", () => {
 
 	it("submits the form and navigates to home on success", async () => {
 		const serverFormWrapper = componentWrapper.findComponent(ServerForm);
-		mockIPC((cmd) => {
+		mockIPC(async (cmd) => {
 			if (cmd === COMMANDS.ADD_SERVER) {
 				return Promise.resolve({
 					id: "1",

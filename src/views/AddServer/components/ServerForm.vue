@@ -9,7 +9,9 @@ import {
 	FormMessage,
 } from "@components/ui/form";
 
-defineEmits(["submit"]);
+defineEmits<{
+	submit: [];
+}>();
 withDefaults(
 	defineProps<{
 		isLoading: boolean;

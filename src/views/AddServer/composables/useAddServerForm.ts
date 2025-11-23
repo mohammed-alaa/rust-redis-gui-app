@@ -41,7 +41,7 @@ export function useAddServerForm() {
 		genericError.value = "";
 
 		try {
-			return withLoading(() => serverStore.addServer(values));
+			return withLoading(async () => serverStore.addServer(values));
 		} catch (error: any) {
 			genericError.value = error;
 			return Promise.reject(error);

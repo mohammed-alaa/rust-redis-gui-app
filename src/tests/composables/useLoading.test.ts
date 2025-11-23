@@ -15,7 +15,7 @@ describe("useLoading", () => {
 	it("sets isLoading to true while promise is pending and false after it resolves", async () => {
 		const { isLoading, withLoading } = useLoading();
 
-		const mockPromise = () =>
+		const mockPromise = async () =>
 			new Promise((resolve) => {
 				setTimeout(() => resolve("done"), 100);
 			});
@@ -29,8 +29,8 @@ describe("useLoading", () => {
 	it("sets isLoading to true while promise is pending and false after it rejects", async () => {
 		const { isLoading, withLoading } = useLoading();
 
-		const mockPromise = () =>
-			new Promise((_, reject) => {
+		const mockPromise = async () =>
+			new Promise<void>((_, reject) => {
 				setTimeout(() => reject(new Error("failed")), 100);
 			});
 
@@ -46,7 +46,7 @@ describe("useLoading", () => {
 	it("returns the resolved value from the promise", async () => {
 		const { withLoading } = useLoading();
 
-		const mockPromise = () =>
+		const mockPromise = async () =>
 			new Promise<string>((resolve) => {
 				setTimeout(() => resolve("success"), 100);
 			});
@@ -57,7 +57,7 @@ describe("useLoading", () => {
 	it("propagates the error from the rejected promise", async () => {
 		const { withLoading } = useLoading();
 
-		const mockPromise = () =>
+		const mockPromise = async () =>
 			new Promise<string>((_, reject) => {
 				setTimeout(() => reject(new Error("failure")), 100);
 			});

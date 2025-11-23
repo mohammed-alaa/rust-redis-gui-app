@@ -1,13 +1,35 @@
 {
-	"$schema": "https://raw.githubusercontent.com/oxc-project/oxc/refs/heads/main/npm/oxlint/configuration_schema.json",
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
 	"settings": {
 		"vitest": {
 			"typecheck": true
 		}
 	},
+	"env": {
+		"browser": true
+	},
 	"rules": {
 		"typescript/no-require-imports": "error",
 		"typescript/no-unused-vars": "warn",
+		"vue/require-typed-ref": "error",
+		"vue/no-import-compiler-macros": "error",
+		"vue/no-required-prop-with-default": "error",
+		"import/no-commonjs": "error",
+		"no-duplicate-imports": "error",
+		"import/no-duplicates": "error",
+		"import/named": "error",
+		"import/export": "error",
+		"vue/no-export-in-script-setup": "error",
+		"eslint/no-eq-null": "error",
+		"eslint/no-var": "error",
+		"eslint/no-console": "error",
+		"jsdoc/check-access": "error",
+		"import/no-default-export": "error",
+		"promise/no-new-statics": "error",
+		"typescript/promise-function-async": "error",
+		"eslint/no-empty": ["error", { "allowEmptyCatch": true }],
+		"vue/define-props-declaration": ["error", "type-based"],
+		"vue/define-emits-declaration": ["error", "type-literal"],
 		"no-unused-vars": [
 			"warn",
 			{
@@ -17,8 +39,22 @@
 				"caughtErrorsIgnorePattern": "^_",
 				"caughtErrors": "all"
 			}
+		],
+		"vue/define-props-destructuring": [
+			"error",
+			{
+				"destructure": "never"
+			}
 		]
 	},
 	"plugins": ["typescript", "vue", "vitest", "promise", "import", "jsdoc"],
-	"ignorePatterns": ["src-tauri"]
+	"ignorePatterns": ["src-tauri"],
+	"overrides": [
+		{
+			"files": ["vite.config.ts", "vitest.config.ts"],
+			"rules": {
+				"import/no-default-export": "allow"
+			}
+		}
+	]
 }

@@ -43,7 +43,7 @@ describe("useServerStore", () => {
 
 		it("handles errors when fetching servers", async () => {
 			const errorMessage = "Failed to fetch servers";
-			mockIPC((cmd) => {
+			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.GET_SERVERS) {
 					return Promise.reject(errorMessage);
 				}
@@ -74,7 +74,7 @@ describe("useServerStore", () => {
 
 		it("handles errors when adding a server", async () => {
 			const errorMessage = "Failed to add server";
-			mockIPC((cmd) => {
+			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.ADD_SERVER) {
 					return Promise.reject(errorMessage);
 				}
@@ -106,7 +106,7 @@ describe("useServerStore", () => {
 
 		it("handles errors when opening a server", async () => {
 			const errorMessage = "Failed to open server";
-			mockIPC((cmd) => {
+			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.OPEN_SERVER) {
 					return Promise.reject(errorMessage);
 				}
@@ -171,7 +171,7 @@ describe("useServerStore", () => {
 
 		it("handles errors when closing a server", async () => {
 			const errorMessage = "Failed to close server";
-			mockIPC((cmd) => {
+			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.OPEN_SERVER) {
 					return server;
 				}
