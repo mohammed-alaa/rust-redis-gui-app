@@ -1,28 +1,21 @@
 use crate::{core::AppError, models::Server};
-use redis::Client;
+use redis::{AsyncConnectionConfig, AsyncTypedCommands, Client};
 use std::time::Duration;
 
-pub fn test_connection(server: &Server) -> Result<Client, AppError> {
-    let client = Client::open(format!("redis://{}:{}", server.address, server.port));
+pub async fn test_connection(server: &Server) -> Result<Client, AppError> {
+    let client = Client::open(format!("redis://{}:{}", server.address, server.port))
+        .map_err(|_| AppError::RedisFailed)?;
 
-    if client.is_err() {
+    let config = AsyncConnectionConfig::new().set_connection_timeout(Duration::from_secs(6));
+    let mut conn = client
+        .get_multiplexed_async_connection_with_config(&config)
+        .await
+        .map_err(|_| AppError::RedisFailed)?;
+
+    let pong: String = conn.ping().await.map_err(|_| AppError::RedisFailed)?;
+
+    if pong != "PONG" {
         return Err(AppError::RedisFailed);
-        // return Err(format!(
-        //     "Error connecting to Redis server: {}",
-        //     client.err().unwrap()
-        // ));
-    }
-
-    let client = client.unwrap();
-    let connection = client.get_connection_with_timeout(Duration::from_secs(5));
-
-    if connection.is_err() {
-        return Err(AppError::RedisFailed);
-
-        // return Err(format!(
-        //     "Error getting connection to Redis server: {}",
-        //     connection.err().unwrap()
-        // ));
     }
 
     Ok(client)
@@ -38,7 +31,7 @@ pub mod tests {
         let (_, _, container) = run_redis_container(6379).await;
 
         let server = Server::from_payload("Test".to_string(), "256.256.256.256".to_string(), 6379);
-        let result = test_connection(&server);
+        let result = test_connection(&server).await;
         assert!(result.is_err());
         assert_eq!(result.err().unwrap(), AppError::RedisFailed);
         drop(container);
@@ -49,7 +42,7 @@ pub mod tests {
         let (host, port, container) = run_redis_container(6379).await;
 
         let server = Server::from_payload("Test".to_string(), host, port);
-        let result = test_connection(&server);
+        let result = test_connection(&server).await;
         assert!(result.is_ok());
 
         drop(container);
