@@ -62,7 +62,7 @@ mod tests {
             new_server_payload.create(db_connection).unwrap()
         };
 
-        let result = _open_server(&app_state, new_server.id.clone()).await;
+        let result = _open_server(&app_state, new_server.id).await;
 
         assert!(result.is_ok());
         let opened_server = result.unwrap();
