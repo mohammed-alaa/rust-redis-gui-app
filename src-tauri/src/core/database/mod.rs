@@ -47,3 +47,58 @@ impl Database {
         base_path.join("database.db")
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::{any::Any, env::temp_dir, fs};
+
+    #[test]
+    fn test_database_creation() {
+        let temp_dir = temp_dir();
+        let db_path = Database::db_file_path(temp_dir.as_path());
+
+        let db = Database::new(&db_path);
+        assert!(db.is_ok());
+
+        db.unwrap().connection.close().unwrap();
+        fs::remove_file(db_path).unwrap();
+    }
+
+    #[test]
+    fn test_in_memory_database_creation() {
+        let db = Database::new_in_memory();
+        assert!(db.is_ok());
+        assert_eq!(db.unwrap().connection.path(), Some(""));
+    }
+
+    #[test]
+    fn test_db_file_path() {
+        let base_path = Path::new("/some/base/path");
+        let expected_path = base_path.join("database.db");
+        let db_path = Database::db_file_path(base_path);
+        assert_eq!(db_path, expected_path);
+    }
+
+    #[test]
+    fn test_get_connection() {
+        let db = Database::new_in_memory().unwrap();
+        let conn = db.get_connection();
+        assert_eq!(
+            std::any::TypeId::of::<Connection>(),
+            conn.type_id(),
+            "Wrong type! Expected Connection"
+        );
+    }
+
+    #[test]
+    fn test_migrations_run() {
+        let db = Database::new_in_memory();
+        assert!(db.is_ok());
+        assert!(db
+            .unwrap()
+            .connection
+            .table_exists(None, "servers")
+            .unwrap());
+    }
+}
