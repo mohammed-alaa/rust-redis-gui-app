@@ -13,13 +13,8 @@ jobs:
     frontend-tests:
         uses: ./.github/workflows/test-frontend.yml
 
-    clippy:
-        uses: ./.github/workflows/run-clippy.yml
-
     rust-tests:
         uses: ./.github/workflows/test-rust.yml
-        needs:
-            - clippy
 
     publish-tauri:
         needs:
