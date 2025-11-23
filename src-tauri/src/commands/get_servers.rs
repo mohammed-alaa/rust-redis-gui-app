@@ -2,11 +2,11 @@ use crate::{
     core::{AppError, AppState},
     models::{Model, Server},
 };
-use std::sync::Mutex;
 use tauri::State;
+use tokio::sync::Mutex;
 
-fn _get_servers(state: &Mutex<AppState>) -> Result<Vec<Server>, AppError> {
-    let state = state.lock().unwrap();
+async fn _get_servers(state: &Mutex<AppState>) -> Result<Vec<Server>, AppError> {
+    let state = state.lock().await;
     let db_connection = state.get_db_connection();
 
     if db_connection.is_none() {
@@ -17,8 +17,8 @@ fn _get_servers(state: &Mutex<AppState>) -> Result<Vec<Server>, AppError> {
 }
 
 #[tauri::command]
-pub fn get_servers(state: State<'_, Mutex<AppState>>) -> Result<Vec<Server>, AppError> {
-    _get_servers(state.inner())
+pub async fn get_servers(state: State<'_, Mutex<AppState>>) -> Result<Vec<Server>, AppError> {
+    _get_servers(state.inner()).await
 }
 
 #[cfg(test)]
@@ -28,7 +28,6 @@ mod tests {
         core::{AppState, Database},
         models::Server,
     };
-    use std::sync::Mutex;
     // use tauri::test::{assert_ipc_response, mock_builder, mock_context, noop_assets, MockRuntime};
 
     // fn create_app() -> tauri::App<MockRuntime> {
@@ -45,30 +44,30 @@ mod tests {
     //         .expect("failed to build app")
     // }
 
-    #[test]
-    fn test_get_servers_empty_db() {
+    #[tokio::test]
+    async fn test_get_servers_empty_db() {
         let app_state = Mutex::new({
             let mut s = AppState::new();
             s.set_db_connection(Some(Database::new_in_memory().unwrap()));
             s
         });
 
-        let servers = _get_servers(&app_state);
+        let servers = _get_servers(&app_state).await;
 
         assert!(servers.is_ok());
         assert_eq!(servers.unwrap().len(), 0);
     }
 
-    #[test]
-    fn test_get_servers_with_data() {
+    #[tokio::test]
+    async fn test_get_servers_with_data() {
         let app_state = Mutex::new({
             let mut s = AppState::new();
             s.set_db_connection(Some(Database::new_in_memory().unwrap()));
             s
         });
 
-        let server = Server::new().create(app_state.lock().unwrap().get_db_connection().unwrap());
-        let result = _get_servers(&app_state);
+        let server = Server::new().create(app_state.lock().await.get_db_connection().unwrap());
+        let result = _get_servers(&app_state).await;
 
         assert!(result.is_ok());
         let servers = result.unwrap();
@@ -76,10 +75,10 @@ mod tests {
         assert_eq!(servers[0], server.unwrap())
     }
 
-    #[test]
-    fn test_get_servers_no_db() {
+    #[tokio::test]
+    async fn test_get_servers_no_db() {
         let app_state = Mutex::new(AppState::new());
-        let servers = _get_servers(&app_state);
+        let servers = _get_servers(&app_state).await;
 
         assert!(servers.is_err());
         assert_eq!(servers.err().unwrap(), AppError::DbNotReady);

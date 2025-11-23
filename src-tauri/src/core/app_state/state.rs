@@ -53,7 +53,7 @@ mod tests {
         let mut app_state = AppState::new();
         let server = Server::from_payload("Local".to_string(), host, port);
 
-        let redis_client = test_connection(&server).unwrap();
+        let redis_client = test_connection(&server).await.unwrap();
         app_state.set_redis_client(Some(redis_client));
 
         assert!(app_state.get_redis_client().is_some());
