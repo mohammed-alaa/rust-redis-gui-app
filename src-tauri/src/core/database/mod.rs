@@ -9,8 +9,6 @@ mod embedded {
 
 #[derive(Debug)]
 pub struct Database {
-    // Temp: temporary ignore dead code until functionalities are implemented
-    #[allow(dead_code)]
     connection: Connection,
 }
 
@@ -30,8 +28,17 @@ impl Database {
         Ok(Self { connection })
     }
 
-    // Temp: temporary ignore dead code until functionalities are implemented
-    #[allow(dead_code)]
+    #[cfg(test)]
+    pub fn new_in_memory() -> Result<Self, String> {
+        let mut connection = Connection::open_in_memory().map_err(|e| e.to_string())?;
+
+        embedded::migrations::runner()
+            .run(&mut connection)
+            .map_err(|e| e.to_string())?;
+
+        Ok(Self { connection })
+    }
+
     pub fn get_connection(&self) -> &Connection {
         &self.connection
     }
