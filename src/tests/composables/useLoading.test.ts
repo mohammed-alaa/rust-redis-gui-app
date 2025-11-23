@@ -51,8 +51,7 @@ describe("useLoading", () => {
 				setTimeout(() => resolve("success"), 100);
 			});
 
-		const result = await withLoading(mockPromise);
-		expect(result).toBe("success");
+		await expect(withLoading(mockPromise)).resolves.toBe("success");
 	});
 
 	it("propagates the error from the rejected promise", async () => {
@@ -63,10 +62,6 @@ describe("useLoading", () => {
 				setTimeout(() => reject(new Error("failure")), 100);
 			});
 
-		try {
-			await withLoading(mockPromise);
-		} catch (error: any) {
-			expect(error.message).toBe("failure");
-		}
+		await expect(withLoading(mockPromise)).rejects.toThrowError("failure");
 	});
 });

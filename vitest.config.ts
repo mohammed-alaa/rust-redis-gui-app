@@ -1,10 +1,5 @@
 import { resolve } from "path";
-import {
-	defineConfig,
-	mergeConfig,
-	defaultExclude,
-	defaultInclude,
-} from "vitest/config";
+import { defineConfig, mergeConfig, defaultExclude } from "vitest/config";
 import viteConfig from "./vite.config";
 
 export default defineConfig((configEnv) =>
@@ -18,10 +13,7 @@ export default defineConfig((configEnv) =>
 						test: {
 							name: "Unit tests",
 							environment: "jsdom",
-							include: [
-								...defaultInclude,
-								"src/tests/**/*.test.ts",
-							],
+							include: ["src/tests/**/*.test.ts"],
 							exclude: [...defaultExclude, "src-tauri/**/*"],
 						},
 					},
