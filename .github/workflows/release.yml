@@ -20,10 +20,15 @@ jobs:
     clippy:
         uses: ./.github/workflows/run-clippy.yml
 
+    rust-tests:
+        uses: ./.github/workflows/test-rust.yml
+        needs:
+            - clippy
+
     publish-tauri:
         needs:
             - frontend-tests
-            - clippy
+            - rust-tests
         strategy:
             fail-fast: false
             matrix:

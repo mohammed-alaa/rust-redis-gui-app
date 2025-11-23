@@ -1,0 +1,37 @@
+name: "Rust Tests"
+
+on:
+    workflow_call:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    actions: read
+
+jobs:
+    rust-tests:
+        name: Run Tests
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install Ubuntu deps
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y \
+                    libwebkit2gtk-4.1-dev \
+                    libappindicator3-dev \
+                    librsvg2-dev \
+                    patchelf
+
+            - name: Install Rust
+              uses: dtolnay/rust-toolchain@stable
+
+            - name: Run Tests
+              run: cargo test
+              working-directory: src-tauri
