@@ -1,4 +1,4 @@
-use crate::core::Database;
+use crate::core::{AppError, Database};
 use rusqlite::{params_from_iter, Error, ParamsFromIter, Row};
 use std::fmt::Display;
 
@@ -7,11 +7,11 @@ pub trait Model: Display + Clone + PartialEq + Eq {
     fn table_name() -> &'static str;
 
     /// Saves the model to the database.
-    fn save(&self, db: &Database) -> Result<(), String>;
+    fn save(&self, db: &Database) -> Result<(), AppError>;
 
     /// Queries the model by its ID.
     #[allow(dead_code)]
-    fn find_by_id(id: &str, db: &Database) -> Result<Self, String>
+    fn find_by_id(id: &str, db: &Database) -> Result<Self, AppError>
     where
         Self: Sized;
 
@@ -28,17 +28,17 @@ pub trait Model: Display + Clone + PartialEq + Eq {
     }
 
     /// Creates a new model in the database.
-    fn create(&self, db: &Database) -> Result<Self, String>
+    fn create(&self, db: &Database) -> Result<Self, AppError>
     where
         Self: Sized;
 
     /// Deletes the model from the database.
     #[allow(dead_code)]
-    fn delete(&self, db: &Database) -> Result<bool, String>
+    fn delete(&self, db: &Database) -> Result<bool, AppError>
     where
         Self: Sized;
 
-    fn get(db: &Database) -> Result<Vec<Self>, String>
+    fn get(db: &Database) -> Result<Vec<Self>, AppError>
     where
         Self: Sized;
 }
