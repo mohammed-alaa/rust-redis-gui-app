@@ -14,7 +14,7 @@ permissions:
 
 jobs:
     rust-tests:
-        name: Run Tests
+        name: Run Rust Tests
         runs-on: ubuntu-latest
 
         steps:
