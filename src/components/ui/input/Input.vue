@@ -7,7 +7,6 @@ const modelValue = defineModel<string | number>({
 });
 
 const props = defineProps<{
-	defaultValue?: string | number;
 	class?: HTMLAttributes["class"];
 }>();
 </script>
