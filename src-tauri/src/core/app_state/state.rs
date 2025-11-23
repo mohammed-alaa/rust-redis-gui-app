@@ -32,3 +32,47 @@ impl AppState {
         self.db_connection.as_ref()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::{models::Server, services::test_connection, tests::run_redis_container};
+
+    use super::*;
+
+    #[test]
+    fn test_app_state_initialization() {
+        let app_state = AppState::new();
+        assert!(app_state.get_redis_client().is_none());
+        assert!(app_state.get_db_connection().is_none());
+    }
+
+    #[tokio::test]
+    async fn test_set_and_get_redis_client() {
+        let (host, port, container) = run_redis_container(6379).await;
+
+        let mut app_state = AppState::new();
+        let server = Server::from_payload("Local".to_string(), host, port);
+
+        let redis_client = test_connection(&server).await.unwrap();
+        app_state.set_redis_client(Some(redis_client));
+
+        assert!(app_state.get_redis_client().is_some());
+
+        app_state.set_redis_client(None);
+        assert!(app_state.get_redis_client().is_none());
+
+        drop(container);
+    }
+
+    #[test]
+    fn test_set_and_get_db_connection() {
+        let mut app_state = AppState::new();
+        let db_connection = Database::new_in_memory().unwrap();
+        app_state.set_db_connection(Some(db_connection));
+
+        assert!(app_state.get_db_connection().is_some());
+
+        app_state.set_db_connection(None);
+        assert!(app_state.get_db_connection().is_none());
+    }
+}

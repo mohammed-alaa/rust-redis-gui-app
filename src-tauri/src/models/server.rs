@@ -1,5 +1,5 @@
 use super::Model;
-use crate::core::Database;
+use crate::core::{AppError, Database};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use time::{format_description::well_known::Rfc3339, OffsetDateTime};
@@ -48,23 +48,23 @@ impl Model for Server {
         "servers"
     }
 
-    fn get(db: &Database) -> Result<Vec<Self>, String> {
+    fn get(db: &Database) -> Result<Vec<Self>, AppError> {
         let sql = format!("SELECT * FROM {}", Self::table_name());
 
         let mut stmt = db
             .get_connection()
             .prepare(&sql)
-            .map_err(|e| format!("Failed to prepare statement: {}", e))?;
+            .map_err(|_| AppError::DbQueryFailed)?;
 
         let servers_iter = stmt
             .query_map([], Self::from_row)
-            .map_err(|e| format!("Failed to query servers: {}", e))?;
+            .map_err(|_| AppError::DbQueryFailed)?;
 
         let servers: Result<Vec<Self>, _> = servers_iter.collect();
-        servers.map_err(|e| format!("Failed to fetch servers: {}", e))
+        servers.map_err(|_| AppError::DbQueryFailed)
     }
 
-    fn create(&self, db: &Database) -> Result<Self, String>
+    fn create(&self, db: &Database) -> Result<Self, AppError>
     where
         Self: Sized,
     {
@@ -74,7 +74,7 @@ impl Model for Server {
         Ok(_self)
     }
 
-    fn delete(&self, db: &Database) -> Result<bool, String>
+    fn delete(&self, db: &Database) -> Result<bool, AppError>
     where
         Self: Sized,
     {
@@ -82,10 +82,10 @@ impl Model for Server {
         db.get_connection()
             .execute(&sql, [&self.id.to_string()])
             .map(|_| true)
-            .map_err(|e| e.to_string())
+            .map_err(|_| AppError::DbQueryFailed)
     }
 
-    fn save(&self, db: &Database) -> Result<(), String> {
+    fn save(&self, db: &Database) -> Result<(), AppError> {
         let placeholders = "?,"
             .repeat(self.to_db_values().len())
             .trim_end_matches(',')
@@ -99,21 +99,21 @@ impl Model for Server {
 
         db.get_connection()
             .execute(&sql, self.to_db_values_safe())
-            .map_err(|e| e.to_string())?;
+            .map_err(|_| AppError::DbQueryFailed)?;
         Ok(())
     }
 
-    fn find_by_id(id: &str, db: &Database) -> Result<Self, String> {
+    fn find_by_id(id: &str, db: &Database) -> Result<Self, AppError> {
         let sql = format!("SELECT * FROM {} WHERE id = ? LIMIT 1", Self::table_name());
 
         let mut stmt = db
             .get_connection()
             .prepare(&sql)
-            .map_err(|e| e.to_string())?;
+            .map_err(|_| AppError::DbQueryFailed)?;
 
         let row = stmt
             .query_row([id], Self::from_row)
-            .map_err(|e| e.to_string())?;
+            .map_err(|_| AppError::DbQueryFailed)?;
         Ok(row)
     }
 

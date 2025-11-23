@@ -6,8 +6,8 @@ mod utils;
 
 use commands::{add_server, close_server, get_keys, get_servers, open_server};
 use core::{AppState, Database};
-use std::sync::Mutex;
 use tauri::{Builder, Manager};
+use tokio::sync::Mutex;
 use utils::get_db_base_dir;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -36,4 +36,11 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running redis GUI application");
+}
+
+#[cfg(test)]
+mod tests {
+    mod common;
+
+    pub use common::*;
 }
