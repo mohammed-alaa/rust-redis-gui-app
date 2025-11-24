@@ -12,16 +12,10 @@ import {
 defineEmits<{
 	submit: [];
 }>();
-withDefaults(
-	defineProps<{
-		isLoading: boolean;
-		isFormValid: boolean;
-		genericError?: string;
-	}>(),
-	{
-		genericError: "",
-	},
-);
+defineProps<{
+	isLoading: boolean;
+	isFormValid: boolean;
+}>();
 </script>
 
 <template>
@@ -30,14 +24,6 @@ withDefaults(
 		class="flex flex-col gap-4"
 		@submit.prevent="$emit('submit')"
 	>
-		<p
-			data-testid="add-server-form-generic-error"
-			class="text-red-600"
-			v-if="genericError"
-		>
-			{{ genericError }}
-		</p>
-
 		<FormField bails name="name" v-slot="{ componentField }">
 			<FormItem>
 				<FormLabel>Name</FormLabel>
