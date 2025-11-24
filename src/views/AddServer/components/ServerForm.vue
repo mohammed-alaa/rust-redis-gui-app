@@ -10,7 +10,7 @@ import {
 } from "@components/ui/form";
 
 defineEmits<{
-	submit: [];
+	submit: [e: Event];
 }>();
 withDefaults(
 	defineProps<{
@@ -28,7 +28,7 @@ withDefaults(
 	<form
 		data-testid="add-server-form"
 		class="flex flex-col gap-4"
-		@submit.prevent="$emit('submit')"
+		@submit.prevent="$emit('submit', $event)"
 	>
 		<p
 			data-testid="add-server-form-generic-error"
