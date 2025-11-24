@@ -21,6 +21,12 @@ export default defineConfig((configEnv) =>
 				coverage: {
 					provider: "v8",
 					include: ["src/**/*.ts", "src/**/*.vue"],
+					exclude: [
+						"src/main.ts",
+						"src/router.ts",
+						"src/routes.ts",
+						"src/**/*.d.ts",
+					],
 				},
 			},
 			resolve: {
