@@ -7,7 +7,11 @@ import { mockIPC } from "@tauri-apps/api/mocks";
 import { useServerStore } from "@stores/useServerStore";
 import AddServer from "@views/AddServer/index.vue";
 import ServerForm from "@views/AddServer/components/ServerForm.vue";
-import { COMMANDS } from "@constants";
+import { APP_ERROR_CODES, COMMANDS } from "@constants";
+import { toast } from "vue-sonner";
+import { ServerService } from "@services/ServerService";
+
+vi.spyOn(toast, "error").mockImplementation((msg, __data) => msg as string);
 
 let componentWrapper: ReturnType<typeof mount>;
 
@@ -79,6 +83,30 @@ describe("AddServer Page", () => {
 		await vi.waitFor(() => {
 			expect(componentWrapper.vm.$route.name).toBe("home");
 			expect(serverStore.servers.length).toBe(1);
+		});
+	});
+
+	it("submits the form and displays error in toast on failure", async () => {
+		const errorMessage = ServerService.handleErrorCodes(
+			APP_ERROR_CODES.REDIS_FAILED,
+		);
+		mockIPC(async (cmd) => {
+			if (cmd === COMMANDS.ADD_SERVER) {
+				return Promise.reject(APP_ERROR_CODES.REDIS_FAILED);
+			}
+		});
+		const serverFormWrapper = componentWrapper.findComponent(ServerForm);
+
+		const serverStore = useServerStore();
+
+		// Submit the form
+		await serverFormWrapper
+			.find('form[data-testid="add-server-form"]')
+			.trigger("submit");
+
+		void vi.waitFor(() => {
+			expect(serverStore.servers.length).toBe(0);
+			expect(toast.error).toHaveBeenCalledExactlyOnceWith(errorMessage);
 		});
 	});
 });
