@@ -67,7 +67,7 @@ mod tests {
         assert_eq!(server.port, test_server.port);
         assert_ne!(server, test_server);
 
-        drop(container);
+        container.rm().await.unwrap();
     }
 
     #[tokio::test]
@@ -98,6 +98,6 @@ mod tests {
 
         assert!(server.is_err());
         assert_eq!(server.err().unwrap(), AppError::DbNotReady);
-        drop(container);
+        container.rm().await.unwrap();
     }
 }

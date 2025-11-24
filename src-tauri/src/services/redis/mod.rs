@@ -34,7 +34,7 @@ pub mod tests {
         let result = test_connection(&server).await;
         assert!(result.is_err());
         assert_eq!(result.err().unwrap(), AppError::RedisFailed);
-        drop(container);
+        container.rm().await.unwrap();
     }
 
     #[tokio::test]
@@ -45,6 +45,6 @@ pub mod tests {
         let result = test_connection(&server).await;
         assert!(result.is_ok());
 
-        drop(container);
+        container.rm().await.unwrap();
     }
 }
