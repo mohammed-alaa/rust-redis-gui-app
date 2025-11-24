@@ -20,12 +20,16 @@ export default defineConfig((configEnv) =>
 				],
 				coverage: {
 					provider: "v8",
+					skipFull: true,
+					reporter: ["html", "text", "text-summary"],
 					include: ["src/**/*.ts", "src/**/*.vue"],
 					exclude: [
 						"src/main.ts",
 						"src/router.ts",
 						"src/routes.ts",
 						"src/**/*.d.ts",
+						"tests/__utils__/*",
+						"index.ts",
 					],
 				},
 			},
