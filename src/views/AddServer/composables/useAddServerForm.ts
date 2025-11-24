@@ -37,11 +37,7 @@ export function useAddServerForm() {
 	const isFormValid = computed(() => form.meta.value.valid);
 
 	async function submit(values: TServerFormFields) {
-		try {
-			return withLoading(async () => serverStore.addServer(values));
-		} catch (error: any) {
-			return Promise.reject(error);
-		}
+		return withLoading(async () => serverStore.addServer(values));
 	}
 
 	return {
