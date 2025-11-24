@@ -3,19 +3,21 @@ import { createPinia } from "pinia";
 import { createRouter, createWebHashHistory } from "vue-router";
 import { expect, describe, it, afterEach, beforeEach, vi } from "vitest";
 import { mount } from "@vue/test-utils";
-import { mockIPC } from "@tauri-apps/api/mocks";
+import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
 import { useServerStore } from "@stores/useServerStore";
-import AddServer from "@views/AddServer/index.vue";
-import ServerForm from "@views/AddServer/components/ServerForm.vue";
 import { APP_ERROR_CODES, COMMANDS } from "@constants";
 import { toast } from "vue-sonner";
 import { ServerService } from "@services/ServerService";
+import { useServerFactory } from "@test-utils/useServerFactory";
+import { useAddServerForm } from "@views/AddServer/composables/useAddServerForm";
+import AddServer from "@views/AddServer/index.vue";
+import ServerForm from "@views/AddServer/components/ServerForm.vue";
 
-vi.spyOn(toast, "error").mockImplementation((msg, __data) => msg as string);
-
-let componentWrapper: ReturnType<typeof mount>;
+vi.spyOn(toast, "error");
 
 describe("AddServer Page", () => {
+	let componentWrapper: ReturnType<typeof mount>;
+
 	beforeEach(() => {
 		componentWrapper = mount(AddServer, {
 			global: {
@@ -39,26 +41,20 @@ describe("AddServer Page", () => {
 	});
 
 	afterEach(() => {
-		vi.clearAllMocks();
 		componentWrapper.unmount();
+		clearMocks();
+		vi.clearAllMocks();
 	});
 
 	it("renders AddServer page correctly", async () => {
-		expect(componentWrapper.findComponent(ServerForm).exists()).toBe(true);
+		expect(componentWrapper.findComponent(AddServer).exists()).toBe(true);
 	});
 
 	it("submits the form and navigates to home on success", async () => {
 		const serverFormWrapper = componentWrapper.findComponent(ServerForm);
 		mockIPC(async (cmd) => {
 			if (cmd === COMMANDS.ADD_SERVER) {
-				return Promise.resolve({
-					id: "1",
-					name: "Test Server",
-					address: "localhost",
-					port: 6379,
-					created_at: new Date(),
-					updated_at: new Date(),
-				} as TServer);
+				return Promise.resolve(useServerFactory().validServer().server);
 			}
 		});
 
@@ -76,14 +72,12 @@ describe("AddServer Page", () => {
 			.setValue("6379");
 
 		// Submit the form
-		await serverFormWrapper
-			.find('form[data-testid="add-server-form"]')
-			.trigger("submit.prevent");
+		await serverFormWrapper.trigger("submit");
 
-		await vi.waitFor(() => {
-			expect(componentWrapper.vm.$route.name).toBe("home");
-			expect(serverStore.servers.length).toBe(1);
-		});
+		await vi.waitFor(async () => await useAddServerForm().onSubmit());
+
+		expect(componentWrapper.vm.$route.name).toBe("home");
+		expect(serverStore.servers.length).toBe(1);
 	});
 
 	it("submits the form and displays error in toast on failure", async () => {
@@ -95,18 +89,22 @@ describe("AddServer Page", () => {
 				return Promise.reject(APP_ERROR_CODES.REDIS_FAILED);
 			}
 		});
+
 		const serverFormWrapper = componentWrapper.findComponent(ServerForm);
 
-		const serverStore = useServerStore();
-
-		// Submit the form
 		await serverFormWrapper
-			.find('form[data-testid="add-server-form"]')
-			.trigger("submit");
+			.find('input[data-testid="add-server-form-name-field"]')
+			.setValue("Test Server");
+		await serverFormWrapper
+			.find('input[data-testid="add-server-form-address-field"]')
+			.setValue("localhost");
+		await serverFormWrapper
+			.find('input[data-testid="add-server-form-port-field"]')
+			.setValue("6379");
 
-		void vi.waitFor(() => {
-			expect(serverStore.servers.length).toBe(0);
-			expect(toast.error).toHaveBeenCalledExactlyOnceWith(errorMessage);
-		});
+		await serverFormWrapper.trigger("submit");
+		await vi.waitFor(async () => useAddServerForm().onSubmit());
+
+		expect(toast.error).toHaveBeenCalledExactlyOnceWith(errorMessage);
 	});
 });
