@@ -1,20 +1,66 @@
-import { COMMANDS } from "@constants";
+import { APP_ERROR_CODES, COMMANDS } from "@constants";
 import { invoke } from "@tauri-apps/api/core";
 
 export class ServerService {
+	static handleErrorCodes(errorCode: APP_ERROR_CODES) {
+		let errorMessage = "";
+
+		switch (errorCode) {
+			case APP_ERROR_CODES.REDIS_FAILED:
+				errorMessage =
+					"Failed to interact with the Redis server. Please check your connection settings.";
+				break;
+			case APP_ERROR_CODES.DATABASE_NOT_READY:
+				errorMessage =
+					"The database is not ready. Please ensure the connection is established.";
+				break;
+			case APP_ERROR_CODES.DATABASE_QUERY_FAILED:
+				errorMessage = "A database query has failed. Please try again.";
+				break;
+			default:
+				errorMessage = "An unknown error has occurred.";
+		}
+
+		return errorMessage;
+	}
+
 	static async addServer(values: TServerFormFields): Promise<TServer> {
-		return invoke<TServer>(COMMANDS.ADD_SERVER, values);
+		try {
+			return await invoke<TServer>(COMMANDS.ADD_SERVER, values);
+		} catch (error) {
+			return Promise.reject(
+				ServerService.handleErrorCodes(error as APP_ERROR_CODES),
+			);
+		}
 	}
 
 	static async getServers(): Promise<TServer[]> {
-		return invoke<TServer[]>(COMMANDS.GET_SERVERS);
+		try {
+			return await invoke<TServer[]>(COMMANDS.GET_SERVERS);
+		} catch (error) {
+			return Promise.reject(
+				ServerService.handleErrorCodes(error as APP_ERROR_CODES),
+			);
+		}
 	}
 
 	static async openServer(id: TServer["id"]): Promise<TServer> {
-		return invoke<TServer>(COMMANDS.OPEN_SERVER, { id });
+		try {
+			return await invoke<TServer>(COMMANDS.OPEN_SERVER, { id });
+		} catch (error) {
+			return Promise.reject(
+				ServerService.handleErrorCodes(error as APP_ERROR_CODES),
+			);
+		}
 	}
 
 	static async closeServer(): Promise<void> {
-		return invoke<void>(COMMANDS.CLOSE_SERVER);
+		try {
+			return await invoke<void>(COMMANDS.CLOSE_SERVER);
+		} catch (error) {
+			return Promise.reject(
+				ServerService.handleErrorCodes(error as APP_ERROR_CODES),
+			);
+		}
 	}
 }

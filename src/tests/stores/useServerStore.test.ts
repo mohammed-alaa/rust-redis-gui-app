@@ -2,8 +2,9 @@ import { beforeEach, expect, describe, it, afterEach, vi } from "vitest";
 import { setActivePinia, createPinia } from "pinia";
 import { useServerStore } from "@stores/useServerStore";
 import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
-import { COMMANDS } from "@constants";
+import { APP_ERROR_CODES, COMMANDS } from "@constants";
 import { useServerFactory } from "@test-utils/useServerFactory";
+import { ServerService } from "@services/ServerService";
 
 describe("useServerStore", () => {
 	let server: TServer;
@@ -42,10 +43,12 @@ describe("useServerStore", () => {
 		});
 
 		it("handles errors when fetching servers", async () => {
-			const errorMessage = "Failed to fetch servers";
+			const errorMessage = ServerService.handleErrorCodes(
+				APP_ERROR_CODES.REDIS_FAILED,
+			);
 			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.GET_SERVERS) {
-					return Promise.reject(errorMessage);
+					return Promise.reject(APP_ERROR_CODES.REDIS_FAILED);
 				}
 			});
 			const serverStore = useServerStore();
@@ -73,10 +76,12 @@ describe("useServerStore", () => {
 		});
 
 		it("handles errors when adding a server", async () => {
-			const errorMessage = "Failed to add server";
+			const errorMessage = ServerService.handleErrorCodes(
+				APP_ERROR_CODES.REDIS_FAILED,
+			);
 			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.ADD_SERVER) {
-					return Promise.reject(errorMessage);
+					return Promise.reject(APP_ERROR_CODES.REDIS_FAILED);
 				}
 			});
 			const serverStore = useServerStore();
@@ -105,10 +110,12 @@ describe("useServerStore", () => {
 		});
 
 		it("handles errors when opening a server", async () => {
-			const errorMessage = "Failed to open server";
+			const errorMessage = ServerService.handleErrorCodes(
+				APP_ERROR_CODES.REDIS_FAILED,
+			);
 			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.OPEN_SERVER) {
-					return Promise.reject(errorMessage);
+					return Promise.reject(APP_ERROR_CODES.REDIS_FAILED);
 				}
 			});
 
@@ -170,13 +177,15 @@ describe("useServerStore", () => {
 		});
 
 		it("handles errors when closing a server", async () => {
-			const errorMessage = "Failed to close server";
+			const errorMessage = ServerService.handleErrorCodes(
+				APP_ERROR_CODES.REDIS_FAILED,
+			);
 			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.OPEN_SERVER) {
 					return server;
 				}
 				if (cmd === COMMANDS.CLOSE_SERVER) {
-					return Promise.reject(errorMessage);
+					return Promise.reject(APP_ERROR_CODES.REDIS_FAILED);
 				}
 			});
 

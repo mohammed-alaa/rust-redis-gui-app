@@ -2,11 +2,12 @@ import { beforeEach, expect, describe, it, afterEach, vi } from "vitest";
 import { setActivePinia, createPinia } from "pinia";
 import { useServerStore } from "@stores/useServerStore";
 import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
-import { COMMANDS } from "@constants";
+import { APP_ERROR_CODES, COMMANDS } from "@constants";
 import { useAddServerForm } from "@views/AddServer/composables/useAddServerForm";
 import { nextTick, defineComponent } from "vue";
 import { mount, flushPromises } from "@vue/test-utils";
 import { useServerFactory } from "@test-utils/useServerFactory";
+import { ServerService } from "@services/ServerService";
 
 describe("useAddServerForm", () => {
 	let validServerFactory: {
@@ -409,10 +410,12 @@ describe("useAddServerForm", () => {
 		});
 
 		it("rejects promise when submission fails", async () => {
-			const errorMessage = "Failed to add server";
+			const errorMessage = ServerService.handleErrorCodes(
+				APP_ERROR_CODES.REDIS_FAILED,
+			);
 			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.ADD_SERVER) {
-					return Promise.reject(errorMessage);
+					return Promise.reject(APP_ERROR_CODES.REDIS_FAILED);
 				}
 			});
 
