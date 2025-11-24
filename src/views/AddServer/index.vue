@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
+import { toast } from "vue-sonner";
 import { useAddServerForm } from "./composables/useAddServerForm";
 import ServerForm from "./components/ServerForm.vue";
 import { Button } from "@components/ui/button";
@@ -7,7 +8,6 @@ import { Button } from "@components/ui/button";
 const router = useRouter();
 const {
 	isLoading,
-	genericError,
 	isFormValid,
 	onSubmit: onAddServerFormSubmit,
 } = useAddServerForm();
@@ -20,7 +20,9 @@ async function onSubmit(event: Event) {
 	try {
 		await onAddServerFormSubmit(event);
 		goToHomePage();
-	} catch (_) {}
+	} catch (error) {
+		toast.error(error as string);
+	}
 }
 </script>
 
@@ -34,7 +36,6 @@ async function onSubmit(event: Event) {
 		<ServerForm
 			:is-loading="isLoading"
 			:is-form-valid="isFormValid"
-			:generic-error="genericError"
 			@submit="onSubmit"
 		/>
 	</div>
