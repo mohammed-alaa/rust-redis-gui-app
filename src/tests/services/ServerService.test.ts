@@ -22,6 +22,24 @@ describe("ServerService", () => {
 		vi.clearAllMocks();
 	});
 
+	it("handles error codes", () => {
+		expect(
+			ServerService.handleErrorCodes(APP_ERROR_CODES.REDIS_FAILED),
+		).toBe(
+			"Failed to interact with the Redis server. Please check your connection settings.",
+		);
+		expect(
+			ServerService.handleErrorCodes(APP_ERROR_CODES.DATABASE_NOT_READY),
+		).toBe(
+			"The database is not ready. Please ensure the connection is established.",
+		);
+		expect(
+			ServerService.handleErrorCodes(
+				APP_ERROR_CODES.DATABASE_QUERY_FAILED,
+			),
+		).toBe("A database query has failed. Please try again.");
+	});
+
 	describe("Add Server", () => {
 		it("can add server", async () => {
 			mockIPC((cmd) => {
