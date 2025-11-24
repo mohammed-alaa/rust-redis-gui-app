@@ -67,7 +67,7 @@ mod tests {
         assert!(result.is_ok());
         let opened_server = result.unwrap();
         assert_eq!(opened_server, new_server);
-        drop(container);
+        container.rm().await.unwrap();
     }
 
     #[tokio::test]
@@ -91,7 +91,7 @@ mod tests {
 
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), new_server);
-        drop(container);
+        container.rm().await.unwrap();
     }
 
     #[tokio::test]

@@ -61,7 +61,7 @@ mod tests {
         app_state.set_redis_client(None);
         assert!(app_state.get_redis_client().is_none());
 
-        drop(container);
+        container.rm().await.unwrap();
     }
 
     #[test]
