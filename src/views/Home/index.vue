@@ -60,6 +60,7 @@ serverStore.getServers().catch((error) => toast.error(error as string));
 							tabindex="0"
 							aria-role="button"
 							:aria-label="`Connect to ${server.name}`"
+							data-testid="server-row"
 							@click="onOpenServer(server.id)"
 							@keydown.enter="onOpenServer(server.id)"
 						>
@@ -77,8 +78,13 @@ serverStore.getServers().catch((error) => toast.error(error as string));
 			<TableFooter>
 				<TableRow>
 					<TableCell colspan="100%" class="text-center">
-						<RouterLink :to="{ name: 'add-server' }">
-							<Button>Add Server</Button>
+						<RouterLink
+							:to="{ name: 'add-server' }"
+							data-testid="add-server-link"
+						>
+							<Button data-testid="add-server-button">
+								Add Server
+							</Button>
 						</RouterLink>
 					</TableCell>
 				</TableRow>
