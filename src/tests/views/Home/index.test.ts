@@ -10,7 +10,7 @@ import { APP_ERROR_CODES, COMMANDS } from "@constants";
 import { useServerStore } from "@stores/useServerStore";
 import { ServerService } from "@services/ServerService";
 
-vi.spyOn(toast, "error").mockImplementation((msg, __data) => msg as string);
+vi.spyOn(toast, "error");
 
 describe("Home View", () => {
 	let servers: TServer[];

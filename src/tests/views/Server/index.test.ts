@@ -2,15 +2,12 @@ import { createPinia } from "pinia";
 import { createRouter, createWebHashHistory } from "vue-router";
 import { mount } from "@vue/test-utils";
 import { describe, it, vi, beforeEach, afterEach, expect } from "vitest";
-import { mockIPC, clearMocks } from "@tauri-apps/api/mocks";
+import { clearMocks } from "@tauri-apps/api/mocks";
 import { toast } from "vue-sonner";
 import Server from "@views/Server/index.vue";
 import { useServerFactory } from "@test-utils/useServerFactory";
-import { APP_ERROR_CODES, COMMANDS } from "@constants";
-import { useServerStore } from "@stores/useServerStore";
-import { ServerService } from "@services/ServerService";
 
-vi.spyOn(toast, "error").mockImplementation((msg, __data) => msg as string);
+vi.spyOn(toast, "error");
 
 describe("Home View", () => {
 	let servers: TServer[];
