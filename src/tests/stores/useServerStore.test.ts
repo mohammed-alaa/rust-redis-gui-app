@@ -25,6 +25,7 @@ describe("useServerStore", () => {
 	describe("initializes & resets", () => {
 		it("initializes with empty servers array", () => {
 			const serverStore = useServerStore();
+			serverStore.init();
 			expect(serverStore.servers).toEqual([]);
 		});
 
@@ -49,7 +50,13 @@ describe("useServerStore", () => {
 			});
 			const serverStore = useServerStore();
 
-			await expect(serverStore.getServers()).resolves.toEqual([server]);
+			const loadingServers = serverStore.getServers();
+
+			expect(serverStore.isLoading).toBe(true);
+			await vi.waitFor(async () => loadingServers);
+
+			expect(serverStore.isLoading).toBe(false);
+			await expect(loadingServers).resolves.toEqual([server]);
 			expect(serverStore.servers).toContainEqual(server);
 		});
 
@@ -198,8 +205,7 @@ describe("useServerStore", () => {
 			mockIPC((cmd) => {
 				if (cmd === COMMANDS.OPEN_SERVER) {
 					return server;
-				}
-				if (cmd === COMMANDS.CLOSE_SERVER) {
+				} else if (cmd === COMMANDS.CLOSE_SERVER) {
 					return;
 				}
 			});
