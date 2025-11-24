@@ -17,8 +17,6 @@ export class ServerService {
 			case APP_ERROR_CODES.DATABASE_QUERY_FAILED:
 				errorMessage = "A database query has failed. Please try again.";
 				break;
-			default:
-				errorMessage = "An unknown error has occurred.";
 		}
 
 		return errorMessage;

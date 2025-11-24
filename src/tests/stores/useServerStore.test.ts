@@ -22,10 +22,22 @@ describe("useServerStore", () => {
 		vi.clearAllMocks();
 	});
 
-	describe("initializes", () => {
+	describe("initializes & resets", () => {
 		it("initializes with empty servers array", () => {
 			const serverStore = useServerStore();
+			serverStore.init();
 			expect(serverStore.servers).toEqual([]);
+		});
+
+		it("resets correctly", () => {
+			const serverStore = useServerStore();
+			serverStore.servers = [server];
+			serverStore.activeServer = server;
+
+			serverStore.$reset();
+
+			expect(serverStore.servers).toEqual([]);
+			expect(serverStore.activeServer).toBeNull();
 		});
 	});
 
@@ -38,7 +50,13 @@ describe("useServerStore", () => {
 			});
 			const serverStore = useServerStore();
 
-			await expect(serverStore.getServers()).resolves.toEqual([server]);
+			const loadingServers = serverStore.getServers();
+
+			expect(serverStore.isLoading).toBe(true);
+			await vi.waitFor(async () => loadingServers);
+
+			expect(serverStore.isLoading).toBe(false);
+			await expect(loadingServers).resolves.toEqual([server]);
 			expect(serverStore.servers).toContainEqual(server);
 		});
 
@@ -146,6 +164,40 @@ describe("useServerStore", () => {
 			expect(serverStore.activeServer).toEqual(server);
 			expect(openServerCallCount).toBe(1);
 		});
+
+		it("closes the current server when opening a different server", async () => {
+			const anotherServer = useServerFactory().validServer().server;
+
+			let openServerCallCount = 0;
+			let closeServerCallCount = 0;
+
+			mockIPC((cmd) => {
+				if (cmd === COMMANDS.OPEN_SERVER) {
+					openServerCallCount += 1;
+					if (openServerCallCount === 1) {
+						return server;
+					} else {
+						return anotherServer;
+					}
+				}
+				if (cmd === COMMANDS.CLOSE_SERVER) {
+					closeServerCallCount += 1;
+					return;
+				}
+			});
+
+			const serverStore = useServerStore();
+			await serverStore.openServer(server.id);
+			expect(serverStore.activeServer).toEqual(server);
+			expect(openServerCallCount).toBe(1);
+			expect(closeServerCallCount).toBe(0);
+
+			// Open a different server
+			await serverStore.openServer(anotherServer.id);
+			expect(serverStore.activeServer).toEqual(anotherServer);
+			expect(openServerCallCount).toBe(2);
+			expect(closeServerCallCount).toBe(1);
+		});
 	});
 
 	describe("close server", () => {
@@ -153,8 +205,7 @@ describe("useServerStore", () => {
 			mockIPC((cmd) => {
 				if (cmd === COMMANDS.OPEN_SERVER) {
 					return server;
-				}
-				if (cmd === COMMANDS.CLOSE_SERVER) {
+				} else if (cmd === COMMANDS.CLOSE_SERVER) {
 					return;
 				}
 			});
