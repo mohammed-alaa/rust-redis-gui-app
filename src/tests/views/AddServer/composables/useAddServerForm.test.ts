@@ -40,10 +40,9 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form, genericError, isLoading, isFormValid } = wrapper.vm;
+			const { form, isLoading, isFormValid } = wrapper.vm;
 
 			expect(form.values).toEqual(invalidServerFactory.serverFormFields);
-			expect(genericError).toBe("");
 			expect(isLoading).toBe(false);
 			expect(isFormValid).toBe(true);
 			wrapper.unmount();
@@ -304,7 +303,7 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form, onSubmit, genericError } = wrapper.vm;
+			const { form, onSubmit, isFormValid } = wrapper.vm;
 
 			form.setFieldValue(
 				"name",
@@ -322,7 +321,7 @@ describe("useAddServerForm", () => {
 			await onSubmit();
 			await nextTick();
 
-			expect(genericError).toBe("");
+			expect(isFormValid).toBe(true);
 			wrapper.unmount();
 		});
 
@@ -367,48 +366,6 @@ describe("useAddServerForm", () => {
 			wrapper.unmount();
 		});
 
-		it("sets genericError when submission fails", async () => {
-			const errorMessage = "Failed to add server";
-			mockIPC(async (cmd) => {
-				if (cmd === COMMANDS.ADD_SERVER) {
-					return Promise.reject(errorMessage);
-				}
-			});
-
-			const TestComponent = defineComponent({
-				setup() {
-					return useAddServerForm();
-				},
-				template: "<div></div>",
-			});
-
-			const wrapper = mount(TestComponent);
-			const { form, onSubmit } = wrapper.vm;
-
-			form.setFieldValue(
-				"name",
-				validServerFactory.serverFormFields.name,
-			);
-			form.setFieldValue(
-				"address",
-				validServerFactory.serverFormFields.address,
-			);
-			form.setFieldValue(
-				"port",
-				validServerFactory.serverFormFields.port,
-			);
-
-			try {
-				await onSubmit();
-			} catch {}
-
-			void vi.waitFor(() => {
-				expect(wrapper.vm.genericError).toBe(errorMessage);
-			});
-
-			wrapper.unmount();
-		});
-
 		it("rejects promise when submission fails", async () => {
 			const errorMessage = ServerService.handleErrorCodes(
 				APP_ERROR_CODES.REDIS_FAILED,
@@ -443,46 +400,6 @@ describe("useAddServerForm", () => {
 			);
 
 			await expect(onSubmit()).rejects.toBe(errorMessage);
-			wrapper.unmount();
-		});
-
-		it("clears genericError before submission", async () => {
-			mockIPC((cmd) => {
-				if (cmd === COMMANDS.ADD_SERVER) {
-					return validServerFactory.server;
-				}
-			});
-
-			const TestComponent = defineComponent({
-				setup() {
-					return useAddServerForm();
-				},
-				template: "<div></div>",
-			});
-
-			const wrapper = mount(TestComponent);
-			const { form, onSubmit } = wrapper.vm;
-
-			// Set an initial error
-			wrapper.vm.genericError = "Previous error";
-
-			form.setFieldValue(
-				"name",
-				validServerFactory.serverFormFields.name,
-			);
-			form.setFieldValue(
-				"address",
-				validServerFactory.serverFormFields.address,
-			);
-			form.setFieldValue(
-				"port",
-				validServerFactory.serverFormFields.port,
-			);
-
-			await onSubmit();
-			await nextTick();
-
-			expect(wrapper.vm.genericError).toBe("");
 			wrapper.unmount();
 		});
 

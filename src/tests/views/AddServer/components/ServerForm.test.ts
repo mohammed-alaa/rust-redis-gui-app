@@ -89,7 +89,7 @@ describe("ServerForm", () => {
 	describe("Form Submission", () => {
 		it("disables submit button when loading", async () => {
 			const wrapper = mount(ServerForm, {
-				props: { isLoading: true, isFormValid: true, genericError: "" },
+				props: { isLoading: true, isFormValid: true },
 			});
 
 			const submitBtn = wrapper.find(
@@ -109,7 +109,6 @@ describe("ServerForm", () => {
 				props: {
 					isLoading: false,
 					isFormValid: false,
-					genericError: "",
 				},
 			});
 
@@ -130,7 +129,6 @@ describe("ServerForm", () => {
 				props: {
 					isLoading: false,
 					isFormValid: true,
-					genericError: "",
 				},
 			});
 
@@ -150,7 +148,6 @@ describe("ServerForm", () => {
 				props: {
 					isLoading: false,
 					isFormValid: true,
-					genericError: "",
 				},
 			});
 
@@ -158,42 +155,6 @@ describe("ServerForm", () => {
 				.find('[data-testid="add-server-form"]')
 				.trigger("submit");
 			expect(wrapper.emitted("submit")).toHaveLength(1);
-
-			wrapper.unmount();
-		});
-	});
-
-	describe("Generic Error Display", () => {
-		it("displays generic error message when provided", async () => {
-			const genericError = "Unable to connect to the server.";
-			const wrapper = mount(ServerForm, {
-				props: { isLoading: false, isFormValid: true, genericError },
-			});
-
-			await flushPromises();
-
-			const errorMsg = wrapper
-				.find('[data-testid="add-server-form-generic-error"]')
-				.text();
-			expect(errorMsg).toBe(genericError);
-
-			wrapper.unmount();
-		});
-
-		it("hides generic error when not provided", () => {
-			const wrapper = mount(ServerForm, {
-				props: {
-					isLoading: false,
-					isFormValid: true,
-					genericError: "",
-				},
-			});
-
-			expect(
-				wrapper
-					.find('[data-testid="add-server-form-generic-error"]')
-					.exists(),
-			).toBe(false);
 
 			wrapper.unmount();
 		});
@@ -207,7 +168,7 @@ describe("ServerForm", () => {
 				setup() {
 					return useAddServerForm();
 				},
-				template: `<ServerForm :isLoading="isLoading" :isFormValid="isFormValid" :genericError="genericError" @submit="onSubmit" />`,
+				template: `<ServerForm :isLoading="isLoading" :isFormValid="isFormValid" @submit="onSubmit" />`,
 			}),
 		);
 

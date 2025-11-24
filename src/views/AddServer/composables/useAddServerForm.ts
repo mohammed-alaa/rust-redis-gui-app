@@ -1,4 +1,4 @@
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
@@ -6,7 +6,6 @@ import { useServerStore } from "@stores/useServerStore";
 import { useLoading } from "@composables";
 
 export function useAddServerForm() {
-	const genericError = ref("");
 	const formSchema = toTypedSchema(
 		z.object({
 			name: z
@@ -38,19 +37,15 @@ export function useAddServerForm() {
 	const isFormValid = computed(() => form.meta.value.valid);
 
 	async function submit(values: TServerFormFields) {
-		genericError.value = "";
-
 		try {
 			return withLoading(async () => serverStore.addServer(values));
 		} catch (error: any) {
-			genericError.value = error;
 			return Promise.reject(error);
 		}
 	}
 
 	return {
 		form,
-		genericError,
 		isLoading,
 		isFormValid,
 
