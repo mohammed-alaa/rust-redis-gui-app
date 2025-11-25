@@ -18,7 +18,7 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
               with:
-                  token: ${{ secrets.GITHUB_TOKEN }}
+                  token: ${{ secrets.FRONTEND_PACKAGE_UPDATER }}
 
             - name: Setup Node.js
               uses: actions/setup-node@v4
@@ -59,7 +59,7 @@ jobs:
               if: steps.ncu.outputs.has_updates == 'true'
               uses: peter-evans/create-pull-request@v6
               with:
-                  token: ${{ secrets.GITHUB_TOKEN }}
+                  token: ${{ secrets.FRONTEND_PACKAGE_UPDATER }}
                   branch: chore/dependency-updates
                   delete-branch: true
                   commit-message: "chore(deps): update dependencies"
