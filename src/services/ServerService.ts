@@ -22,9 +22,21 @@ export class ServerService {
 		return errorMessage;
 	}
 
+	static formatServer(server: TServerFromBackend): TServer {
+		return {
+			...server,
+			created_at: new Date(server.created_at),
+			updated_at: new Date(server.updated_at),
+		} as TServer;
+	}
+
 	static async addServer(values: TServerFormFields): Promise<TServer> {
 		try {
-			return await invoke<TServer>(COMMANDS.ADD_SERVER, values);
+			const server = await invoke<TServerFromBackend>(
+				COMMANDS.ADD_SERVER,
+				values,
+			);
+			return ServerService.formatServer(server);
 		} catch (error) {
 			return Promise.reject(
 				ServerService.handleErrorCodes(error as APP_ERROR_CODES),
@@ -34,7 +46,9 @@ export class ServerService {
 
 	static async getServers(): Promise<TServer[]> {
 		try {
-			return await invoke<TServer[]>(COMMANDS.GET_SERVERS);
+			return (
+				await invoke<TServerFromBackend[]>(COMMANDS.GET_SERVERS)
+			).map((server) => ServerService.formatServer(server));
 		} catch (error) {
 			return Promise.reject(
 				ServerService.handleErrorCodes(error as APP_ERROR_CODES),
@@ -44,7 +58,11 @@ export class ServerService {
 
 	static async openServer(id: TServer["id"]): Promise<TServer> {
 		try {
-			return await invoke<TServer>(COMMANDS.OPEN_SERVER, { id });
+			const server = await invoke<TServerFromBackend>(
+				COMMANDS.OPEN_SERVER,
+				{ id },
+			);
+			return ServerService.formatServer(server);
 		} catch (error) {
 			return Promise.reject(
 				ServerService.handleErrorCodes(error as APP_ERROR_CODES),
