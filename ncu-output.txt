@@ -1,0 +1,10 @@
+Using yarn
+Checking /home/runner/work/rust-redis-gui-app/rust-redis-gui-app/package.json
+
+
+ oxlint           ^1.29.0  →  ^1.30.0
+ oxlint-tsgolint   ^0.8.1  →   ^0.8.2
+ vue              ^3.5.24  →  ^3.5.25
+ zod              ^4.1.12  →  ^4.1.13
+
+Run ncu -u to upgrade package.json
