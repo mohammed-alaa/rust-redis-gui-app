@@ -40,6 +40,19 @@ describe("ServerService", () => {
 		).toBe("A database query has failed. Please try again.");
 	});
 
+	it("formats server", () => {
+		const serverFromBackend: TServerFromBackend = {
+			...server,
+			created_at: server.created_at.toISOString(),
+			updated_at: server.updated_at.toISOString(),
+		};
+
+		const formattedServer = ServerService.formatServer(serverFromBackend);
+		expect(formattedServer).toEqual(server);
+		expect(formattedServer.created_at).toBeInstanceOf(Date);
+		expect(formattedServer.updated_at).toBeInstanceOf(Date);
+	});
+
 	describe("Add Server", () => {
 		it("can add server", async () => {
 			mockIPC((cmd) => {
