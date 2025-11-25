@@ -15,53 +15,60 @@ jobs:
     update-deps:
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout
+            - name: Checkout repository
               uses: actions/checkout@v4
               with:
-                  token: ${{ secrets.FRONTEND_PACKAGE_UPDATER }}
+                  token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: "20"
-                  cache: "yarn"
+                  node-version: 20
+                  cache: yarn
 
-            - name: Install ncu globally
+            - name: Install npm-check-updates
               run: yarn global add npm-check-updates
 
             - name: Check for outdated packages
-              id: check
+              id: ncu
               run: |
-                  echo "Running ncu..."
-                  OUTPUT=$(ncu 2>&1 || true)        # ncu exits with code 1 when updates exist → we ignore it
-                  echo "$OUTPUT"
+                  echo "Running ncu check..."
+                  ncu_output=$(ncu --format group 2>&1 || true)
 
-                  if echo "$OUTPUT" | grep -q "All dependencies match the latest package versions"; then
-                    echo "No updates found"
-                    echo "has_updates=false" >> $GITHUB_OUTPUT
-                  else
-                    echo "Updates found!"
+                  echo "$ncu_output"
+
+                  # Save full output for the PR body
+                  echo "report<<EOF" >> $GITHUB_OUTPUT
+                  echo "$ncu_output" >> $GITHUB_OUTPUT
+                  echo "EOF" >> $GITHUB_OUTPUT
+
+                  # Set flag if updates exist
+                  if echo "$ncu_output" | grep -q "→"; then
                     echo "has_updates=true" >> $GITHUB_OUTPUT
-                    echo "$OUTPUT" > ncu-output.txt
+                  else
+                    echo "has_updates=false" >> $GITHUB_OUTPUT
                   fi
 
-            - name: Upgrade package.json + yarn.lock
-              if: steps.check.outputs.has_updates == 'true'
+            - name: Update dependencies
+              if: steps.ncu.outputs.has_updates == 'true'
               run: |
                   ncu -u
-                  yarn install
+                  yarn install --mode=update-lockfile
 
-            - name: Create Pull Request
-              if: steps.check.outputs.has_updates == 'true'
+            - name: Create or update Pull Request
+              if: steps.ncu.outputs.has_updates == 'true'
               uses: peter-evans/create-pull-request@v6
               with:
-                  token: ${{ secrets.FRONTEND_PACKAGE_UPDATER }}
+                  token: ${{ secrets.GITHUB_TOKEN }}
                   branch: chore/dependency-updates
                   delete-branch: true
                   commit-message: "chore(deps): update dependencies"
-                  title: "Update dependencies"
+                  title: "chore(deps): update dependencies"
                   body: |
                       Daily automated dependency update (Yarn + ncu)
 
+                      <details>
+                      <summary>Updated packages – click to expand</summary>
+
                       ```text
-                      $(cat ncu-output.txt)
+                      ${{ steps.ncu.outputs.report }}
