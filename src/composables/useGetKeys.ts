@@ -1,18 +1,20 @@
 import { ref } from "vue";
 import { useLoading } from "./useLoading";
-import { COMMANDS } from "@constants";
-import { invoke } from "@tauri-apps/api/core";
+import { KeyService } from "@services/KeyService";
 
 export function useGetKeys() {
 	const { isLoading, withLoading } = useLoading();
-	const keys = ref<string[]>([]);
-	const filter = ref<string>("");
+	const keys = ref<TKey[]>([]);
+	const options = ref<TKeyOptions>({
+		filter: "",
+		limit: 100,
+	});
 
 	async function getKeys() {
-		keys.value = await withLoading<string[]>(
-			invoke(COMMANDS.GET_KEYS, { filter: filter.value }),
+		keys.value = await withLoading(async () =>
+			KeyService.getKeys(options.value),
 		);
 	}
 
-	return { isLoading, keys, filter, getKeys };
+	return { isLoading, keys, options, getKeys };
 }
