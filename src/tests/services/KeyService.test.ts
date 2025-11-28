@@ -1,0 +1,111 @@
+import { describe, it, expect, afterEach } from "vitest";
+import { KeyService } from "@services/KeyService";
+import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
+import { COMMANDS } from "@constants";
+
+describe("KeyService", () => {
+	afterEach(() => {
+		clearMocks();
+	});
+
+	it("exists", () => {
+		expect(KeyService).toBeDefined();
+	});
+
+	it("retrieves keys", async () => {
+		mockIPC((cmd) => {
+			if (cmd === COMMANDS.GET_KEYS) {
+				return Promise.resolve<TKey[]>([]);
+			}
+		});
+
+		const keys = await KeyService.getKeys({ filter: "", limit: 100 });
+		expect(keys).toBeDefined();
+		expect(Array.isArray(keys)).toBe(true);
+	});
+
+	it("retrieves keys with filter", async () => {
+		mockIPC((cmd, args) => {
+			if (cmd === COMMANDS.GET_KEYS) {
+				if ((args as TGetKeysOptions).filter === "user:*") {
+					return Promise.resolve<TKey[]>([
+						{
+							key: "user:1",
+							key_type: "string",
+							ttl: -1,
+							memory_usage: 128,
+						},
+						{
+							key: "user:2",
+							key_type: "string",
+							ttl: -1,
+							memory_usage: 256,
+						},
+					]);
+				}
+				return Promise.resolve<TKey[]>([]);
+			}
+		});
+
+		const keys = await KeyService.getKeys({ filter: "user:*", limit: 100 });
+		expect(keys).toBeDefined();
+		expect(Array.isArray(keys)).toBe(true);
+		expect(keys.length).toBe(2);
+		expect(keys[0].key).toBe("user:1");
+		expect(keys[1].key).toBe("user:2");
+	});
+
+	it("retrieves keys with limit", async () => {
+		mockIPC((cmd, args) => {
+			if (cmd === COMMANDS.GET_KEYS) {
+				const limit = (args as TGetKeysOptions).limit;
+				const allKeys: TKey[] = [];
+				for (let i = 1; i <= 10; i++) {
+					allKeys.push({
+						key: `key:${i}`,
+						key_type: "string",
+						ttl: -1,
+						memory_usage: 64 * i,
+					});
+				}
+				return Promise.resolve<TKey[]>(allKeys.slice(0, limit));
+			}
+		});
+
+		const keys = await KeyService.getKeys({ filter: "", limit: 5 });
+		expect(keys).toBeDefined();
+		expect(Array.isArray(keys)).toBe(true);
+		expect(keys.length).toBe(5);
+		expect(keys[0].key).toBe("key:1");
+		expect(keys[4].key).toBe("key:5");
+	});
+
+	it("handles no keys found", async () => {
+		mockIPC((cmd) => {
+			if (cmd === COMMANDS.GET_KEYS) {
+				return Promise.resolve<TKey[]>([]);
+			}
+		});
+
+		const keys = await KeyService.getKeys({
+			filter: "nonexistent:*",
+			limit: 100,
+		});
+		expect(keys).toBeDefined();
+		expect(Array.isArray(keys)).toBe(true);
+		expect(keys.length).toBe(0);
+	});
+
+	it("handles errors", async () => {
+		const errorMessage = "Failed to retrieve keys";
+		mockIPC((cmd) => {
+			if (cmd === COMMANDS.GET_KEYS) {
+				return Promise.reject(errorMessage);
+			}
+		});
+
+		await expect(
+			KeyService.getKeys({ filter: "", limit: 100 }),
+		).rejects.toThrow(errorMessage);
+	});
+});
