@@ -1,7 +1,7 @@
 name: "Rust Clippy"
 
 concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
+    group: ${{ github.workflow }}-${{ github.ref }}-rust-clippy
     cancel-in-progress: true
 
 on:
