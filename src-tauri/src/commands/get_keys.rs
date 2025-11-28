@@ -18,9 +18,7 @@ async fn _get_keys(
     limit: usize,
 ) -> Result<Vec<KeyInfo>, AppError> {
     let state = state.lock().await;
-    let redis_client = state
-        .get_redis_client()
-        .ok_or_else(|| AppError::RedisFailed)?;
+    let redis_client = state.get_redis_client().ok_or(AppError::RedisFailed)?;
 
     let config = AsyncConnectionConfig::new().set_connection_timeout(Duration::from_secs(6));
     let mut connection = redis_client
@@ -28,7 +26,7 @@ async fn _get_keys(
         .await
         .map_err(|_| AppError::RedisFailed)?;
 
-    let mut scan_options = ScanOptions::default().with_count(limit.into());
+    let mut scan_options = ScanOptions::default().with_count(limit);
     if !filter.is_empty() {
         scan_options = scan_options.with_pattern(&filter);
     }
