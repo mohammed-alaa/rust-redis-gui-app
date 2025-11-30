@@ -1,12 +1,13 @@
 use log::{LevelFilter, SetLoggerError};
 use log4rs::{
-    append::{console::ConsoleAppender, file::FileAppender},
     config::{Appender, Logger, Root},
     encode::pattern::PatternEncoder,
     Config, Handle,
 };
-use std::path::Path;
 
+#[cfg(any(test, dev))]
+use log4rs::append::console::ConsoleAppender;
+#[cfg(any(test, dev))]
 fn build_console_logger() -> (String, LevelFilter, Appender) {
     let name = "console".to_string();
     let logger = log4rs::config::Appender::builder().build(
@@ -23,6 +24,11 @@ fn build_console_logger() -> (String, LevelFilter, Appender) {
     (name, LevelFilter::Debug, logger)
 }
 
+#[cfg(all(not(test), not(dev)))]
+use log4rs::file::FileAppender;
+#[cfg(all(not(test), not(dev)))]
+use std::path::Path;
+#[cfg(all(not(test), not(dev)))]
 fn build_file_logger() -> (String, LevelFilter, Appender) {
     let name = "file".to_string();
     let logger = log4rs::config::Appender::builder().build(
@@ -41,10 +47,17 @@ fn build_file_logger() -> (String, LevelFilter, Appender) {
     (name, LevelFilter::Warn, logger)
 }
 
-pub fn init_logger(is_dev: bool) -> Result<Handle, SetLoggerError> {
-    let (name, minimum_level, logger) = match is_dev {
-        true => build_console_logger(),
-        false => build_file_logger(),
+pub fn init_logger() -> Result<Handle, SetLoggerError> {
+    let (name, minimum_level, logger) = {
+        #[cfg(any(test, dev))]
+        {
+            build_console_logger()
+        }
+
+        #[cfg(all(not(test), not(dev)))]
+        {
+            build_file_logger()
+        }
     };
 
     let config = Config::builder()

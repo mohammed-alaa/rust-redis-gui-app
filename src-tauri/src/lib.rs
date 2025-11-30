@@ -13,7 +13,7 @@ use utils::{get_db_base_dir, init_logger};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    init_logger(tauri::is_dev()).unwrap();
+    init_logger().unwrap();
 
     Builder::default()
         .setup(|app| {
