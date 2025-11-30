@@ -3,7 +3,6 @@ import { setActivePinia, createPinia } from "pinia";
 import { useKeyStore } from "@stores/useKeyStore";
 import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
 import { APP_ERROR_CODES, COMMANDS } from "@constants";
-import { KeyService } from "@services/KeyService";
 
 describe("useKeyStore", () => {
 	beforeEach(() => {
