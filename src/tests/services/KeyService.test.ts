@@ -10,11 +10,13 @@ describe("KeyService", () => {
 
 	it("exists", () => {
 		expect(KeyService).toBeDefined();
-		expect(KeyService).toHaveProperty("retrieveKeys");
-		expect(KeyService).toHaveProperty("retrieveKey");
 	});
 
 	describe("Retrieve Keys", () => {
+		it("exists", () => {
+			expect(KeyService).toHaveProperty("retrieveKeys");
+		});
+
 		it("retrieves keys", async () => {
 			mockIPC((cmd) => {
 				if (cmd === COMMANDS.RETRIEVE_KEYS) {
@@ -119,6 +121,48 @@ describe("KeyService", () => {
 			await expect(
 				KeyService.retrieveKeys({ filter: "", limit: 100 }),
 			).rejects.toThrow(errorMessage);
+		});
+	});
+
+	describe("Retrieve Key", () => {
+		it("exists", () => {
+			expect(KeyService).toHaveProperty("retrieveKey");
+		});
+
+		it("retrieves a specific key", async () => {
+			const mockKey: TKey = {
+				key: "user:1",
+				key_type: "string",
+				ttl: -1,
+				memory_usage: 128,
+			};
+
+			mockIPC((cmd, args) => {
+				if (cmd === COMMANDS.RETRIEVE_KEY) {
+					if ((args as { key: string }).key === "user:1") {
+						return Promise.resolve<TKey>(mockKey);
+					}
+				}
+			});
+
+			const key = await KeyService.retrieveKey("user:1");
+			expect(key).toBeDefined();
+			expect(key.key).toBe("user:1");
+			expect(key.key_type).toBe("string");
+		});
+
+		it("handles key not found", async () => {
+			mockIPC((cmd, args) => {
+				if (cmd === COMMANDS.RETRIEVE_KEY) {
+					if ((args as { key: string }).key === "nonexistent:key") {
+						return Promise.reject("Key not found");
+					}
+				}
+			});
+
+			await expect(
+				KeyService.retrieveKey("nonexistent:key"),
+			).rejects.toThrow("Key not found");
 		});
 	});
 });
