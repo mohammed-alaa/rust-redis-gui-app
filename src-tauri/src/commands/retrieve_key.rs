@@ -39,6 +39,7 @@ async fn _retrieve_key(state: &Mutex<AppState>, key: String) -> Result<(KeyInfo,
         .query_async::<(String, isize, usize)>(&mut connection)
         .await
         .map_err(|_| AppError::RedisFailed)?;
+
     let key = KeyInfo {
         key: key.clone(),
         key_type: key_info.0,
@@ -49,35 +50,37 @@ async fn _retrieve_key(state: &Mutex<AppState>, key: String) -> Result<(KeyInfo,
     let value = match key.key_type.as_str() {
         "string" => {
             let v = connection
-                .get::<String, String>(key.key.to_string())
+                .get::<String, redis::Value>(key.key.to_string())
                 .await
-                .unwrap_or("nil".into());
-            json!(v)
+                .map_err(|_| AppError::RedisFailed)?;
+            json!(redis_to_json(v))
         }
         "hash" => {
             let v = connection
                 .hgetall::<String, Vec<(String, redis::Value)>>(key.key.clone())
                 .await
-                .map_err(|_| AppError::RedisFailed)?;
-
-            let obj = v
+                .map_err(|_| AppError::RedisFailed)?
                 .into_iter()
                 .map(|(field, redis_val)| (field, redis_to_json(redis_val)))
                 .collect::<serde_json::Map<String, Value>>();
 
-            json!(obj)
+            json!(v)
         }
         "list" => {
             let v = connection
-                .lrange::<String, Vec<String>>(key.key.to_string(), 0, -1)
+                .lrange::<String, redis::Value>(key.key.to_string(), 0, -1)
                 .await
                 .map_err(|_| AppError::RedisFailed)?;
-            json!(v)
+
+            json!(redis_to_json(v))
         }
-        // "set" => {
-        //     let v: Vec<String> = connection.smem(key.key.to_string()).await?;
-        //     json!(v)
-        // },
+        "set" => {
+            let v = connection
+                .smembers(key.key.to_string())
+                .await
+                .map_err(|_| AppError::RedisFailed)?;
+            json!(redis_to_json(v))
+        }
         // "zset" => {
         //     let v: Vec<(String, f64)> = connection.zran(key.key.to_string()) 0, -1).await?;
         //     json!(v.into_iter().collect::<serde_json::Map<_, _>>())
