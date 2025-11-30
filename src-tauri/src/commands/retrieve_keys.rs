@@ -12,7 +12,7 @@ pub struct KeyInfo {
     memory_usage: usize,
 }
 
-async fn _get_keys(
+async fn _retrieve_keys(
     state: &Mutex<AppState>,
     filter: String,
     limit: usize,
@@ -88,12 +88,12 @@ async fn _get_keys(
 }
 
 #[tauri::command]
-pub async fn get_keys(
+pub async fn retrieve_keys(
     state: State<'_, Mutex<AppState>>,
     filter: String,
     limit: usize,
 ) -> Result<Vec<KeyInfo>, AppError> {
-    _get_keys(state.inner(), filter, limit).await
+    _retrieve_keys(state.inner(), filter, limit).await
 }
 
 #[cfg(test)]
@@ -105,7 +105,7 @@ mod tests {
     const PORT: u16 = 6379;
 
     #[tokio::test]
-    async fn test_get_keys() {
+    async fn test_retrieve_keys() {
         let (host, port, container) = run_redis_container(PORT).await;
         let db_connection = Database::new_in_memory().unwrap();
         let mut app_state = AppState::new();
@@ -129,7 +129,9 @@ mod tests {
         }
 
         let app_state = Mutex::new(app_state);
-        let keys = _get_keys(&app_state, "".to_string(), 10).await.unwrap();
+        let keys = _retrieve_keys(&app_state, "".to_string(), 10)
+            .await
+            .unwrap();
         assert_eq!(keys.len(), 3);
 
         let key1 = keys.iter().find(|k| k.key == "key1").unwrap();
@@ -151,7 +153,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_get_keys_with_filter() {
+    async fn test_retrieve_keys_with_filter() {
         let (host, port, container) = run_redis_container(PORT).await;
         let db_connection = Database::new_in_memory().unwrap();
         let mut app_state = AppState::new();
@@ -175,7 +177,9 @@ mod tests {
         }
 
         let app_state = Mutex::new(app_state);
-        let keys = _get_keys(&app_state, "a*".to_string(), 10).await.unwrap();
+        let keys = _retrieve_keys(&app_state, "a*".to_string(), 10)
+            .await
+            .unwrap();
         assert_eq!(keys.len(), 1);
 
         let key_names = keys.iter().map(|k| k.key.clone()).collect::<Vec<String>>();
@@ -185,7 +189,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_get_keys_with_limit() {
+    async fn test_retrieve_keys_with_limit() {
         const LIMIT: usize = 2;
         let (host, port, container) = run_redis_container(PORT).await;
         let db_connection = Database::new_in_memory().unwrap();
@@ -208,7 +212,9 @@ mod tests {
         }
 
         let app_state = Mutex::new(app_state);
-        let keys = _get_keys(&app_state, "".to_string(), LIMIT).await.unwrap();
+        let keys = _retrieve_keys(&app_state, "".to_string(), LIMIT)
+            .await
+            .unwrap();
         assert_eq!(keys.len(), LIMIT);
         container.rm().await.unwrap();
     }

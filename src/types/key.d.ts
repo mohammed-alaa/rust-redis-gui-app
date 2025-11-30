@@ -8,10 +8,10 @@ declare global {
 		memory_usage: number;
 	}
 
-	interface TKeyOptions {
+	interface TRetrieveOptions {
 		filter: string;
 		limit: number;
 	}
 
-	type TGetKeysOptions = InvokeArgs & TKeyOptions;
+	type TRetrieveKeysOptions = InvokeArgs & TRetrieveOptions;
 }
