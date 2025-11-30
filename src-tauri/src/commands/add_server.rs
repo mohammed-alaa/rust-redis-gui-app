@@ -16,7 +16,10 @@ async fn _add_server(
     test_connection(&server).await?;
 
     let app_state = state.lock().await;
-    let db_connection = app_state.get_db_connection().ok_or(AppError::DbNotReady)?;
+    let db_connection = app_state.get_db_connection().ok_or_else(|| {
+        log::error!("Database connection is not ready");
+        AppError::DbNotReady
+    })?;
     server.create(db_connection)
 }
 
