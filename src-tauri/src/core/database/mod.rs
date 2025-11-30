@@ -1,3 +1,4 @@
+use log::{debug, error, warn};
 use rusqlite::{Connection, OpenFlags};
 use std::path::{Path, PathBuf};
 
@@ -14,28 +15,44 @@ pub struct Database {
 
 impl Database {
     pub fn new(path: &Path) -> Result<Self, String> {
-        println!("Database Path: {:?}", path);
         let connection = Connection::open_with_flags(
             path,
             OpenFlags::SQLITE_OPEN_CREATE | OpenFlags::SQLITE_OPEN_READ_WRITE,
         );
 
-        let mut connection = connection.map_err(|e| e.to_string())?;
+        let mut connection = connection.map_err(|e| {
+            error!("Error opening database connection: {}", e.to_string());
+            e.to_string()
+        })?;
         embedded::migrations::runner()
             .run(&mut connection)
-            .map_err(|e| e.to_string())?;
+            .map_err(|e| {
+                error!("Error running migration: {} ", e.to_string());
+                e.to_string()
+            })?;
 
+        debug!("Database is ready @ {:?}", path);
         Ok(Self { connection })
     }
 
     #[cfg(test)]
     pub fn new_in_memory() -> Result<Self, String> {
-        let mut connection = Connection::open_in_memory().map_err(|e| e.to_string())?;
+        let mut connection = Connection::open_in_memory().map_err(|e| {
+            error!(
+                "Error opening in-memory database connection: {}",
+                e.to_string()
+            );
+            e.to_string()
+        })?;
 
         embedded::migrations::runner()
             .run(&mut connection)
-            .map_err(|e| e.to_string())?;
+            .map_err(|e| {
+                error!("Error running migration in-memory DB: {}", e.to_string());
+                e.to_string()
+            })?;
 
+        debug!("In-memory Database is ready");
         Ok(Self { connection })
     }
 
