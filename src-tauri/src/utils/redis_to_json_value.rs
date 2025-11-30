@@ -20,7 +20,7 @@ pub fn redis_to_json(value: RedisValue) -> Value {
         }
         RedisValue::Double(f) => Number::from_f64(f).map_or(json!(null), Value::Number),
         RedisValue::VerbatimString { format: _, text } => {
-            let text = String::from_utf8_lossy(&text.as_bytes());
+            let text = String::from_utf8_lossy(text.as_bytes());
             parse_as_json_or_string(&text)
         }
         RedisValue::Array(items) => {
