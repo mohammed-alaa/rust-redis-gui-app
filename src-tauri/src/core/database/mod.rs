@@ -21,13 +21,13 @@ impl Database {
         );
 
         let mut connection = connection.map_err(|e| {
-            error!("Error opening database connection: {}", e.to_string());
+            error!("Error opening database connection: {}", e);
             e.to_string()
         })?;
         embedded::migrations::runner()
             .run(&mut connection)
             .map_err(|e| {
-                error!("Error running migration: {} ", e.to_string());
+                error!("Error running migration: {} ", e);
                 e.to_string()
             })?;
 
@@ -38,17 +38,14 @@ impl Database {
     #[cfg(test)]
     pub fn new_in_memory() -> Result<Self, String> {
         let mut connection = Connection::open_in_memory().map_err(|e| {
-            error!(
-                "Error opening in-memory database connection: {}",
-                e.to_string()
-            );
+            error!("Error opening in-memory database connection: {}", e);
             e.to_string()
         })?;
 
         embedded::migrations::runner()
             .run(&mut connection)
             .map_err(|e| {
-                error!("Error running migration in-memory DB: {}", e.to_string());
+                error!("Error running migration in-memory DB: {}", e);
                 e.to_string()
             })?;
 
