@@ -3,6 +3,7 @@ import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { useServerStore } from "@stores/useServerStore";
 import { toast } from "vue-sonner";
+import Icon from "@components/Icon.vue";
 import { Button } from "@components/ui/button";
 import {
 	Table,
@@ -83,6 +84,7 @@ serverStore.getServers().catch((error) => toast.error(error as string));
 							data-testid="add-server-link"
 						>
 							<Button data-testid="add-server-button">
+								<Icon icon="tabler:plus" />
 								Add Server
 							</Button>
 						</RouterLink>
