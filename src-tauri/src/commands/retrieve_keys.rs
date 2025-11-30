@@ -18,24 +18,38 @@ async fn _retrieve_keys(
     limit: usize,
 ) -> Result<Vec<KeyInfo>, AppError> {
     let state = state.lock().await;
-    let redis_client = state.get_redis_client().ok_or(AppError::RedisFailed)?;
+    let redis_client = state.get_redis_client().ok_or_else(|| {
+        log::error!("Redis client is not ready");
+        AppError::RedisFailed
+    })?;
 
     let config = AsyncConnectionConfig::new().set_connection_timeout(Duration::from_secs(6));
     let mut connection = redis_client
         .get_multiplexed_async_connection_with_config(&config)
         .await
-        .map_err(|_| AppError::RedisFailed)?;
+        .map_err(|e| {
+            log::error!("Failed to get Redis connection: {}", e);
+            AppError::RedisFailed
+        })?;
 
     let mut scan_options = ScanOptions::default().with_count(limit);
     if !pattern.is_empty() {
         scan_options = scan_options.with_pattern(&pattern);
     }
 
+    log::debug!(
+        "Scanning keys with pattern: '{}' and limit: {}",
+        pattern,
+        limit
+    );
     let keys: Vec<KeyInfo> = {
         let mut keys_iter = connection
             .scan_options::<String>(scan_options)
             .await
-            .map_err(|_| AppError::RedisFailed)?;
+            .map_err(|e| {
+                log::error!("Error scanning keys: {:?}", e);
+                AppError::RedisFailed
+            })?;
         let mut _keys: Vec<KeyInfo> = vec![];
 
         while let Some(key) = keys_iter.next_item().await {
@@ -66,7 +80,7 @@ async fn _retrieve_keys(
 
     // let types: Vec<(String, isize, usize)> =
     let types: Vec<(String, isize)> = pipe.query_async(&mut connection).await.map_err(|e| {
-        println!("Error scanning keys: {:?}", e);
+        log::error!("Failed to retrieve key types and TTLs: {}", e);
         AppError::RedisFailed
     })?;
 

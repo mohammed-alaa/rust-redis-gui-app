@@ -7,13 +7,12 @@ use tokio::sync::Mutex;
 
 async fn _get_servers(state: &Mutex<AppState>) -> Result<Vec<Server>, AppError> {
     let state = state.lock().await;
-    let db_connection = state.get_db_connection();
+    let db_connection = state.get_db_connection().ok_or_else(|| {
+        log::error!("Database connection is not ready");
+        AppError::DbNotReady
+    })?;
 
-    if db_connection.is_none() {
-        return Err(AppError::DbNotReady);
-    }
-
-    Server::get(db_connection.unwrap())
+    Server::get(db_connection)
 }
 
 #[tauri::command]

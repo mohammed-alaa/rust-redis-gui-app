@@ -52,18 +52,29 @@ impl Model for Server {
 
     fn get(db: &Database) -> Result<Vec<Self>, AppError> {
         let sql = format!("SELECT * FROM {}", Self::table_name());
+        log::debug!("Executing query: {}", sql);
 
-        let mut stmt = db
-            .get_connection()
-            .prepare(&sql)
-            .map_err(|_| AppError::DbQueryFailed)?;
+        let mut stmt = db.get_connection().prepare(&sql).map_err(|e| {
+            log::error!(
+                "Failed to prepare statement while retrieving all servers: {}",
+                e
+            );
+            AppError::DbQueryFailed
+        })?;
 
-        let servers_iter = stmt
-            .query_map([], Self::from_row)
-            .map_err(|_| AppError::DbQueryFailed)?;
+        let servers_iter = stmt.query_map([], Self::from_row).map_err(|e| {
+            log::error!(
+                "Failed to execute query while retrieving all servers: {}",
+                e
+            );
+            AppError::DbQueryFailed
+        })?;
 
         let servers: Result<Vec<Self>, _> = servers_iter.collect();
-        servers.map_err(|_| AppError::DbQueryFailed)
+        servers.map_err(|e| {
+            log::error!("Failed to collect servers from query result: {}", e);
+            AppError::DbQueryFailed
+        })
     }
 
     fn create(&self, db: &Database) -> Result<Self, AppError>
@@ -107,15 +118,25 @@ impl Model for Server {
 
     fn find_by_id(id: &str, db: &Database) -> Result<Self, AppError> {
         let sql = format!("SELECT * FROM {} WHERE id = ? LIMIT 1", Self::table_name());
+        log::debug!("Executing query: {}, ID: {}", sql, id);
 
-        let mut stmt = db
-            .get_connection()
-            .prepare(&sql)
-            .map_err(|_| AppError::DbQueryFailed)?;
+        let mut stmt = db.get_connection().prepare(&sql).map_err(|e| {
+            log::error!(
+                "Failed to prepare statement while finding server by id {}: {}",
+                id,
+                e
+            );
+            AppError::DbQueryFailed
+        })?;
 
-        let row = stmt
-            .query_row([id], Self::from_row)
-            .map_err(|_| AppError::DbQueryFailed)?;
+        let row = stmt.query_row([id], Self::from_row).map_err(|e| {
+            log::error!(
+                "Failed to execute query while finding server by id {}: {}",
+                id,
+                e
+            );
+            AppError::DbQueryFailed
+        })?;
         Ok(row)
     }
 
