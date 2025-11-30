@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { useRouter } from "vue-router";
+import { RouterLink } from "vue-router";
 import { useServerStore } from "@stores/useServerStore";
 import { onBeforeUnmount } from "vue";
 import { toast } from "vue-sonner";
-import { useGetKeys } from "@composables";
+import { useFilterForm } from "./composables/useFilterForm";
 import { Button } from "@components/ui/button";
+import {
+	FormField,
+	FormItem,
+	FormControl,
+	FormMessage,
+} from "@components/ui/form";
+import { Input } from "@components/ui/input";
 import {
 	Table,
 	TableHead,
@@ -14,15 +21,13 @@ import {
 	TableHeader,
 	TableCell,
 } from "@components/ui/table";
+import { useKeyStore } from "@stores/useKeyStore";
 
-const router = useRouter();
 const serverStore = useServerStore();
-const { getKeys, keys } = useGetKeys();
+const keyStore = useKeyStore();
+const { keys } = storeToRefs(keyStore);
+const { form, onSubmit: onFiltersSubmitted } = useFilterForm();
 const { activeServer, isConnected } = storeToRefs(serverStore);
-
-function onGoHome() {
-	router.push({ name: "home" });
-}
 
 onBeforeUnmount(() => {
 	serverStore.closeServer().catch(() => {
@@ -30,12 +35,23 @@ onBeforeUnmount(() => {
 	});
 });
 
-getKeys().catch((error) => toast.error(`${error}`));
+async function onSubmit(event: Event) {
+	try {
+		const values = await onFiltersSubmitted(event);
+		await keyStore.retrieveKeys(values!);
+	} catch (error) {
+		toast.error(`${error}`);
+	}
+}
+
+keyStore.retrieveKeys(form.values).catch((error) => toast.error(`${error}`));
 </script>
 
 <template>
 	<div class="flex items-center px-4 py-2 bg-muted gap-2">
-		<Button @click="onGoHome"> Go Back </Button>
+		<RouterLink :to="{ name: 'home' }">
+			<Button> Go Back </Button>
+		</RouterLink>
 		<h1>Server</h1>
 	</div>
 
@@ -48,6 +64,28 @@ getKeys().catch((error) => toast.error(`${error}`));
 					{{ activeServer!.port }}
 				</strong>
 			</p>
+
+			<form
+				data-testid="filter-keys-form"
+				class="flex flex-col gap-4"
+				@submit.prevent="onSubmit"
+			>
+				<FormField bails name="pattern" v-slot="{ componentField }">
+					<FormItem>
+						<FormControl>
+							<Input
+								type="text"
+								placeholder="Filter by pattern (e.g. user:*)"
+								data-testid="filter-keys-form-pattern-field"
+								v-bind="componentField"
+							/>
+						</FormControl>
+						<FormMessage
+							data-testid="filter-keys-form-pattern-field-error"
+						/>
+					</FormItem>
+				</FormField>
+			</form>
 
 			<div
 				class="overflow-auto rounded-md border"
@@ -62,9 +100,9 @@ getKeys().catch((error) => toast.error(`${error}`));
 							<TableHead class="text-center"> Key </TableHead>
 							<TableHead class="text-center"> Type </TableHead>
 							<TableHead class="text-center"> TTL </TableHead>
-							<TableHead class="text-center">
+							<!-- <TableHead class="text-center">
 								Memory Usage
-							</TableHead>
+							</TableHead> -->
 						</TableRow>
 					</TableHeader>
 					<TableBody>
@@ -87,9 +125,9 @@ getKeys().catch((error) => toast.error(`${error}`));
 								<TableCell class="text-center">
 									<p>{{ key.ttl }}</p>
 								</TableCell>
-								<TableCell class="text-center">
+								<!-- <TableCell class="text-center">
 									<p>{{ key.memory_usage }}</p>
-								</TableCell>
+								</TableCell> -->
 							</TableRow>
 						</template>
 					</TableBody>

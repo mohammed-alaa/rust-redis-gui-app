@@ -5,13 +5,13 @@ declare global {
 		key: string;
 		key_type: string;
 		ttl: number;
-		memory_usage: number;
+		// memory_usage: number;
 	}
 
-	interface TKeyOptions {
-		filter: string;
+	interface TRetrieveFilters {
+		pattern: string;
 		limit: number;
 	}
 
-	type TGetKeysOptions = InvokeArgs & TKeyOptions;
+	type TRetrieveKeysFilters = InvokeArgs & TRetrieveFilters;
 }

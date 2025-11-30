@@ -4,9 +4,9 @@ export const COMMANDS = {
 	 */
 	ADD_SERVER: "add_server",
 	/**
-	 * Get keys from the server.
+	 * Retrieve keys from the server.
 	 */
-	GET_KEYS: "get_keys",
+	RETRIEVE_KEYS: "retrieve_keys",
 	/**
 	 * Retrieve the list of configured servers.
 	 */
@@ -19,6 +19,8 @@ export const COMMANDS = {
 	 * Close the connection to the specified server.
 	 */
 	CLOSE_SERVER: "close_server",
+	/** Retrieve details of a specific key from the server. */
+	RETRIEVE_KEY: "retrieve_key",
 };
 
 /**

@@ -9,12 +9,12 @@ pub struct KeyInfo {
     key: String,
     key_type: String,
     ttl: isize,
-    memory_usage: usize,
+    // memory_usage: usize,
 }
 
-async fn _get_keys(
+async fn _retrieve_keys(
     state: &Mutex<AppState>,
-    filter: String,
+    pattern: String,
     limit: usize,
 ) -> Result<Vec<KeyInfo>, AppError> {
     let state = state.lock().await;
@@ -27,8 +27,8 @@ async fn _get_keys(
         .map_err(|_| AppError::RedisFailed)?;
 
     let mut scan_options = ScanOptions::default().with_count(limit);
-    if !filter.is_empty() {
-        scan_options = scan_options.with_pattern(&filter);
+    if !pattern.is_empty() {
+        scan_options = scan_options.with_pattern(&pattern);
     }
 
     let keys: Vec<KeyInfo> = {
@@ -58,42 +58,40 @@ async fn _get_keys(
 
     let mut pipe = redis::pipe();
     for key in &keys {
-        pipe.cmd("TYPE")
-            .arg(key.key.clone())
-            .cmd("TTL")
-            .arg(key.key.clone())
-            .cmd("MEMORY")
-            .arg("USAGE")
-            .arg(key.key.clone());
+        pipe.key_type(key.key.clone()).ttl(key.key.clone());
+        // .cmd("MEMORY")
+        // .arg("USAGE")
+        // .arg(key.key.clone());
     }
 
-    let types: Vec<(String, isize, usize)> = pipe
-        .query_async(&mut connection)
-        .await
-        .map_err(|_| AppError::RedisFailed)?;
+    // let types: Vec<(String, isize, usize)> =
+    let types: Vec<(String, isize)> = pipe.query_async(&mut connection).await.map_err(|e| {
+        println!("Error scanning keys: {:?}", e);
+        AppError::RedisFailed
+    })?;
 
-    let results = keys
+    let keys = keys
         .clone()
         .into_iter()
         .zip(types)
         .map(|(key, key_type)| KeyInfo {
             key_type: key_type.0,
             ttl: key_type.1,
-            memory_usage: key_type.2,
+            // memory_usage: key_type.2,
             ..key
         })
         .collect::<Vec<KeyInfo>>();
 
-    Ok(results)
+    Ok(keys)
 }
 
 #[tauri::command]
-pub async fn get_keys(
+pub async fn retrieve_keys(
     state: State<'_, Mutex<AppState>>,
-    filter: String,
+    pattern: String,
     limit: usize,
 ) -> Result<Vec<KeyInfo>, AppError> {
-    _get_keys(state.inner(), filter, limit).await
+    _retrieve_keys(state.inner(), pattern, limit).await
 }
 
 #[cfg(test)]
@@ -105,7 +103,7 @@ mod tests {
     const PORT: u16 = 6379;
 
     #[tokio::test]
-    async fn test_get_keys() {
+    async fn test_retrieve_keys() {
         let (host, port, container) = run_redis_container(PORT).await;
         let db_connection = Database::new_in_memory().unwrap();
         let mut app_state = AppState::new();
@@ -129,29 +127,31 @@ mod tests {
         }
 
         let app_state = Mutex::new(app_state);
-        let keys = _get_keys(&app_state, "".to_string(), 10).await.unwrap();
+        let keys = _retrieve_keys(&app_state, "".to_string(), 10)
+            .await
+            .unwrap();
         assert_eq!(keys.len(), 3);
 
         let key1 = keys.iter().find(|k| k.key == "key1").unwrap();
         assert_eq!(key1.key_type, "string");
         assert_eq!(key1.ttl, -1);
-        assert!(key1.memory_usage > 0);
+        // assert!(key1.memory_usage > 0);
 
         let key2 = keys.iter().find(|k| k.key == "key2").unwrap();
         assert_eq!(key2.key_type, "string");
         assert_eq!(key2.ttl, -1);
-        assert!(key2.memory_usage > 0);
+        // assert!(key2.memory_usage > 0);
 
         let key3 = keys.iter().find(|k| k.key == "key3").unwrap();
         assert_eq!(key3.key_type, "string");
         assert!(key3.ttl > 0);
-        assert!(key3.memory_usage > 0);
+        // assert!(key3.memory_usage > 0);
 
         container.rm().await.unwrap();
     }
 
     #[tokio::test]
-    async fn test_get_keys_with_filter() {
+    async fn test_retrieve_keys_with_pattern() {
         let (host, port, container) = run_redis_container(PORT).await;
         let db_connection = Database::new_in_memory().unwrap();
         let mut app_state = AppState::new();
@@ -175,7 +175,9 @@ mod tests {
         }
 
         let app_state = Mutex::new(app_state);
-        let keys = _get_keys(&app_state, "a*".to_string(), 10).await.unwrap();
+        let keys = _retrieve_keys(&app_state, "a*".to_string(), 10)
+            .await
+            .unwrap();
         assert_eq!(keys.len(), 1);
 
         let key_names = keys.iter().map(|k| k.key.clone()).collect::<Vec<String>>();
@@ -185,7 +187,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_get_keys_with_limit() {
+    async fn test_retrieve_keys_with_limit() {
         const LIMIT: usize = 2;
         let (host, port, container) = run_redis_container(PORT).await;
         let db_connection = Database::new_in_memory().unwrap();
@@ -208,7 +210,9 @@ mod tests {
         }
 
         let app_state = Mutex::new(app_state);
-        let keys = _get_keys(&app_state, "".to_string(), LIMIT).await.unwrap();
+        let keys = _retrieve_keys(&app_state, "".to_string(), LIMIT)
+            .await
+            .unwrap();
         assert_eq!(keys.len(), LIMIT);
         container.rm().await.unwrap();
     }
