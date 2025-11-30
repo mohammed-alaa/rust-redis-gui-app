@@ -81,15 +81,17 @@ async fn _retrieve_key(state: &Mutex<AppState>, key: String) -> Result<(KeyInfo,
                 .map_err(|_| AppError::RedisFailed)?;
             json!(redis_to_json(v))
         }
-        // "zset" => {
-        //     let v: Vec<(String, f64)> = connection.zran(key.key.to_string()) 0, -1).await?;
-        //     json!(v.into_iter().collect::<serde_json::Map<_, _>>())
-        // },
-        // "stream" => {
-        //     let v: Vec<(String, Vec<(String, String)>)> = connection.xran(key.key.to_string()) "-", "+").await?;
-        //     json!(v)
-        // };
-        "none" => json!("(key does not exist)"),
+        "zset" => {
+            let v = connection
+                .zrange(key.key.to_string(), 0, -1)
+                // .zrange_withscores(key.key.to_string(), 0, -1)
+                .await
+                .map_err(|e| {
+                    println!("Error retrieving zset: {:?}", e);
+                    AppError::RedisFailed
+                })?;
+            json!(redis_to_json(v))
+        }
         _ => json!({"type": key.key_type, "raw": "cannot display"}),
     };
 
