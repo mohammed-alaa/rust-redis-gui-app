@@ -6,18 +6,23 @@ mod utils;
 
 use commands::{add_server, close_server, get_servers, open_server, retrieve_key, retrieve_keys};
 use core::{AppState, Database};
+use log::error;
 use tauri::{Builder, Manager};
 use tokio::sync::Mutex;
-use utils::get_db_base_dir;
+use utils::{get_db_base_dir, init_logger};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    init_logger().unwrap();
+
     Builder::default()
         .setup(|app| {
             let base_path = get_db_base_dir(app, tauri::is_dev())?;
             let db_path = Database::db_file_path(&base_path);
-            let db_connection = Database::new(&db_path)
-                .map_err(|e| format!("Failed to create database connection: {}", e))?;
+            let db_connection = Database::new(&db_path).map_err(|e| {
+                error!("Failed to create database connection: {e}");
+                format!("Failed to create database connection: {}", e)
+            })?;
 
             let mut app_state = AppState::new();
             app_state.set_db_connection(Some(db_connection));
