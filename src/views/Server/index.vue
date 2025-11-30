@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { useRouter } from "vue-router";
+import { RouterLink } from "vue-router";
 import { useServerStore } from "@stores/useServerStore";
 import { onBeforeUnmount } from "vue";
 import { toast } from "vue-sonner";
@@ -23,16 +23,11 @@ import {
 } from "@components/ui/table";
 import { useKeyStore } from "@stores/useKeyStore";
 
-const router = useRouter();
 const serverStore = useServerStore();
 const keyStore = useKeyStore();
 const { keys } = storeToRefs(keyStore);
 const { form, onSubmit: onFiltersSubmitted } = useFilterForm();
 const { activeServer, isConnected } = storeToRefs(serverStore);
-
-function onGoHome() {
-	router.push({ name: "home" });
-}
 
 onBeforeUnmount(() => {
 	serverStore.closeServer().catch(() => {
@@ -54,7 +49,9 @@ keyStore.retrieveKeys(form.values).catch((error) => toast.error(`${error}`));
 
 <template>
 	<div class="flex items-center px-4 py-2 bg-muted gap-2">
-		<Button @click="onGoHome"> Go Back </Button>
+		<RouterLink :to="{ name: 'home' }">
+			<Button> Go Back </Button>
+		</RouterLink>
 		<h1>Server</h1>
 	</div>
 
