@@ -28,19 +28,18 @@ async fn _retrieve_key(state: &Mutex<AppState>, key: String) -> Result<(KeyInfo,
 
     let mut pipe = redis::pipe();
 
-    pipe.key_type(key.clone())
-        .ttl(key.clone())
-        .cmd("MEMORY")
-        .arg("USAGE")
-        .arg(key.clone());
-
     let key_info = pipe
+        .key_type(key.clone())
+        .ttl(key.clone())
+        // .cmd("MEMORY")
+        // .arg("USAGE")
+        // .arg(key.clone());
         .query_async::<(String, isize, usize)>(&mut connection)
         .await
         .map_err(|_| AppError::RedisFailed)?;
 
     let key = KeyInfo {
-        key: key.clone(),
+        key,
         key_type: key_info.0,
         ttl: key_info.1,
         memory_usage: key_info.2,
