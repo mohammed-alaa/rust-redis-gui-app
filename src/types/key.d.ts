@@ -8,10 +8,10 @@ declare global {
 		// memory_usage: number;
 	}
 
-	interface TRetrieveOptions {
-		filter: string;
+	interface TRetrieveFilters {
+		pattern: string;
 		limit: number;
 	}
 
-	type TRetrieveKeysOptions = InvokeArgs & TRetrieveOptions;
+	type TRetrieveKeysFilters = InvokeArgs & TRetrieveFilters;
 }

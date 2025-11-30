@@ -2,9 +2,12 @@ import { COMMANDS } from "@constants";
 import { invoke } from "@tauri-apps/api/core";
 
 export class KeyService {
-	/** Retrieve keys from Redis based on the provided options */
-	static async retrieveKeys(options: TRetrieveKeysOptions) {
-		return invoke<TKey[]>(COMMANDS.RETRIEVE_KEYS, options);
+	/** Retrieve keys from Redis based on the provided filters */
+	static async retrieveKeys(filters: TRetrieveFilters) {
+		return invoke<TKey[]>(
+			COMMANDS.RETRIEVE_KEYS,
+			filters as TRetrieveKeysFilters,
+		);
 	}
 
 	/** Retrieve a specific key's details from Redis */

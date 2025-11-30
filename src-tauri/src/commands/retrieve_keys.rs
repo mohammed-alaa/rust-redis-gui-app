@@ -14,7 +14,7 @@ pub struct KeyInfo {
 
 async fn _retrieve_keys(
     state: &Mutex<AppState>,
-    filter: String,
+    pattern: String,
     limit: usize,
 ) -> Result<Vec<KeyInfo>, AppError> {
     let state = state.lock().await;
@@ -27,8 +27,8 @@ async fn _retrieve_keys(
         .map_err(|_| AppError::RedisFailed)?;
 
     let mut scan_options = ScanOptions::default().with_count(limit);
-    if !filter.is_empty() {
-        scan_options = scan_options.with_pattern(&filter);
+    if !pattern.is_empty() {
+        scan_options = scan_options.with_pattern(&pattern);
     }
 
     let keys: Vec<KeyInfo> = {
@@ -64,12 +64,13 @@ async fn _retrieve_keys(
         // .arg(key.key.clone());
     }
 
-    let types: Vec<(String, isize, usize)> = pipe
-        .query_async(&mut connection)
-        .await
-        .map_err(|_| AppError::RedisFailed)?;
+    // let types: Vec<(String, isize, usize)> =
+    let types: Vec<(String, isize)> = pipe.query_async(&mut connection).await.map_err(|e| {
+        println!("Error scanning keys: {:?}", e);
+        AppError::RedisFailed
+    })?;
 
-    let results = keys
+    let keys = keys
         .clone()
         .into_iter()
         .zip(types)
@@ -81,16 +82,16 @@ async fn _retrieve_keys(
         })
         .collect::<Vec<KeyInfo>>();
 
-    Ok(results)
+    Ok(keys)
 }
 
 #[tauri::command]
 pub async fn retrieve_keys(
     state: State<'_, Mutex<AppState>>,
-    filter: String,
+    pattern: String,
     limit: usize,
 ) -> Result<Vec<KeyInfo>, AppError> {
-    _retrieve_keys(state.inner(), filter, limit).await
+    _retrieve_keys(state.inner(), pattern, limit).await
 }
 
 #[cfg(test)]
@@ -150,7 +151,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_retrieve_keys_with_filter() {
+    async fn test_retrieve_keys_with_pattern() {
         let (host, port, container) = run_redis_container(PORT).await;
         let db_connection = Database::new_in_memory().unwrap();
         let mut app_state = AppState::new();
