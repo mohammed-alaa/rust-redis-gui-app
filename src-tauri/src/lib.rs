@@ -41,7 +41,11 @@ pub fn run() {
             retrieve_key
         ])
         .run(tauri::generate_context!())
-        .expect("error while running redis GUI application");
+        .map_err(|e| {
+            error!("Failed to run redis GUI application: {e}");
+            format!("Failed to run redis GUI application: {}", e)
+        })
+        .unwrap();
 }
 
 #[cfg(test)]

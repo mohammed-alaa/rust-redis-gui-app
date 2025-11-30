@@ -10,7 +10,10 @@ use uuid::Uuid;
 async fn _open_server(state: &Mutex<AppState>, id: Uuid) -> Result<Server, AppError> {
     let server = {
         let app_state = state.lock().await;
-        let db = app_state.get_db_connection().ok_or(AppError::DbNotReady)?;
+        let db = app_state.get_db_connection().ok_or_else(|| {
+            log::error!("Database connection is not ready");
+            AppError::DbNotReady
+        })?;
         Server::find_by_id(&id.to_string(), db)?
     };
 

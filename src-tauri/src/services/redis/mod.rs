@@ -3,18 +3,48 @@ use redis::{AsyncConnectionConfig, AsyncTypedCommands, Client};
 use std::time::Duration;
 
 pub async fn test_connection(server: &Server) -> Result<Client, AppError> {
-    let client = Client::open(format!("redis://{}:{}", server.address, server.port))
-        .map_err(|_| AppError::RedisFailed)?;
+    let client =
+        Client::open(format!("redis://{}:{}", server.address, server.port)).map_err(|e| {
+            log::error!(
+                "Failed to create Redis client for {}:{} - {}",
+                server.address,
+                server.port,
+                e
+            );
+            AppError::RedisFailed
+        })?;
 
     let config = AsyncConnectionConfig::new().set_connection_timeout(Duration::from_secs(6));
     let mut conn = client
         .get_multiplexed_async_connection_with_config(&config)
         .await
-        .map_err(|_| AppError::RedisFailed)?;
+        .map_err(|e| {
+            log::error!(
+                "Failed to connect to Redis server at {}:{} - {}",
+                server.address,
+                server.port,
+                e
+            );
+            AppError::RedisFailed
+        })?;
 
-    let pong: String = conn.ping().await.map_err(|_| AppError::RedisFailed)?;
+    let pong: String = conn.ping().await.map_err(|e| {
+        log::error!(
+            "Failed to ping Redis server at {}:{} - {}",
+            server.address,
+            server.port,
+            e
+        );
+        AppError::RedisFailed
+    })?;
 
     if pong != "PONG" {
+        log::error!(
+            "Unexpected PING response from Redis server at {}:{} - {}",
+            server.address,
+            server.port,
+            pong
+        );
         return Err(AppError::RedisFailed);
     }
 
