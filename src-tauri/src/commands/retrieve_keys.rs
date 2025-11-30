@@ -9,7 +9,7 @@ pub struct KeyInfo {
     key: String,
     key_type: String,
     ttl: isize,
-    memory_usage: usize,
+    // memory_usage: usize,
 }
 
 async fn _retrieve_keys(
@@ -58,13 +58,10 @@ async fn _retrieve_keys(
 
     let mut pipe = redis::pipe();
     for key in &keys {
-        pipe.cmd("TYPE")
-            .arg(key.key.clone())
-            .cmd("TTL")
-            .arg(key.key.clone())
-            .cmd("MEMORY")
-            .arg("USAGE")
-            .arg(key.key.clone());
+        pipe.key_type(key.key.clone()).ttl(key.key.clone());
+        // .cmd("MEMORY")
+        // .arg("USAGE")
+        // .arg(key.key.clone());
     }
 
     let types: Vec<(String, isize, usize)> = pipe
@@ -79,7 +76,7 @@ async fn _retrieve_keys(
         .map(|(key, key_type)| KeyInfo {
             key_type: key_type.0,
             ttl: key_type.1,
-            memory_usage: key_type.2,
+            // memory_usage: key_type.2,
             ..key
         })
         .collect::<Vec<KeyInfo>>();
@@ -137,17 +134,17 @@ mod tests {
         let key1 = keys.iter().find(|k| k.key == "key1").unwrap();
         assert_eq!(key1.key_type, "string");
         assert_eq!(key1.ttl, -1);
-        assert!(key1.memory_usage > 0);
+        // assert!(key1.memory_usage > 0);
 
         let key2 = keys.iter().find(|k| k.key == "key2").unwrap();
         assert_eq!(key2.key_type, "string");
         assert_eq!(key2.ttl, -1);
-        assert!(key2.memory_usage > 0);
+        // assert!(key2.memory_usage > 0);
 
         let key3 = keys.iter().find(|k| k.key == "key3").unwrap();
         assert_eq!(key3.key_type, "string");
         assert!(key3.ttl > 0);
-        assert!(key3.memory_usage > 0);
+        // assert!(key3.memory_usage > 0);
 
         container.rm().await.unwrap();
     }

@@ -17,7 +17,7 @@ import {
 
 const router = useRouter();
 const serverStore = useServerStore();
-const { getKeys, keys } = useGetKeys();
+const { retrieveKeys, keys } = useGetKeys();
 const { activeServer, isConnected } = storeToRefs(serverStore);
 
 function onGoHome() {
@@ -30,7 +30,7 @@ onBeforeUnmount(() => {
 	});
 });
 
-getKeys().catch((error) => toast.error(`${error}`));
+retrieveKeys().catch((error) => toast.error(`${error}`));
 </script>
 
 <template>
@@ -62,9 +62,9 @@ getKeys().catch((error) => toast.error(`${error}`));
 							<TableHead class="text-center"> Key </TableHead>
 							<TableHead class="text-center"> Type </TableHead>
 							<TableHead class="text-center"> TTL </TableHead>
-							<TableHead class="text-center">
+							<!-- <TableHead class="text-center">
 								Memory Usage
-							</TableHead>
+							</TableHead> -->
 						</TableRow>
 					</TableHeader>
 					<TableBody>
@@ -87,9 +87,9 @@ getKeys().catch((error) => toast.error(`${error}`));
 								<TableCell class="text-center">
 									<p>{{ key.ttl }}</p>
 								</TableCell>
-								<TableCell class="text-center">
+								<!-- <TableCell class="text-center">
 									<p>{{ key.memory_usage }}</p>
-								</TableCell>
+								</TableCell> -->
 							</TableRow>
 						</template>
 					</TableBody>

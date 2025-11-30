@@ -27,10 +27,9 @@ async fn _retrieve_key(state: &Mutex<AppState>, key: String) -> Result<(KeyInfo,
         .map_err(|_| AppError::RedisFailed)?;
 
     let mut pipe = redis::pipe();
-    pipe.cmd("TYPE")
-        .arg(key.clone())
-        .cmd("TTL")
-        .arg(key.clone())
+
+    pipe.key_type(key.clone())
+        .ttl(key.clone())
         .cmd("MEMORY")
         .arg("USAGE")
         .arg(key.clone());
