@@ -1,4 +1,4 @@
-use log::{debug, error, warn};
+use log::{debug, error};
 use rusqlite::{Connection, OpenFlags};
 use std::path::{Path, PathBuf};
 

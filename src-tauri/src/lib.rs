@@ -6,46 +6,14 @@ mod utils;
 
 use commands::{add_server, close_server, get_servers, open_server, retrieve_key, retrieve_keys};
 use core::{AppState, Database};
-use log::{error, LevelFilter};
-use log4rs::{
-    append::{console::ConsoleAppender, file::FileAppender},
-    config::{Logger, Root},
-    encode::pattern::PatternEncoder,
-    Config,
-};
-use std::path::Path;
+use log::error;
 use tauri::{Builder, Manager};
 use tokio::sync::Mutex;
-use utils::get_db_base_dir;
+use utils::{get_db_base_dir, init_logger};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // let stdout = ConsoleAppender::builder()
-    //     .encoder(Box::new(PatternEncoder::new(
-    //         "[{d(%Y-%m-%d %H:%M:%S)} - {h({l})}] - {m}{n}",
-    //     )))
-    //     .build();
-    // let file = FileAppender::builder()
-    //     .append(true)
-    //     .encoder(Box::new(PatternEncoder::new(
-    //         "[{d(%Y-%m-%d %H:%M:%S)} - {l}] - {m}{n}",
-    //     )))
-    //     .build(Path::new("app.log"))
-    //     .unwrap();
-    // let config = Config::builder()
-    //     .appender(log4rs::config::Appender::builder().build("stdout", Box::new(stdout)))
-    //     .appender(log4rs::config::Appender::builder().build("file", Box::new(file)))
-    //     .logger(Logger::builder().build("stdout", LevelFilter::Debug))
-    //     .logger(Logger::builder().build("file", LevelFilter::Debug))
-    //     .build(
-    //         Root::builder()
-    //             .appenders(vec!["stdout", "file"])
-    //             .build(LevelFilter::Debug),
-    //     )
-    //     .unwrap();
-
-    // log4rs::init_config(config).unwrap();
-    log4rs::init_file(Path::new("logger.yml"), Default::default()).unwrap();
+    init_logger(tauri::is_dev()).unwrap();
 
     Builder::default()
         .setup(|app| {
