@@ -4,8 +4,15 @@ import { useRouter } from "vue-router";
 import { useServerStore } from "@stores/useServerStore";
 import { onBeforeUnmount } from "vue";
 import { toast } from "vue-sonner";
-import { useGetKeys } from "@composables";
+import { useFilterForm } from "./composables/useFilterForm";
 import { Button } from "@components/ui/button";
+import {
+	FormField,
+	FormItem,
+	FormControl,
+	FormMessage,
+} from "@components/ui/form";
+import { Input } from "@components/ui/input";
 import {
 	Table,
 	TableHead,
@@ -14,10 +21,13 @@ import {
 	TableHeader,
 	TableCell,
 } from "@components/ui/table";
+import { useKeyStore } from "@stores/useKeyStore";
 
 const router = useRouter();
 const serverStore = useServerStore();
-const { retrieveKeys, keys } = useGetKeys();
+const keyStore = useKeyStore();
+const { keys } = storeToRefs(keyStore);
+const { form, onSubmit: onFiltersSubmitted } = useFilterForm();
 const { activeServer, isConnected } = storeToRefs(serverStore);
 
 function onGoHome() {
@@ -30,7 +40,16 @@ onBeforeUnmount(() => {
 	});
 });
 
-retrieveKeys().catch((error) => toast.error(`${error}`));
+async function onSubmit(event: Event) {
+	try {
+		const values = await onFiltersSubmitted(event);
+		await keyStore.retrieveKeys(values!);
+	} catch (error) {
+		toast.error(`${error}`);
+	}
+}
+
+keyStore.retrieveKeys(form.values).catch((error) => toast.error(`${error}`));
 </script>
 
 <template>
@@ -48,6 +67,28 @@ retrieveKeys().catch((error) => toast.error(`${error}`));
 					{{ activeServer!.port }}
 				</strong>
 			</p>
+
+			<form
+				data-testid="filter-keys-form"
+				class="flex flex-col gap-4"
+				@submit.prevent="onSubmit"
+			>
+				<FormField bails name="pattern" v-slot="{ componentField }">
+					<FormItem>
+						<FormControl>
+							<Input
+								type="text"
+								placeholder="Filter by pattern (e.g. user:*)"
+								data-testid="filter-keys-form-pattern-field"
+								v-bind="componentField"
+							/>
+						</FormControl>
+						<FormMessage
+							data-testid="filter-keys-form-pattern-field-error"
+						/>
+					</FormItem>
+				</FormField>
+			</form>
 
 			<div
 				class="overflow-auto rounded-md border"
