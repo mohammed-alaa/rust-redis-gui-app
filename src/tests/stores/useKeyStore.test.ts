@@ -114,7 +114,10 @@ describe("useKeyStore", () => {
 			await expect(loadingKey).rejects.toEqual({
 				code: APP_ERROR_CODES.REDIS_FAILED,
 			});
-			expect(keyStore.currentKey).toBeNull();
+			expect(keyStore.currentKey).toEqual({
+				details: null,
+				content: null,
+			} as TCurrentKey);
 		});
 	});
 });
