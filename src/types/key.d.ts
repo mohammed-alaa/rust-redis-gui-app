@@ -3,7 +3,7 @@ import { type InvokeArgs } from "@tauri-apps/api/core";
 declare global {
 	interface TKey {
 		key: string;
-		key_type: string;
+		key_type: "string" | "hash" | "list" | "set" | "zset";
 		ttl: number;
 		// memory_usage: number;
 	}
