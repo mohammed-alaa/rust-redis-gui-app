@@ -14,4 +14,11 @@ declare global {
 	}
 
 	type TRetrieveKeysFilters = InvokeArgs & TRetrieveFilters;
+
+	interface TKeyContent extends any {}
+
+	interface TCurrentKey {
+		details?: TKey | null;
+		content?: TKeyContent | null;
+	}
 }
