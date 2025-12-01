@@ -66,7 +66,7 @@ async fn _retrieve_key(
         // memory_usage: key_info.2,
     };
 
-    if !vec!["string", "hash", "list", "set", "zset"].contains(&key.key_type.as_str()) {
+    if !["string", "hash", "list", "set", "zset"].contains(&key.key_type.as_str()) {
         log::warn!("Cannot display value for key type: {}", key.key_type);
         return Err(AppError::RedisFailed);
     }
