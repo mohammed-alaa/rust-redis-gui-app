@@ -25,29 +25,29 @@ describe("KeyService", () => {
 			});
 
 			const keys = await KeyService.retrieveKeys({
-				filter: "",
+				pattern: "",
 				limit: 100,
 			});
 			expect(keys).toBeDefined();
 			expect(Array.isArray(keys)).toBe(true);
 		});
 
-		it("retrieves keys with filter", async () => {
+		it("retrieves keys with pattern", async () => {
 			mockIPC((cmd, args) => {
 				if (cmd === COMMANDS.RETRIEVE_KEYS) {
-					if ((args as TRetrieveKeysOptions).filter === "user:*") {
+					if ((args as TRetrieveKeysFilters).pattern === "user:*") {
 						return Promise.resolve<TKey[]>([
 							{
 								key: "user:1",
 								key_type: "string",
 								ttl: -1,
-								memory_usage: 128,
+								// memory_usage: 128,
 							},
 							{
 								key: "user:2",
 								key_type: "string",
 								ttl: -1,
-								memory_usage: 256,
+								// memory_usage: 256,
 							},
 						]);
 					}
@@ -56,7 +56,7 @@ describe("KeyService", () => {
 			});
 
 			const keys = await KeyService.retrieveKeys({
-				filter: "user:*",
+				pattern: "user:*",
 				limit: 100,
 			});
 			expect(keys).toBeDefined();
@@ -69,14 +69,14 @@ describe("KeyService", () => {
 		it("retrieves keys with limit", async () => {
 			mockIPC((cmd, args) => {
 				if (cmd === COMMANDS.RETRIEVE_KEYS) {
-					const limit = (args as TRetrieveKeysOptions).limit;
+					const limit = (args as TRetrieveKeysFilters).limit;
 					const allKeys: TKey[] = [];
 					for (let i = 1; i <= 10; i++) {
 						allKeys.push({
 							key: `key:${i}`,
 							key_type: "string",
 							ttl: -1,
-							memory_usage: 64 * i,
+							// memory_usage: 64 * i,
 						});
 					}
 					return Promise.resolve<TKey[]>(allKeys.slice(0, limit));
@@ -84,7 +84,7 @@ describe("KeyService", () => {
 			});
 
 			const keys = await KeyService.retrieveKeys({
-				filter: "",
+				pattern: "",
 				limit: 5,
 			});
 			expect(keys).toBeDefined();
@@ -102,7 +102,7 @@ describe("KeyService", () => {
 			});
 
 			const keys = await KeyService.retrieveKeys({
-				filter: "nonexistent:*",
+				pattern: "nonexistent:*",
 				limit: 100,
 			});
 			expect(keys).toBeDefined();
@@ -119,7 +119,7 @@ describe("KeyService", () => {
 			});
 
 			await expect(
-				KeyService.retrieveKeys({ filter: "", limit: 100 }),
+				KeyService.retrieveKeys({ pattern: "", limit: 100 }),
 			).rejects.toThrow(errorMessage);
 		});
 	});
@@ -134,21 +134,27 @@ describe("KeyService", () => {
 				key: "user:1",
 				key_type: "string",
 				ttl: -1,
-				memory_usage: 128,
+				// memory_usage: 128,
+			};
+			const mockContent: TCurrentKey["content"] = {
+				value: "Sample content for user:1",
 			};
 
 			mockIPC((cmd, args) => {
 				if (cmd === COMMANDS.RETRIEVE_KEY) {
 					if ((args as { key: string }).key === "user:1") {
-						return Promise.resolve<TKey>(mockKey);
+						return Promise.resolve<TCurrentKey>({
+							details: mockKey,
+							content: mockContent,
+						});
 					}
 				}
 			});
 
 			const key = await KeyService.retrieveKey("user:1");
 			expect(key).toBeDefined();
-			expect(key.key).toBe("user:1");
-			expect(key.key_type).toBe("string");
+			expect(key.details).toBe(mockKey);
+			expect(key.content).toBe(mockContent);
 		});
 
 		it("handles key not found", async () => {
