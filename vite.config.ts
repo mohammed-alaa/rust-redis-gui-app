@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import { resolve } from "path";
 import vue from "@vitejs/plugin-vue";
 import tailwindcss from "@tailwindcss/vite";
+import ui from "@nuxt/ui/vite";
 
 const host = process.env.TAURI_DEV_HOST;
 
@@ -10,6 +11,32 @@ export default defineConfig(() => ({
 		vue({
 			features: {
 				optionsAPI: false,
+			},
+		}),
+		ui({
+			ui: {
+				button: {
+					slots: {
+						base: "select-none",
+					},
+				},
+				pageHeader: {
+					slots: {
+						root: "py-2 px-4",
+					},
+				},
+				tooltip: {
+					slots: {
+						content: "z-500",
+						arrow: "z-500",
+					},
+				},
+				popover: {
+					slots: {
+						content: "z-500",
+						arrow: "z-500",
+					},
+				},
 			},
 		}),
 		tailwindcss({
@@ -35,7 +62,7 @@ export default defineConfig(() => ({
 		},
 	},
 	resolve: {
-		extensions: [".ts", ".vue"],
+		extensions: [".ts", ".vue", ".js"],
 		alias: {
 			"@components": resolve(__dirname, "./src/components"),
 			"@composables": resolve(__dirname, "./src/composables"),
