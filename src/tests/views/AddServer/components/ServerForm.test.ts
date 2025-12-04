@@ -5,8 +5,18 @@ import { defineComponent } from "vue";
 import { useAddServerForm } from "@views/AddServer/composables/useAddServerForm";
 import { createPinia, setActivePinia } from "pinia";
 import { useServerFactory } from "@test-utils/useServerFactory";
+import { useFakeRouter } from "@test-utils/useFakeRouter";
 
 describe("ServerForm", () => {
+	async function setup(props: any) {
+		return mount(ServerForm, {
+			props,
+			global: {
+				plugins: [await useFakeRouter()],
+			},
+		});
+	}
+
 	beforeEach(() => {
 		setActivePinia(createPinia());
 	});
@@ -15,11 +25,12 @@ describe("ServerForm", () => {
 	});
 
 	describe("Form Structure", () => {
-		it("renders the form structure correctly", () => {
+		it("renders the form structure correctly", async () => {
 			const { fields, validationSchema } = useAddServerForm();
-
-			const wrapper = mount(ServerForm, {
-				props: { isLoading: false, fields, validationSchema },
+			const wrapper = await setup({
+				isLoading: false,
+				fields,
+				validationSchema,
 			});
 
 			expect(
@@ -73,10 +84,15 @@ describe("ServerForm", () => {
 			wrapper.unmount();
 		});
 
-		it("renders correct labels for each field", () => {
+		it("renders correct labels for each field", async () => {
 			const { fields, validationSchema } = useAddServerForm();
-			const wrapper = mount(ServerForm, {
-				props: { isLoading: false, fields, validationSchema },
+			// const wrapper = mount(ServerForm, {
+			// 	props: { isLoading: false, fields, validationSchema },
+			// });
+			const wrapper = await setup({
+				isLoading: false,
+				fields,
+				validationSchema,
 			});
 
 			const nameFieldId = wrapper.find(
@@ -104,8 +120,13 @@ describe("ServerForm", () => {
 		it("disables submit button when loading", async () => {
 			const { fields, validationSchema } = useAddServerForm();
 
-			const wrapper = mount(ServerForm, {
-				props: { isLoading: true, fields, validationSchema },
+			// const wrapper = mount(ServerForm, {
+			// 	props: { isLoading: true, fields, validationSchema },
+			// });
+			const wrapper = await setup({
+				isLoading: true,
+				fields,
+				validationSchema,
 			});
 
 			const submitBtn = wrapper.find(
@@ -123,12 +144,17 @@ describe("ServerForm", () => {
 		it("emits 'submit' event when clicking enabled submit button", async () => {
 			const { fields, validationSchema } = useAddServerForm();
 
-			const wrapper = mount(ServerForm, {
-				props: {
-					isLoading: false,
-					fields,
-					validationSchema,
-				},
+			// const wrapper = mount(ServerForm, {
+			// 	props: {
+			// 		isLoading: false,
+			// 		fields,
+			// 		validationSchema,
+			// 	},
+			// });
+			const wrapper = await setup({
+				isLoading: false,
+				fields,
+				validationSchema,
 			});
 
 			const submitBtn = wrapper.find(
@@ -151,17 +177,23 @@ describe("ServerForm", () => {
 			fields.address = validFormFields.address;
 			fields.port = validFormFields.port;
 
-			const wrapper = mount(ServerForm, {
-				props: {
-					isLoading: false,
-					fields,
-					validationSchema,
-				},
-				global: {
-					stubs: {
-						Teleport: true,
-					},
-				},
+			// const wrapper = mount(ServerForm, {
+			// 	props: {
+			// 		isLoading: false,
+			// 		fields,
+			// 		validationSchema,
+			// 	},
+			// 	global: {
+			// 		stubs: {
+			// 			Teleport: true,
+			// 		},
+			// 	},
+			// });
+
+			const wrapper = await setup({
+				isLoading: false,
+				fields,
+				validationSchema,
 			});
 
 			await wrapper
@@ -187,6 +219,11 @@ describe("ServerForm", () => {
 				template: `<ServerForm :isLoading="isLoading" :fields="fields"
                 :validationSchema="validationSchema" @submit="onSubmit" />`,
 			}),
+			{
+				global: {
+					plugins: [await useFakeRouter()],
+				},
+			},
 		);
 
 		await wrapper.find('[data-testid="add-server-form"]').trigger("submit");
