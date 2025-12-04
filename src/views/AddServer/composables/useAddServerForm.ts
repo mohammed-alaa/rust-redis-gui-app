@@ -1,50 +1,62 @@
-import { computed } from "vue";
-import { useForm } from "vee-validate";
-import { toTypedSchema } from "@vee-validate/zod";
+import { reactive } from "vue";
 import { z } from "zod";
 import { useServerStore } from "@stores/useServerStore";
 import { useLoading } from "@composables";
+import { type FormSubmitEvent } from "@nuxt/ui";
 
-export function useAddServerForm() {
-	const formSchema = toTypedSchema(
-		z.object({
-			name: z
-				.string()
-				.min(2, "Name must be at least 2 characters")
-				.max(50, "Name must not exceed 50 characters"),
-			address: z
-				.string()
-				.min(2, "Address must be at least 2 characters")
-				.max(50, "Address must not exceed 50 characters"),
-			port: z
-				.number()
-				.min(1, "Port must be at least 1")
-				.max(65535, "Port must not exceed 65535"),
-		}),
-	);
+interface TOptions {
+	onSuccess?: (data: TServer) => void;
+	onError?: (error: any) => void;
+}
+
+export function useAddServerForm({
+	onSuccess = (__data: TServer): void => {},
+	onError = (__error: any): void => {},
+}: TOptions = {}) {
+	const validationSchema = z.object({
+		name: z
+			.string()
+			.min(2, "Name must be at least 2 characters")
+			.max(50, "Name must not exceed 50 characters"),
+		address: z
+			.string()
+			.min(2, "Address must be at least 2 characters")
+			.max(50, "Address must not exceed 50 characters"),
+		port: z
+			.number()
+			.min(1, "Port must be at least 1")
+			.max(65535, "Port must not exceed 65535"),
+	});
+
+	const fields = reactive<TServerFormFields>({
+		name: "",
+		address: "",
+		port: 1,
+	});
 
 	const serverStore = useServerStore();
 	const { isLoading, withLoading } = useLoading();
-	const form = useForm<TServerFormFields>({
-		validationSchema: formSchema,
-		initialValues: {
-			name: "",
-			address: "",
-			port: 1,
-		},
-	});
 
-	const isFormValid = computed(() => form.meta.value.valid);
-
-	async function submit(values: TServerFormFields) {
-		return withLoading(async () => serverStore.addServer(values));
+	async function onSubmit(
+		event: FormSubmitEvent<z.output<typeof validationSchema>>,
+	) {
+		try {
+			const data = await withLoading(async () =>
+				serverStore.addServer(event.data),
+			);
+			onSuccess?.(data);
+			return data;
+		} catch (error) {
+			onError?.(error);
+			return {} as TServer;
+		}
 	}
 
 	return {
-		form,
 		isLoading,
-		isFormValid,
+		fields,
+		validationSchema,
 
-		onSubmit: form.handleSubmit(submit),
+		onSubmit,
 	};
 }

@@ -15,6 +15,7 @@ export default defineConfig((configEnv) =>
 							environment: "jsdom",
 							include: ["src/tests/**/*.test.ts"],
 							exclude: [...defaultExclude, "src-tauri/**/*"],
+							setupFiles: ["src/tests/setupTests.ts"],
 						},
 					},
 				],

@@ -3,7 +3,6 @@ import { onUnmounted } from "vue";
 import { RouterView } from "vue-router";
 import { check } from "@tauri-apps/plugin-updater";
 import { useServerStore } from "@stores/useServerStore";
-import { Toaster } from "@components/ui/sonner";
 
 const serverStore = useServerStore();
 
@@ -30,14 +29,25 @@ serverStore.init();
 </script>
 
 <template>
-	<router-view />
-
-	<Toaster
-		rich-colors
-		close-button
-		dir="auto"
-		theme="system"
-		position="bottom-center"
-		:duration="8000"
-	/>
+	<UApp>
+		<UHeader>
+			<template #left>
+				<!-- Header Icon (e.g: Back button, etc...) -->
+				<div id="header-icon" />
+				<!-- Page title (e.g: Home, Add Server, etc..) -->
+				<h1 class="text-2xl font-bold" id="header-title" />
+				<!-- Anything that goes after the title (e.g: Server info popover) -->
+				<div id="header-title-icon" />
+			</template>
+			<template #toggle>
+				<!-- Any button on the right side of the header (e.g: Add Server button) -->
+				<div id="header-right">
+					<div class="hidden" />
+				</div>
+			</template>
+		</UHeader>
+		<UMain as="main">
+			<router-view />
+		</UMain>
+	</UApp>
 </template>
