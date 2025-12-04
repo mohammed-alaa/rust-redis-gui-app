@@ -86,17 +86,19 @@ keyStore.retrieveKeys(form.values).catch((error) =>
 						/>
 
 						<template #content>
-							<div>content</div>
+							<UContainer class="py-2">
+								<p>
+									<span>Address: </span>
+									<strong>
+										{{ activeServer!.address }}:{{
+											activeServer!.port
+										}}
+									</strong>
+								</p>
+							</UContainer>
 						</template>
 					</UPopover>
 				</Teleport>
-
-				<p>
-					<span>Active Server: </span>
-					<strong>
-						{{ activeServer!.address }}:{{ activeServer!.port }}
-					</strong>
-				</p>
 
 				<div class="grid grid-cols-2 h-full gap-2 flex-wrap max-h-full">
 					<div class="flex flex-col gap-2">
