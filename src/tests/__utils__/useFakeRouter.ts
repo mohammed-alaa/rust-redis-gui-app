@@ -28,7 +28,7 @@ export async function useFakeRouter(
 	});
 
 	// Navigate to initial route and wait for it to be ready
-	router.push(initialRoute);
+	await router.push(initialRoute);
 	await router.isReady();
 
 	return router;
