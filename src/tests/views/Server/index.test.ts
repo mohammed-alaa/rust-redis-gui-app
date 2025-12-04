@@ -9,7 +9,7 @@ import { useServerFactory } from "@test-utils/useServerFactory";
 
 vi.spyOn(toast, "error");
 
-describe("Home View", () => {
+describe("Server View", () => {
 	let servers: TServer[];
 	let componentWrapper: ReturnType<typeof mount>;
 
@@ -21,6 +21,9 @@ describe("Home View", () => {
 
 		componentWrapper = mount(Server, {
 			global: {
+				stubs: {
+					Teleport: true,
+				},
 				plugins: [
 					createPinia(),
 					createRouter({
