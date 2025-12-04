@@ -83,7 +83,7 @@ keyStore.retrieveKeys(form.values).catch((error) =>
 							color="info"
 							class="rounded-full"
 							size="sm"
-							vairant="subtle"
+							variant="subtle"
 						/>
 
 						<template #content>
