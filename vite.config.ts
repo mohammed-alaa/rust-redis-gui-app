@@ -27,14 +27,14 @@ export default defineConfig(() => ({
 				},
 				tooltip: {
 					slots: {
-						content: "z-500",
-						arrow: "z-500",
+						content: "z-50",
+						arrow: "z-50",
 					},
 				},
 				popover: {
 					slots: {
-						content: "z-500",
-						arrow: "z-500",
+						content: "z-50",
+						arrow: "z-50",
 					},
 				},
 			},
