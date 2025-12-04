@@ -183,3 +183,199 @@ impl PartialEq for Server {
         self.id == other.id
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_server_new() {
+        let server = Server::new();
+        assert_eq!(server.id, Uuid::nil());
+        assert_eq!(server.name, "");
+        assert_eq!(server.address, "");
+        assert_eq!(server.port, 0);
+    }
+
+    #[test]
+    fn test_server_from_payload() {
+        let server = Server::from_payload(
+            "Test Server".to_string(),
+            "localhost".to_string(),
+            6379,
+        );
+        assert_eq!(server.id, Uuid::nil());
+        assert_eq!(server.name, "Test Server");
+        assert_eq!(server.address, "localhost");
+        assert_eq!(server.port, 6379);
+    }
+
+    #[test]
+    fn test_server_default() {
+        let server = Server::default();
+        assert_eq!(server.id, Uuid::nil());
+        assert_eq!(server.name, "");
+        assert_eq!(server.address, "");
+        assert_eq!(server.port, 0);
+    }
+
+    #[test]
+    fn test_server_display() {
+        let server = Server::from_payload(
+            "My Server".to_string(),
+            "127.0.0.1".to_string(),
+            6379,
+        );
+        let display = format!("{}", server);
+        assert!(display.contains("My Server"));
+        assert!(display.contains("127.0.0.1"));
+        assert!(display.contains("6379"));
+    }
+
+    #[test]
+    fn test_server_equality_same_id() {
+        let mut server1 = Server::new();
+        let id = Uuid::new_v4();
+        server1.id = id;
+        server1.name = "Server 1".to_string();
+
+        let mut server2 = Server::new();
+        server2.id = id;
+        server2.name = "Server 2".to_string();
+
+        assert_eq!(server1, server2);
+    }
+
+    #[test]
+    fn test_server_equality_different_id() {
+        let mut server1 = Server::new();
+        server1.id = Uuid::new_v4();
+
+        let mut server2 = Server::new();
+        server2.id = Uuid::new_v4();
+
+        assert_ne!(server1, server2);
+    }
+
+    #[test]
+    fn test_server_clone() {
+        let server = Server::from_payload(
+            "Test".to_string(),
+            "localhost".to_string(),
+            6379,
+        );
+        let cloned = server.clone();
+        assert_eq!(server.name, cloned.name);
+        assert_eq!(server.address, cloned.address);
+        assert_eq!(server.port, cloned.port);
+    }
+
+    #[test]
+    fn test_server_table_name() {
+        assert_eq!(Server::table_name(), "servers");
+    }
+
+    #[test]
+    fn test_server_to_db_values() {
+        let server = Server::from_payload(
+            "Test".to_string(),
+            "localhost".to_string(),
+            6379,
+        );
+        let values = server.to_db_values();
+        assert_eq!(values.len(), 6);
+        assert_eq!(values[1], "Test");
+        assert_eq!(values[2], "localhost");
+        assert_eq!(values[3], "6379");
+    }
+
+    #[test]
+    fn test_server_serialization() {
+        let server = Server::from_payload(
+            "Test".to_string(),
+            "localhost".to_string(),
+            6379,
+        );
+        let json = serde_json::to_value(&server).unwrap();
+        assert_eq!(json["name"], "Test");
+        assert_eq!(json["address"], "localhost");
+        assert_eq!(json["port"], 6379);
+    }
+
+    #[test]
+    fn test_server_create_and_find() {
+        let db = Database::new_in_memory().unwrap();
+        let server = Server::from_payload(
+            "Test Server".to_string(),
+            "localhost".to_string(),
+            6379,
+        );
+
+        let created = server.create(&db).unwrap();
+        assert_ne!(created.id, Uuid::nil());
+
+        let found = Server::find_by_id(&created.id.to_string(), &db).unwrap();
+        assert_eq!(found, created);
+    }
+
+    #[test]
+    fn test_server_get_empty() {
+        let db = Database::new_in_memory().unwrap();
+        let servers = Server::get(&db).unwrap();
+        assert!(servers.is_empty());
+    }
+
+    #[test]
+    fn test_server_get_with_data() {
+        let db = Database::new_in_memory().unwrap();
+        let server1 = Server::from_payload(
+            "Server 1".to_string(),
+            "localhost".to_string(),
+            6379,
+        );
+        let server2 = Server::from_payload(
+            "Server 2".to_string(),
+            "localhost".to_string(),
+            6380,
+        );
+
+        server1.create(&db).unwrap();
+        server2.create(&db).unwrap();
+
+        let servers = Server::get(&db).unwrap();
+        assert_eq!(servers.len(), 2);
+    }
+
+    #[test]
+    fn test_server_delete() {
+        let db = Database::new_in_memory().unwrap();
+        let server = Server::from_payload(
+            "Test Server".to_string(),
+            "localhost".to_string(),
+            6379,
+        );
+
+        let created = server.create(&db).unwrap();
+        assert!(created.delete(&db).unwrap());
+
+        let result = Server::find_by_id(&created.id.to_string(), &db);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_server_save_updates() {
+        let db = Database::new_in_memory().unwrap();
+        let server = Server::from_payload(
+            "Original".to_string(),
+            "localhost".to_string(),
+            6379,
+        );
+
+        let mut created = server.create(&db).unwrap();
+        created.name = "Updated".to_string();
+        created.save(&db).unwrap();
+
+        let found = Server::find_by_id(&created.id.to_string(), &db).unwrap();
+        assert_eq!(found.name, "Updated");
+    }
+}

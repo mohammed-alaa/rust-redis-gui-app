@@ -131,3 +131,68 @@ pub async fn retrieve_key(
 ) -> Result<(KeyInfo, Value), AppError> {
     _retrieve_key(state.inner(), key).await
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_retrieve_key_no_redis_client() {
+        let app_state = Mutex::new(AppState::new());
+        let result = _retrieve_key(&app_state, "test_key".to_string()).await;
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), AppError::RedisFailed);
+    }
+
+    #[test]
+    fn test_key_info_default() {
+        let key_info = KeyInfo::default();
+        assert_eq!(key_info.key, "");
+        assert_eq!(key_info.key_type, "");
+        assert_eq!(key_info.ttl, 0);
+        assert_eq!(key_info.memory_usage, 0);
+    }
+
+    #[test]
+    fn test_key_info_serialization() {
+        let key_info = KeyInfo {
+            key: "test".to_string(),
+            key_type: "string".to_string(),
+            ttl: 100,
+            memory_usage: 50,
+        };
+        let json = serde_json::to_value(&key_info).unwrap();
+        assert_eq!(json["key"], "test");
+        assert_eq!(json["key_type"], "string");
+        assert_eq!(json["ttl"], 100);
+        assert_eq!(json["memory_usage"], 50);
+    }
+
+    #[test]
+    fn test_key_info_clone() {
+        let key_info = KeyInfo {
+            key: "test".to_string(),
+            key_type: "string".to_string(),
+            ttl: 100,
+            memory_usage: 50,
+        };
+        let cloned = key_info.clone();
+        assert_eq!(key_info.key, cloned.key);
+        assert_eq!(key_info.key_type, cloned.key_type);
+        assert_eq!(key_info.ttl, cloned.ttl);
+        assert_eq!(key_info.memory_usage, cloned.memory_usage);
+    }
+
+    #[test]
+    fn test_key_info_debug() {
+        let key_info = KeyInfo {
+            key: "test".to_string(),
+            key_type: "string".to_string(),
+            ttl: 100,
+            memory_usage: 50,
+        };
+        let debug_str = format!("{:?}", key_info);
+        assert!(debug_str.contains("test"));
+        assert!(debug_str.contains("string"));
+    }
+}
