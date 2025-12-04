@@ -2,18 +2,16 @@ import { defineComponent } from "vue";
 import { createPinia } from "pinia";
 import { createRouter, createWebHashHistory } from "vue-router";
 import { expect, describe, it, afterEach, beforeEach, vi } from "vitest";
-import { mount } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
 import { useServerStore } from "@stores/useServerStore";
 import { APP_ERROR_CODES, COMMANDS } from "@constants";
-import { toast } from "vue-sonner";
 import { ServerService } from "@services/ServerService";
 import { useServerFactory } from "@test-utils/useServerFactory";
-import { useAddServerForm } from "@views/AddServer/composables/useAddServerForm";
 import AddServer from "@views/AddServer/index.vue";
 import ServerForm from "@views/AddServer/components/ServerForm.vue";
 
-vi.spyOn(toast, "error");
+vi.fn(useToast);
 
 describe("AddServer Page", () => {
 	let componentWrapper: ReturnType<typeof mount>;
@@ -21,6 +19,9 @@ describe("AddServer Page", () => {
 	beforeEach(() => {
 		componentWrapper = mount(AddServer, {
 			global: {
+				stubs: {
+					Teleport: true,
+				},
 				plugins: [
 					createPinia(),
 					createRouter({
@@ -73,8 +74,7 @@ describe("AddServer Page", () => {
 
 		// Submit the form
 		await serverFormWrapper.trigger("submit");
-
-		await vi.waitFor(async () => await useAddServerForm().onSubmit());
+		await flushPromises();
 
 		expect(componentWrapper.vm.$route.name).toBe("home");
 		expect(serverStore.servers.length).toBe(1);
@@ -103,8 +103,12 @@ describe("AddServer Page", () => {
 			.setValue("6379");
 
 		await serverFormWrapper.trigger("submit");
-		await vi.waitFor(async () => useAddServerForm().onSubmit());
+		await flushPromises();
 
-		expect(toast.error).toHaveBeenCalledExactlyOnceWith(errorMessage);
+		expect(
+			useToast().toasts.value.findIndex(
+				(toast) => toast.title === errorMessage,
+			),
+		).not.toEqual(-1);
 	});
 });
