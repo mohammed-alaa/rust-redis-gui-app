@@ -101,7 +101,8 @@ mod tests {
 
     #[test]
     fn test_redis_bulk_string_json_to_json() {
-        let result = redis_to_json(RedisValue::BulkString(b"{\"key\":\"value\"}".to_vec()));
+        let json_str = r#"{"key":"value"}"#;
+        let result = redis_to_json(RedisValue::BulkString(json_str.as_bytes().to_vec()));
         assert_eq!(result, json!({"key": "value"}));
     }
 

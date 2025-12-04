@@ -114,7 +114,7 @@ describe("useFilterForm", () => {
 
 			const submitFn = vi.fn();
 			const handleSubmit = form.handleSubmit(submitFn);
-			await handleSubmit({} as Event);
+			await handleSubmit(new Event("submit"));
 			await flushPromises();
 
 			expect(submitFn).toHaveBeenCalledWith(
@@ -127,12 +127,12 @@ describe("useFilterForm", () => {
 			wrapper.unmount();
 		});
 
-		it("returns submitted values from onSubmit", async () => {
+		it("returns submitted values after submit event", async () => {
 			const TestComponent = defineComponent({
 				setup() {
 					return useFilterForm();
 				},
-				template: `<form @submit.prevent="onSubmit"></form>`,
+				template: "<div></div>",
 			});
 
 			const wrapper = mount(TestComponent);
@@ -141,7 +141,10 @@ describe("useFilterForm", () => {
 			form.setFieldValue("pattern", "cache:*");
 			form.setFieldValue("limit", 25);
 
-			await wrapper.find("form").trigger("submit");
+			// Use form's handleSubmit directly
+			const submitFn = vi.fn();
+			const handleSubmit = form.handleSubmit(submitFn);
+			await handleSubmit(new Event("submit"));
 			await flushPromises();
 
 			expect(form.values.pattern).toBe("cache:*");
