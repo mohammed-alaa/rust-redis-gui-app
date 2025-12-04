@@ -108,8 +108,8 @@ mod tests {
 
     #[test]
     fn test_redis_double_to_json() {
-        let result = redis_to_json(RedisValue::Double(3.14));
-        assert_eq!(result, json!(3.14));
+        let result = redis_to_json(RedisValue::Double(2.5));
+        assert_eq!(result, json!(2.5));
     }
 
     #[test]

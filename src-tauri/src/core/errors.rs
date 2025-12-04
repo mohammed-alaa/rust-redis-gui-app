@@ -79,7 +79,8 @@ mod tests {
     #[test]
     fn test_app_error_clone() {
         let error = AppError::RedisFailed;
-        let cloned = error.clone();
+        // AppError implements Copy, so assignment works like clone
+        let cloned = error;
         assert_eq!(error, cloned);
     }
 
