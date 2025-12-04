@@ -58,7 +58,7 @@ keyStore.retrieveKeys(form.values).catch((error) =>
 </script>
 
 <template>
-	<Teleport defer to="#header-icon">
+	<Teleport to="#header-icon">
 		<RouterLink :to="{ name: 'home' }">
 			<UButton aria-label="Go home" icon="tabler:arrow-left" size="sm" />
 		</RouterLink>
@@ -67,10 +67,10 @@ keyStore.retrieveKeys(form.values).catch((error) =>
 	<UPage>
 		<UContainer class="flex flex-col gap-4">
 			<template v-if="isConnected">
-				<Teleport defer to="#header-title">
+				<Teleport to="#header-title">
 					Server - {{ activeServer!.name }}
 				</Teleport>
-				<Teleport defer to="#header-title-icon">
+				<Teleport to="#header-title-icon">
 					<UPopover
 						arrow
 						mode="hover"

@@ -19,12 +19,12 @@ const { isLoading, fields, validationSchema, onSubmit } = useAddServerForm({
 </script>
 
 <template>
-	<Teleport defer to="#header-icon">
+	<Teleport to="#header-icon">
 		<RouterLink :to="{ name: 'home' }">
 			<UButton aria-label="Go home" icon="tabler:arrow-left" size="sm" />
 		</RouterLink>
 	</Teleport>
-	<Teleport defer to="#header-title"> Add Server </Teleport>
+	<Teleport to="#header-title"> Add Server </Teleport>
 	<UPage>
 		<UPageBody class="flex items-center justify-center">
 			<ServerForm

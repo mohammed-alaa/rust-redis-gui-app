@@ -38,8 +38,8 @@ serverStore.getServers().catch((error) =>
 </script>
 
 <template>
-	<Teleport defer to="#header-title"> Servers </Teleport>
-	<Teleport defer to="#header-right">
+	<Teleport to="#header-title"> Servers </Teleport>
+	<Teleport to="#header-right">
 		<RouterLink :to="{ name: 'add-server' }" data-testid="add-server-link">
 			<UButton
 				aria-label="Add new server"
