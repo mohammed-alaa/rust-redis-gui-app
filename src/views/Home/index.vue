@@ -2,9 +2,6 @@
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { useServerStore } from "@stores/useServerStore";
-import { toast } from "vue-sonner";
-import Icon from "@components/Icon.vue";
-import { Button } from "@components/ui/button";
 import {
 	Table,
 	TableBody,
@@ -13,9 +10,9 @@ import {
 	TableHeader,
 	TableRow,
 	TableHead,
-	TableFooter,
 } from "@components/ui/table";
 
+const toast = useToast();
 const serverStore = useServerStore();
 const router = useRouter();
 const { servers, isLoading } = storeToRefs(serverStore);
@@ -25,22 +22,40 @@ async function onOpenServer(serverId: TServer["id"]) {
 		await serverStore.openServer(serverId);
 		router.push({ name: "server" });
 	} catch (error) {
-		toast.error(error as string);
+		toast.add({
+			title: error as string,
+			color: "error",
+		});
 	}
 }
 
-serverStore.getServers().catch((error) => toast.error(error as string));
+serverStore.getServers().catch((error) =>
+	toast.add({
+		title: error as string,
+		color: "error",
+	}),
+);
 </script>
 
 <template>
-	<div class="p-4">
+	<Teleport defer to="#header-title"> Servers </Teleport>
+	<Teleport defer to="#header-right">
+		<RouterLink :to="{ name: 'add-server' }" data-testid="add-server-link">
+			<UButton
+				aria-label="Add new server"
+				icon="tabler:plus"
+				size="sm"
+				data-testid="add-server-button"
+				label="Server"
+			/>
+		</RouterLink>
+	</Teleport>
+	<UContainer>
 		<Table>
 			<TableHeader>
-				<TableRow>
-					<TableHead> Name </TableHead>
-					<TableHead>Address</TableHead>
-					<TableHead>Actions</TableHead>
-				</TableRow>
+				<TableHead> Name </TableHead>
+				<TableHead>Address</TableHead>
+				<TableHead>Actions</TableHead>
 			</TableHeader>
 			<TableBody>
 				<TableEmpty colspan="100%" v-if="isLoading || !servers.length">
@@ -56,41 +71,26 @@ serverStore.getServers().catch((error) => toast.error(error as string));
 						v-for="server in servers"
 						:key="`servers-server-${server.id}`"
 					>
-						<TableRow
-							class="cursor-pointer"
-							tabindex="0"
-							aria-role="button"
-							:aria-label="`Connect to ${server.name}`"
-							data-testid="server-row"
-							@click="onOpenServer(server.id)"
-							@keydown.enter="onOpenServer(server.id)"
-						>
+						<TableRow data-testid="server-row">
 							<TableCell class="font-medium">
 								{{ server.name }}
 							</TableCell>
 							<TableCell>
 								{{ server.address }}:{{ server.port }}
 							</TableCell>
-							<TableCell> </TableCell>
+							<TableCell>
+								<UButton
+									icon="tabler:link"
+									size="sm"
+									aria-label="Connect to Server"
+									data-testid="server-row-action-connect"
+									@click="onOpenServer(server.id)"
+								/>
+							</TableCell>
 						</TableRow>
 					</template>
 				</template>
 			</TableBody>
-			<TableFooter>
-				<TableRow>
-					<TableCell colspan="100%" class="text-center">
-						<RouterLink
-							:to="{ name: 'add-server' }"
-							data-testid="add-server-link"
-						>
-							<Button data-testid="add-server-button">
-								<Icon icon="tabler:plus" />
-								Add Server
-							</Button>
-						</RouterLink>
-					</TableCell>
-				</TableRow>
-			</TableFooter>
 		</Table>
-	</div>
+	</UContainer>
 </template>
