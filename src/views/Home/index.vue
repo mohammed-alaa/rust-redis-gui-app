@@ -53,9 +53,11 @@ serverStore.getServers().catch((error) =>
 	<UContainer>
 		<Table>
 			<TableHeader>
-				<TableHead> Name </TableHead>
-				<TableHead>Address</TableHead>
-				<TableHead>Actions</TableHead>
+				<TableRow>
+					<TableHead> Name </TableHead>
+					<TableHead>Address</TableHead>
+					<TableHead>Actions</TableHead>
+				</TableRow>
 			</TableHeader>
 			<TableBody>
 				<TableEmpty colspan="100%" v-if="isLoading || !servers.length">
