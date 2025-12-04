@@ -18,7 +18,7 @@ describe("KeyService", () => {
 		});
 
 		it("retrieves keys", async () => {
-			mockIPC((cmd) => {
+			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.RETRIEVE_KEYS) {
 					return Promise.resolve<TKey[]>([]);
 				}
@@ -33,7 +33,7 @@ describe("KeyService", () => {
 		});
 
 		it("retrieves keys with pattern", async () => {
-			mockIPC((cmd, args) => {
+			mockIPC(async (cmd, args) => {
 				if (cmd === COMMANDS.RETRIEVE_KEYS) {
 					if ((args as TRetrieveKeysFilters).pattern === "user:*") {
 						return Promise.resolve<TKey[]>([
@@ -67,7 +67,7 @@ describe("KeyService", () => {
 		});
 
 		it("retrieves keys with limit", async () => {
-			mockIPC((cmd, args) => {
+			mockIPC(async (cmd, args) => {
 				if (cmd === COMMANDS.RETRIEVE_KEYS) {
 					const limit = (args as TRetrieveKeysFilters).limit;
 					const allKeys: TKey[] = [];
@@ -95,7 +95,7 @@ describe("KeyService", () => {
 		});
 
 		it("handles no keys found", async () => {
-			mockIPC((cmd) => {
+			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.RETRIEVE_KEYS) {
 					return Promise.resolve<TKey[]>([]);
 				}
@@ -112,7 +112,7 @@ describe("KeyService", () => {
 
 		it("handles errors", async () => {
 			const errorMessage = "Failed to retrieve keys";
-			mockIPC((cmd) => {
+			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.RETRIEVE_KEYS) {
 					return Promise.reject(errorMessage);
 				}
@@ -140,7 +140,7 @@ describe("KeyService", () => {
 				value: "Sample content for user:1",
 			};
 
-			mockIPC((cmd, args) => {
+			mockIPC(async (cmd, args) => {
 				if (cmd === COMMANDS.RETRIEVE_KEY) {
 					if ((args as { key: string }).key === "user:1") {
 						return Promise.resolve<TCurrentKey>({
@@ -158,7 +158,7 @@ describe("KeyService", () => {
 		});
 
 		it("handles key not found", async () => {
-			mockIPC((cmd, args) => {
+			mockIPC(async (cmd, args) => {
 				if (cmd === COMMANDS.RETRIEVE_KEY) {
 					if ((args as { key: string }).key === "nonexistent:key") {
 						return Promise.reject("Key not found");

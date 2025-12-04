@@ -3,14 +3,10 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import { mount } from "@vue/test-utils";
 import { describe, it, vi, beforeEach, afterEach, expect } from "vitest";
 import { mockIPC, clearMocks } from "@tauri-apps/api/mocks";
-import { toast } from "vue-sonner";
 import Home from "@views/Home/index.vue";
 import { useServerFactory } from "@test-utils/useServerFactory";
 import { APP_ERROR_CODES, COMMANDS } from "@constants";
 import { useServerStore } from "@stores/useServerStore";
-import { ServerService } from "@services/ServerService";
-
-vi.spyOn(toast, "error");
 
 describe("Home View", () => {
 	let servers: TServer[];
@@ -24,6 +20,9 @@ describe("Home View", () => {
 
 		componentWrapper = mount(Home, {
 			global: {
+				stubs: {
+					Teleport: true,
+				},
 				plugins: [
 					createPinia(),
 					createRouter({
@@ -107,6 +106,7 @@ describe("Home View", () => {
 			const addServerLink = componentWrapper.find(
 				"[data-testid='add-server-link']",
 			);
+
 			await addServerLink.trigger("click");
 
 			expect(pushSpy).toHaveBeenCalledWith({ name: "add-server" });
@@ -126,7 +126,7 @@ describe("Home View", () => {
 	});
 
 	describe("Opens Server", () => {
-		it("should open server when a server row is clicked via mouse", async () => {
+		it("should open server when connect button is clicked", async () => {
 			mockIPC(async (cmd, args) => {
 				if (cmd === COMMANDS.GET_SERVERS) {
 					return Promise.resolve(servers);
@@ -147,34 +147,11 @@ describe("Home View", () => {
 				'[data-testid="server-row"]',
 			);
 
-			await firstServerRow.trigger("click");
-			await vi.waitFor(async () => serverStore.openServer(servers[0].id));
-
-			expect(pushSpy).toHaveBeenCalledExactlyOnceWith({ name: "server" });
-			expect(serverStore.activeServer).toEqual(servers[0]);
-		});
-
-		it("should open server when a server row is clicked via keyboard enter key", async () => {
-			mockIPC(async (cmd, args) => {
-				if (cmd === COMMANDS.GET_SERVERS) {
-					return Promise.resolve(servers);
-				} else if (cmd === COMMANDS.OPEN_SERVER) {
-					const server = servers.find(
-						(s) => s.id === ((args as any).id as TServer["id"]),
-					);
-					return Promise.resolve(server);
-				}
-			});
-
-			const pushSpy = vi.spyOn(componentWrapper.vm.$router, "push");
-			const serverStore = useServerStore();
-			await vi.waitFor(async () => serverStore.getServers());
-
-			const firstServerRow = componentWrapper.find(
-				'[data-testid="server-row"]',
+			const connectButton = firstServerRow.find(
+				'[data-testid="server-row-action-connect"]',
 			);
 
-			await firstServerRow.trigger("keydown.enter");
+			await connectButton.trigger("click");
 			await vi.waitFor(async () => serverStore.openServer(servers[0].id));
 
 			expect(pushSpy).toHaveBeenCalledExactlyOnceWith({ name: "server" });
@@ -182,9 +159,6 @@ describe("Home View", () => {
 		});
 
 		it("should not open server when non existing server is clicked", async () => {
-			const errorMessage = ServerService.handleErrorCodes(
-				APP_ERROR_CODES.DATABASE_NOT_READY,
-			);
 			mockIPC(async (cmd) => {
 				if (cmd === COMMANDS.GET_SERVERS) {
 					return Promise.resolve(servers);
@@ -202,7 +176,11 @@ describe("Home View", () => {
 				'[data-testid="server-row"]',
 			);
 
-			await firstServerRow.trigger("click");
+			const connectButton = firstServerRow.find(
+				'[data-testid="server-row-action-connect"]',
+			);
+
+			await connectButton.trigger("click");
 
 			try {
 				await vi.waitFor(async () =>
@@ -212,7 +190,6 @@ describe("Home View", () => {
 
 			expect(pushSpy).not.toHaveBeenCalled();
 			expect(serverStore.activeServer).toBeNull();
-			expect(toast.error).toHaveBeenCalledWith(errorMessage);
 		});
 	});
 });

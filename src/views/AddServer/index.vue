@@ -1,42 +1,38 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import { toast } from "vue-sonner";
 import { useAddServerForm } from "./composables/useAddServerForm";
 import ServerForm from "./components/ServerForm.vue";
-import { Button } from "@components/ui/button";
 
 const router = useRouter();
-const {
-	isLoading,
-	isFormValid,
-	onSubmit: onAddServerFormSubmit,
-} = useAddServerForm();
-
-function goToHomePage() {
-	router.push({ name: "home" });
-}
-
-async function onSubmit(event: Event) {
-	try {
-		await onAddServerFormSubmit(event);
-		goToHomePage();
-	} catch (error) {
-		toast.error(error as string);
-	}
-}
+const toast = useToast();
+const { isLoading, fields, validationSchema, onSubmit } = useAddServerForm({
+	onSuccess() {
+		router.push({ name: "home" });
+	},
+	onError(error: string) {
+		toast.add({
+			title: error as string,
+			color: "error",
+		});
+	},
+});
 </script>
 
 <template>
-	<div class="grid place-items-center p-4 h-screen">
-		<div class="flex gap-4 items-center">
-			<Button @click="goToHomePage">Back</Button>
-			<h1 class="text-2xl flex-1 font-bold">Add Server</h1>
-		</div>
-
-		<ServerForm
-			:is-loading="isLoading"
-			:is-form-valid="isFormValid"
-			@submit="onSubmit"
-		/>
-	</div>
+	<Teleport to="#header-icon">
+		<RouterLink :to="{ name: 'home' }">
+			<UButton aria-label="Go home" icon="tabler:arrow-left" size="sm" />
+		</RouterLink>
+	</Teleport>
+	<Teleport to="#header-title"> Add Server </Teleport>
+	<UPage>
+		<UPageBody class="flex items-center justify-center">
+			<ServerForm
+				:is-loading="isLoading"
+				:validation-schema="validationSchema"
+				:fields="fields"
+				@submit="onSubmit"
+			/>
+		</UPageBody>
+	</UPage>
 </template>

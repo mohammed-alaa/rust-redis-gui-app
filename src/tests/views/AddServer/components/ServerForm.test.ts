@@ -1,19 +1,36 @@
-import { expect, describe, it, afterEach, vi } from "vitest";
+import { expect, describe, it, afterEach, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 import ServerForm from "@views/AddServer/components/ServerForm.vue";
 import { defineComponent } from "vue";
 import { useAddServerForm } from "@views/AddServer/composables/useAddServerForm";
 import { createPinia, setActivePinia } from "pinia";
+import { useServerFactory } from "@test-utils/useServerFactory";
+import { useFakeRouter } from "@test-utils/useFakeRouter";
 
 describe("ServerForm", () => {
+	async function setup(props: any) {
+		return mount(ServerForm, {
+			props,
+			global: {
+				plugins: [await useFakeRouter()],
+			},
+		});
+	}
+
+	beforeEach(() => {
+		setActivePinia(createPinia());
+	});
 	afterEach(() => {
 		vi.clearAllMocks();
 	});
 
 	describe("Form Structure", () => {
-		it("renders the form structure correctly", () => {
-			const wrapper = mount(ServerForm, {
-				props: { isLoading: false, isFormValid: true },
+		it("renders the form structure correctly", async () => {
+			const { fields, validationSchema } = useAddServerForm();
+			const wrapper = await setup({
+				isLoading: false,
+				fields,
+				validationSchema,
 			});
 
 			expect(
@@ -41,28 +58,41 @@ describe("ServerForm", () => {
 					.exists(),
 			).toBe(true);
 
-			expect(
-				wrapper
-					.find('[data-testid="add-server-form-name-field-error"]')
-					.exists(),
-			).toBe(false);
-			expect(
-				wrapper
-					.find('[data-testid="add-server-form-address-field-error"]')
-					.exists(),
-			).toBe(false);
-			expect(
-				wrapper
-					.find('[data-testid="add-server-form-port-field-error"]')
-					.exists(),
-			).toBe(false);
+			const nameField = wrapper.find(
+				'[data-testid="add-server-form-name-field"]',
+			);
+			const addressField = wrapper.find(
+				'[data-testid="add-server-form-address-field"]',
+			);
+			const portField = wrapper.find(
+				'[data-testid="add-server-form-port-field"]',
+			);
 
+			expect(nameField.element.parentElement).not.toBeNullable();
+			expect(addressField.element.parentElement).not.toBeNullable();
+			expect(portField.element.parentElement).not.toBeNullable();
+
+			expect(
+				nameField.element.parentElement!.nextElementSibling,
+			).toBeNullable();
+			expect(
+				addressField.element.parentElement!.nextElementSibling,
+			).toBeNullable();
+			expect(
+				portField.element.parentElement!.nextElementSibling,
+			).toBeNullable();
 			wrapper.unmount();
 		});
 
-		it("renders correct labels for each field", () => {
-			const wrapper = mount(ServerForm, {
-				props: { isLoading: false, isFormValid: true },
+		it("renders correct labels for each field", async () => {
+			const { fields, validationSchema } = useAddServerForm();
+			// const wrapper = mount(ServerForm, {
+			// 	props: { isLoading: false, fields, validationSchema },
+			// });
+			const wrapper = await setup({
+				isLoading: false,
+				fields,
+				validationSchema,
 			});
 
 			const nameFieldId = wrapper.find(
@@ -88,28 +118,15 @@ describe("ServerForm", () => {
 
 	describe("Form Submission", () => {
 		it("disables submit button when loading", async () => {
-			const wrapper = mount(ServerForm, {
-				props: { isLoading: true, isFormValid: true },
-			});
+			const { fields, validationSchema } = useAddServerForm();
 
-			const submitBtn = wrapper.find(
-				'[data-testid="add-server-form-submit-button"]',
-			);
-
-			expect(submitBtn.attributes("disabled")).toBeDefined();
-			await submitBtn.trigger("click");
-			await flushPromises();
-			expect(wrapper.emitted("submit")).toBeUndefined(); // No emit when disabled
-
-			wrapper.unmount();
-		});
-
-		it("disables submit button when form isn't valid", async () => {
-			const wrapper = mount(ServerForm, {
-				props: {
-					isLoading: false,
-					isFormValid: false,
-				},
+			// const wrapper = mount(ServerForm, {
+			// 	props: { isLoading: true, fields, validationSchema },
+			// });
+			const wrapper = await setup({
+				isLoading: true,
+				fields,
+				validationSchema,
 			});
 
 			const submitBtn = wrapper.find(
@@ -125,11 +142,19 @@ describe("ServerForm", () => {
 		});
 
 		it("emits 'submit' event when clicking enabled submit button", async () => {
-			const wrapper = mount(ServerForm, {
-				props: {
-					isLoading: false,
-					isFormValid: true,
-				},
+			const { fields, validationSchema } = useAddServerForm();
+
+			// const wrapper = mount(ServerForm, {
+			// 	props: {
+			// 		isLoading: false,
+			// 		fields,
+			// 		validationSchema,
+			// 	},
+			// });
+			const wrapper = await setup({
+				isLoading: false,
+				fields,
+				validationSchema,
 			});
 
 			const submitBtn = wrapper.find(
@@ -144,16 +169,38 @@ describe("ServerForm", () => {
 		});
 
 		it("emits 'submit' event on native form submission", async () => {
-			const wrapper = mount(ServerForm, {
-				props: {
-					isLoading: false,
-					isFormValid: true,
-				},
+			const { fields, validationSchema } = useAddServerForm();
+			const validFormFields =
+				useServerFactory().validServer().serverFormFields;
+
+			fields.name = validFormFields.name;
+			fields.address = validFormFields.address;
+			fields.port = validFormFields.port;
+
+			// const wrapper = mount(ServerForm, {
+			// 	props: {
+			// 		isLoading: false,
+			// 		fields,
+			// 		validationSchema,
+			// 	},
+			// 	global: {
+			// 		stubs: {
+			// 			Teleport: true,
+			// 		},
+			// 	},
+			// });
+
+			const wrapper = await setup({
+				isLoading: false,
+				fields,
+				validationSchema,
 			});
 
 			await wrapper
 				.find('[data-testid="add-server-form"]')
 				.trigger("submit");
+			await flushPromises();
+
 			expect(wrapper.emitted("submit")).toHaveLength(1);
 
 			wrapper.unmount();
@@ -161,40 +208,56 @@ describe("ServerForm", () => {
 	});
 
 	it("renders FormMessage elements for each field", async () => {
-		setActivePinia(createPinia());
 		const wrapper = mount(
 			defineComponent({
 				components: { ServerForm },
 				setup() {
-					return useAddServerForm();
+					const addServerForm = useAddServerForm();
+					addServerForm.fields.port = -1; // Invalid port to trigger validation message
+					return addServerForm;
 				},
-				template: `<ServerForm :isLoading="isLoading" :isFormValid="isFormValid" @submit="onSubmit" />`,
+				template: `<ServerForm :isLoading="isLoading" :fields="fields"
+                :validationSchema="validationSchema" @submit="onSubmit" />`,
 			}),
+			{
+				global: {
+					plugins: [await useFakeRouter()],
+				},
+			},
 		);
-
-		wrapper.vm.form.setFieldValue("name", "");
-		wrapper.vm.form.setFieldValue("address", "");
-		wrapper.vm.form.setFieldValue("port", -1);
 
 		await wrapper.find('[data-testid="add-server-form"]').trigger("submit");
 		await flushPromises();
-		await vi.waitFor(() => {
-			expect(
-				wrapper
-					.find('[data-testid="add-server-form-name-field-error"]')
-					.exists(),
-			).toBe(true);
-			expect(
-				wrapper
-					.find('[data-testid="add-server-form-address-field-error"]')
-					.exists(),
-			).toBe(true);
-			expect(
-				wrapper
-					.find('[data-testid="add-server-form-port-field-error"]')
-					.exists(),
-			).toBe(true);
-		});
+
+		const nameField = wrapper.find(
+			'[data-testid="add-server-form-name-field"]',
+		);
+		const addressField = wrapper.find(
+			'[data-testid="add-server-form-address-field"]',
+		);
+		const portField = wrapper.find(
+			'[data-testid="add-server-form-port-field"]',
+		);
+
+		expect(nameField.element.parentElement).not.toBeNullable();
+		expect(addressField.element.parentElement).not.toBeNullable();
+		expect(portField.element.parentElement).not.toBeNullable();
+
+		expect(
+			nameField.element.parentElement!.nextElementSibling?.getAttribute(
+				"id",
+			),
+		).toEqual(nameField.element.getAttribute("aria-describedby"));
+		expect(
+			addressField.element.parentElement!.nextElementSibling?.getAttribute(
+				"id",
+			),
+		).toEqual(addressField.element.getAttribute("aria-describedby"));
+		expect(
+			portField.element.parentElement!.nextElementSibling?.getAttribute(
+				"id",
+			),
+		).toEqual(portField.element.getAttribute("aria-describedby"));
 
 		wrapper.unmount();
 	});

@@ -32,6 +32,12 @@
 			"@test-utils/*": ["./src/tests/__utils__/*"]
 		}
 	},
-	"include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],
+	"include": [
+		"src/**/*.ts",
+		"src/**/*.d.ts",
+		"src/**/*.vue",
+		"auto-imports.d.ts",
+		"components.d.ts"
+	],
 	"references": [{ "path": "./tsconfig.node.json" }]
 }

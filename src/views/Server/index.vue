@@ -4,13 +4,12 @@ import { RouterLink } from "vue-router";
 import { useServerStore } from "@stores/useServerStore";
 import { useKeyStore } from "@stores/useKeyStore";
 import { onBeforeUnmount } from "vue";
-import { toast } from "vue-sonner";
 import { useFilterForm } from "./composables/useFilterForm";
-import { Button } from "@components/ui/button";
 import KeysTable from "./components/KeysTable.vue";
 import FilterForm from "./components/FilterForm.vue";
 import CurrentKeyDetailts from "./components/CurrentKeyDetailts.vue";
 
+const toast = useToast();
 const serverStore = useServerStore();
 const { activeServer, isConnected } = storeToRefs(serverStore);
 const keyStore = useKeyStore();
@@ -19,7 +18,10 @@ const { form, onSubmit: onFiltersSubmitted } = useFilterForm();
 
 onBeforeUnmount(() => {
 	serverStore.closeServer().catch(() => {
-		toast.error("Failed to close the server connection");
+		toast.add({
+			title: "Failed to close server connection",
+			color: "error",
+		});
 	});
 });
 
@@ -28,7 +30,10 @@ async function onSubmit(event: Event) {
 		const values = await onFiltersSubmitted(event);
 		await keyStore.retrieveKeys(values!);
 	} catch (error) {
-		toast.error(`${error}`);
+		toast.add({
+			title: `${error}`,
+			color: "error",
+		});
 	}
 }
 
@@ -36,47 +41,81 @@ async function onKeyClick(key: TKey["key"]) {
 	try {
 		await keyStore.retrieveKey(key);
 	} catch (error) {
-		toast.error(`${error}`);
+		toast.add({
+			title: `${error}`,
+			color: "error",
+		});
 	}
 }
 
-keyStore.retrieveKeys(form.values).catch((error) => toast.error(`${error}`));
+keyStore.retrieveKeys(form.values).catch((error) =>
+	toast.add({
+		title: `${error}`,
+		color: "error",
+	}),
+);
 </script>
 
 <template>
-	<div class="flex items-center px-4 py-2 bg-muted gap-2">
+	<Teleport to="#header-icon">
 		<RouterLink :to="{ name: 'home' }">
-			<Button> Go Back </Button>
+			<UButton aria-label="Go home" icon="tabler:arrow-left" size="sm" />
 		</RouterLink>
-		<h1>Server</h1>
-	</div>
+	</Teleport>
 
-	<template v-if="isConnected">
-		<div class="p-4">
-			<p>
-				<span>Active Server: </span>
-				<strong>
-					{{ activeServer!.name }} - {{ activeServer!.address }}:
-					{{ activeServer!.port }}
-				</strong>
-			</p>
+	<UPage>
+		<UContainer class="flex flex-col gap-4">
+			<template v-if="isConnected">
+				<Teleport to="#header-title">
+					Server - {{ activeServer!.name }}
+				</Teleport>
+				<Teleport to="#header-title-icon">
+					<UPopover
+						arrow
+						mode="hover"
+						:content="{
+							side: 'right',
+						}"
+					>
+						<UButton
+							icon="tabler:info-circle"
+							color="info"
+							class="rounded-full"
+							size="sm"
+							variant="subtle"
+						/>
 
-			<div class="grid grid-cols-2 h-full gap-2 flex-wrap max-h-full">
-				<div class="flex flex-col gap-2">
-					<FilterForm @submit:filters="onSubmit" />
-					<KeysTable
-						class="flex-1"
-						:keys="keys"
-						@click:key="onKeyClick"
-					/>
+						<template #content>
+							<div>content</div>
+						</template>
+					</UPopover>
+				</Teleport>
+
+				<p>
+					<span>Active Server: </span>
+					<strong>
+						{{ activeServer!.address }}:{{ activeServer!.port }}
+					</strong>
+				</p>
+
+				<div class="grid grid-cols-2 h-full gap-2 flex-wrap max-h-full">
+					<div class="flex flex-col gap-2">
+						<FilterForm @submit:filters="onSubmit" />
+						<KeysTable
+							class="flex-1"
+							:keys="keys"
+							@click:key="onKeyClick"
+						/>
+					</div>
+					<div>
+						<CurrentKeyDetailts v-bind="currentKey" />
+					</div>
 				</div>
-				<div>
-					<CurrentKeyDetailts v-bind="currentKey" />
-				</div>
-			</div>
-		</div>
-	</template>
-	<template v-else>
-		<p>No active server</p>
-	</template>
+			</template>
+			<template v-else>
+				<Teleport to="#header-title"> Server </Teleport>
+				<p>No active server</p>
+			</template>
+		</UContainer>
+	</UPage>
 </template>

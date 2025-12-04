@@ -1,10 +1,11 @@
 import { beforeEach, expect, describe, it, afterEach, vi } from "vitest";
 import { setActivePinia, createPinia } from "pinia";
+import { treeifyError } from "zod";
 import { useServerStore } from "@stores/useServerStore";
 import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
 import { APP_ERROR_CODES, COMMANDS } from "@constants";
 import { useAddServerForm } from "@views/AddServer/composables/useAddServerForm";
-import { nextTick, defineComponent } from "vue";
+import { nextTick, defineComponent, ref } from "vue";
 import { mount, flushPromises } from "@vue/test-utils";
 import { useServerFactory } from "@test-utils/useServerFactory";
 import { ServerService } from "@services/ServerService";
@@ -40,11 +41,10 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form, isLoading, isFormValid } = wrapper.vm;
+			const { fields, isLoading } = wrapper.vm;
 
-			expect(form.values).toEqual(invalidServerFactory.serverFormFields);
+			expect(fields).toEqual(invalidServerFactory.serverFormFields);
 			expect(isLoading).toBe(false);
-			expect(isFormValid).toBe(true);
 			wrapper.unmount();
 		});
 
@@ -57,9 +57,9 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form } = wrapper.vm;
+			const { fields } = wrapper.vm;
 
-			expect(form.values).toEqual(invalidServerFactory.serverFormFields);
+			expect(fields).toEqual(invalidServerFactory.serverFormFields);
 			wrapper.unmount();
 		});
 	});
@@ -74,15 +74,17 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form } = wrapper.vm;
+			const { fields, validationSchema } = wrapper.vm;
 
-			form.setFieldValue("name", "A");
-			await form.validateField("name");
-			await nextTick();
+			fields.name = "A";
+			const result = validationSchema.safeParse(fields);
 
-			expect(form.errors.value.name).toBe(
-				"Name must be at least 2 characters",
-			);
+			expect(result.success).toBe(false);
+
+			expect(
+				treeifyError(result.error!).properties!.name!.errors,
+			).toContain("Name must be at least 2 characters");
+
 			wrapper.unmount();
 		});
 
@@ -95,15 +97,17 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form } = wrapper.vm;
+			const { fields, validationSchema } = wrapper.vm;
 
-			form.setFieldValue("name", "A".repeat(51));
-			await form.validateField("name");
-			await nextTick();
+			fields.name = "A".repeat(51);
+			const result = validationSchema.safeParse(fields);
 
-			expect(form.errors.value.name).toBe(
-				"Name must not exceed 50 characters",
-			);
+			expect(result.success).toBe(false);
+
+			expect(
+				treeifyError(result.error!).properties!.name!.errors,
+			).toContain("Name must not exceed 50 characters");
+
 			wrapper.unmount();
 		});
 
@@ -116,13 +120,17 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form } = wrapper.vm;
+			const { fields, validationSchema } = wrapper.vm;
 
-			form.setFieldValue("name", "Valid Server");
-			await form.validateField("name");
-			await nextTick();
+			fields.name = "Valid Server";
+			const result = validationSchema.safeParse(fields);
 
-			expect(form.errors.value.name).toBeUndefined();
+			expect(result.success).toBe(false);
+
+			expect(
+				treeifyError(result.error!).properties!.name?.errors,
+			).toBeUndefined();
+
 			wrapper.unmount();
 		});
 
@@ -135,15 +143,16 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form } = wrapper.vm;
+			const { fields, validationSchema } = wrapper.vm;
 
-			form.setFieldValue("address", "A");
-			await form.validateField("address");
-			await nextTick();
+			fields.address = "A";
+			const result = validationSchema.safeParse(fields);
 
-			expect(form.errors.value.address).toBe(
-				"Address must be at least 2 characters",
-			);
+			expect(result.success).toBe(false);
+
+			expect(
+				treeifyError(result.error!).properties!.address?.errors,
+			).toContain("Address must be at least 2 characters");
 			wrapper.unmount();
 		});
 
@@ -156,15 +165,16 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form } = wrapper.vm;
+			const { fields, validationSchema } = wrapper.vm;
 
-			form.setFieldValue("address", "A".repeat(51));
-			await form.validateField("address");
-			await nextTick();
+			fields.address = "A".repeat(51);
+			const result = validationSchema.safeParse(fields);
 
-			expect(form.errors.value.address).toBe(
-				"Address must not exceed 50 characters",
-			);
+			expect(result.success).toBe(false);
+
+			expect(
+				treeifyError(result.error!).properties!.address?.errors,
+			).toContain("Address must not exceed 50 characters");
 			wrapper.unmount();
 		});
 
@@ -177,13 +187,16 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form } = wrapper.vm;
+			const { fields, validationSchema } = wrapper.vm;
 
-			form.setFieldValue("address", "localhost");
-			await form.validateField("address");
-			await nextTick();
+			fields.address = "localhost";
+			const result = validationSchema.safeParse(fields);
 
-			expect(form.errors.value.address).toBeUndefined();
+			expect(result.success).toBe(false);
+
+			expect(
+				treeifyError(result.error!).properties!.address?.errors,
+			).toBeUndefined();
 			wrapper.unmount();
 		});
 
@@ -196,13 +209,18 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form } = wrapper.vm;
 
-			form.setFieldValue("port", 0);
-			await form.validateField("port");
-			await nextTick();
+			const { fields, validationSchema } = wrapper.vm;
 
-			expect(form.errors.value.port).toBe("Port must be at least 1");
+			fields.port = 0;
+			const result = validationSchema.safeParse(fields);
+
+			expect(result.success).toBe(false);
+
+			expect(
+				treeifyError(result.error!).properties!.port?.errors,
+			).toContain("Port must be at least 1");
+
 			wrapper.unmount();
 		});
 
@@ -215,13 +233,18 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form } = wrapper.vm;
 
-			form.setFieldValue("port", 65536);
-			await form.validateField("port");
-			await nextTick();
+			const { fields, validationSchema } = wrapper.vm;
 
-			expect(form.errors.value.port).toBe("Port must not exceed 65535");
+			fields.port = 65536;
+			const result = validationSchema.safeParse(fields);
+
+			expect(result.success).toBe(false);
+
+			expect(
+				treeifyError(result.error!).properties!.port?.errors,
+			).toContain("Port must not exceed 65535");
+
 			wrapper.unmount();
 		});
 
@@ -234,55 +257,17 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form } = wrapper.vm;
+			const { fields, validationSchema } = wrapper.vm;
 
-			form.setFieldValue("port", 6379);
-			await form.validateField("port");
-			await nextTick();
+			fields.port = 6379;
+			const result = validationSchema.safeParse(fields);
 
-			expect(form.errors.value.port).toBeUndefined();
-			wrapper.unmount();
-		});
+			expect(result.success).toBe(false);
 
-		it("updates isFormValid when all fields are valid", async () => {
-			const TestComponent = defineComponent({
-				setup() {
-					return useAddServerForm();
-				},
-				template: "<div></div>",
-			});
+			expect(
+				treeifyError(result.error!).properties!.port?.errors,
+			).toBeUndefined();
 
-			const wrapper = mount(TestComponent);
-			const { form, isFormValid } = wrapper.vm;
-
-			form.setFieldValue("name", "Test Server");
-			form.setFieldValue("address", "localhost");
-			form.setFieldValue("port", 6379);
-			await form.validate();
-			await nextTick();
-
-			expect(isFormValid).toBe(true);
-			wrapper.unmount();
-		});
-
-		it("isFormValid is false when fields are invalid", async () => {
-			const TestComponent = defineComponent({
-				setup() {
-					return useAddServerForm();
-				},
-				template: "<div></div>",
-			});
-
-			const wrapper = mount(TestComponent);
-			const { form } = wrapper.vm;
-
-			form.setFieldValue("name", "");
-			form.setFieldValue("address", "");
-			form.setFieldValue("port", -1);
-			await form.validate();
-			await nextTick();
-
-			expect(wrapper.vm.isFormValid).toBe(false);
 			wrapper.unmount();
 		});
 	});
@@ -303,25 +288,15 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form, onSubmit, isFormValid } = wrapper.vm;
+			const { fields, validationSchema } = wrapper.vm;
 
-			form.setFieldValue(
-				"name",
-				validServerFactory.serverFormFields.name,
-			);
-			form.setFieldValue(
-				"address",
-				validServerFactory.serverFormFields.address,
-			);
-			form.setFieldValue(
-				"port",
-				validServerFactory.serverFormFields.port,
-			);
+			fields.name = validServerFactory.serverFormFields.name;
+			fields.address = validServerFactory.serverFormFields.address;
+			fields.port = validServerFactory.serverFormFields.port;
 
-			await onSubmit();
-			await nextTick();
-
-			expect(isFormValid).toBe(true);
+			expect(validationSchema.parse(fields)).toEqual(
+				validServerFactory.serverFormFields,
+			);
 			wrapper.unmount();
 		});
 
@@ -340,25 +315,22 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form, onSubmit } = wrapper.vm;
+			const { fields, validationSchema, onSubmit } = wrapper.vm;
 			const serverStore = useServerStore();
 			const addServerSpy = vi.spyOn(serverStore, "addServer");
 
-			form.setFieldValue(
-				"name",
-				validServerFactory.serverFormFields.name,
-			);
-			form.setFieldValue(
-				"address",
-				validServerFactory.serverFormFields.address,
-			);
-			form.setFieldValue(
-				"port",
-				validServerFactory.serverFormFields.port,
+			fields.name = validServerFactory.serverFormFields.name;
+			fields.address = validServerFactory.serverFormFields.address;
+			fields.port = validServerFactory.serverFormFields.port;
+
+			expect(validationSchema.parse(fields)).toEqual(
+				validServerFactory.serverFormFields,
 			);
 
-			await onSubmit();
-			await nextTick();
+			await onSubmit({
+				data: fields,
+			} as any);
+			await flushPromises();
 
 			expect(addServerSpy).toHaveBeenCalledWith(
 				validServerFactory.serverFormFields,
@@ -378,28 +350,40 @@ describe("useAddServerForm", () => {
 
 			const TestComponent = defineComponent({
 				setup() {
-					return useAddServerForm();
+					const errorMessage = ref("");
+					const addServerForm = useAddServerForm({
+						onError(error) {
+							errorMessage.value = error;
+						},
+					});
+
+					return {
+						errorMessage,
+						...addServerForm,
+					};
 				},
-				template: "<div></div>",
+				template: "<div>{{errorMessage}}</div>",
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form, onSubmit } = wrapper.vm;
+			const { fields, validationSchema, onSubmit } = wrapper.vm;
 
-			form.setFieldValue(
-				"name",
-				validServerFactory.serverFormFields.name,
-			);
-			form.setFieldValue(
-				"address",
-				validServerFactory.serverFormFields.address,
-			);
-			form.setFieldValue(
-				"port",
-				validServerFactory.serverFormFields.port,
+			fields.name = validServerFactory.serverFormFields.name;
+			fields.address = validServerFactory.serverFormFields.address;
+			fields.port = validServerFactory.serverFormFields.port;
+
+			expect(validationSchema.parse(fields)).toEqual(
+				validServerFactory.serverFormFields,
 			);
 
-			await expect(onSubmit()).rejects.toBe(errorMessage);
+			await vi.waitFor(async () =>
+				onSubmit({
+					data: fields,
+				} as any),
+			);
+
+			expect(wrapper.text()).toBe(errorMessage);
+
 			wrapper.unmount();
 		});
 
@@ -426,7 +410,9 @@ describe("useAddServerForm", () => {
 
 			expect(wrapper.vm.isLoading).toBe(false);
 
-			const submitPromise = wrapper.vm.onSubmit();
+			const submitPromise = wrapper.vm.onSubmit({
+				data: validServerFactory.serverFormFields,
+			} as any);
 
 			await flushPromises();
 			void vi.waitFor(() => {
@@ -456,23 +442,20 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form, onSubmit } = wrapper.vm;
+			const { fields, validationSchema, onSubmit } = wrapper.vm;
 			const serverStore = useServerStore();
 
-			form.setFieldValue(
-				"name",
-				validServerFactory.serverFormFields.name,
-			);
-			form.setFieldValue(
-				"address",
-				validServerFactory.serverFormFields.address,
-			);
-			form.setFieldValue(
-				"port",
-				validServerFactory.serverFormFields.port,
+			fields.name = validServerFactory.serverFormFields.name;
+			fields.address = validServerFactory.serverFormFields.address;
+			fields.port = validServerFactory.serverFormFields.port;
+
+			expect(validationSchema.parse(fields)).toEqual(
+				validServerFactory.serverFormFields,
 			);
 
-			await onSubmit();
+			await onSubmit({
+				data: fields,
+			} as any);
 			await nextTick();
 
 			expect(serverStore.servers).toContainEqual(
@@ -496,28 +479,26 @@ describe("useAddServerForm", () => {
 			});
 
 			const wrapper = mount(TestComponent);
-			const { form, onSubmit } = wrapper.vm;
+			const { fields, validationSchema, onSubmit } = wrapper.vm;
 			const serverStore = useServerStore();
 
-			form.setFieldValue(
-				"name",
-				validServerFactory.serverFormFields.name,
-			);
-			form.setFieldValue(
-				"address",
-				validServerFactory.serverFormFields.address,
-			);
-			form.setFieldValue(
-				"port",
-				validServerFactory.serverFormFields.port,
+			fields.name = validServerFactory.serverFormFields.name;
+			fields.address = validServerFactory.serverFormFields.address;
+			fields.port = validServerFactory.serverFormFields.port;
+
+			expect(validationSchema.parse(fields)).toEqual(
+				validServerFactory.serverFormFields,
 			);
 
 			try {
-				await onSubmit();
+				await onSubmit({
+					data: fields,
+				} as any);
 			} catch {
 				// Expected error
 			}
-			await nextTick();
+
+			await flushPromises();
 
 			expect(serverStore.servers).toEqual([]);
 			wrapper.unmount();
