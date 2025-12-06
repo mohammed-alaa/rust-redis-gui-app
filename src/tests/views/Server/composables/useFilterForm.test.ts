@@ -1,8 +1,7 @@
 import { beforeEach, expect, describe, it, afterEach, vi } from "vitest";
 import { setActivePinia, createPinia } from "pinia";
 import { useFilterForm } from "@views/Server/composables/useFilterForm";
-import { defineComponent } from "vue";
-import { mount, flushPromises } from "@vue/test-utils";
+import { type FormSubmitEvent } from "@nuxt/ui";
 
 describe("useFilterForm", () => {
 	beforeEach(() => {
@@ -14,167 +13,117 @@ describe("useFilterForm", () => {
 	});
 
 	describe("initialization", () => {
-		it("initializes with default values", () => {
-			const TestComponent = defineComponent({
-				setup() {
-					return useFilterForm();
-				},
-				template: "<div></div>",
-			});
+		it("initializes with default field values", () => {
+			const { fields } = useFilterForm();
 
-			const wrapper = mount(TestComponent);
-			const { form } = wrapper.vm;
-
-			expect(form.values.pattern).toBe("");
-			expect(form.values.limit).toBe(100);
-			wrapper.unmount();
+			expect(fields.pattern).toBe("");
+			expect(fields.limit).toBe(100);
 		});
 
-		it("initializes with valid form state", () => {
-			const TestComponent = defineComponent({
-				setup() {
-					return useFilterForm();
-				},
-				template: "<div></div>",
-			});
+		it("returns a validation schema", () => {
+			const { validationSchema } = useFilterForm();
 
-			const wrapper = mount(TestComponent);
-			const { isFormValid } = wrapper.vm;
+			expect(validationSchema).toBeDefined();
+			// Test that schema can parse valid data
+			const result = validationSchema.safeParse({ pattern: "test", limit: 50 });
+			expect(result.success).toBe(true);
+		});
 
-			expect(isFormValid).toBe(true);
-			wrapper.unmount();
+		it("returns an onSubmit function", () => {
+			const { onSubmit } = useFilterForm();
+
+			expect(onSubmit).toBeDefined();
+			expect(typeof onSubmit).toBe("function");
 		});
 	});
 
-	describe("form validation", () => {
-		it("validates pattern as a string", () => {
-			const TestComponent = defineComponent({
-				setup() {
-					return useFilterForm();
-				},
-				template: "<div></div>",
-			});
+	describe("field reactivity", () => {
+		it("fields are reactive and can be modified", () => {
+			const { fields } = useFilterForm();
 
-			const wrapper = mount(TestComponent);
-			const { form } = wrapper.vm;
+			fields.pattern = "user:*";
+			expect(fields.pattern).toBe("user:*");
 
-			form.setFieldValue("pattern", "user:*");
-			expect(form.values.pattern).toBe("user:*");
-			wrapper.unmount();
-		});
-
-		it("validates limit as a number", () => {
-			const TestComponent = defineComponent({
-				setup() {
-					return useFilterForm();
-				},
-				template: "<div></div>",
-			});
-
-			const wrapper = mount(TestComponent);
-			const { form } = wrapper.vm;
-
-			form.setFieldValue("limit", 50);
-			expect(form.values.limit).toBe(50);
-			wrapper.unmount();
+			fields.limit = 50;
+			expect(fields.limit).toBe(50);
 		});
 
 		it("allows empty pattern", () => {
-			const TestComponent = defineComponent({
-				setup() {
-					return useFilterForm();
-				},
-				template: "<div></div>",
-			});
+			const { fields } = useFilterForm();
 
-			const wrapper = mount(TestComponent);
-			const { form, isFormValid } = wrapper.vm;
+			fields.pattern = "";
+			expect(fields.pattern).toBe("");
+		});
+	});
 
-			form.setFieldValue("pattern", "");
-			expect(form.values.pattern).toBe("");
-			expect(isFormValid).toBe(true);
-			wrapper.unmount();
+	describe("validation schema", () => {
+		it("validates pattern as a string", () => {
+			const { validationSchema } = useFilterForm();
+
+			const result = validationSchema.safeParse({ pattern: "user:*", limit: 100 });
+			expect(result.success).toBe(true);
+		});
+
+		it("validates limit as a number", () => {
+			const { validationSchema } = useFilterForm();
+
+			const result = validationSchema.safeParse({ pattern: "", limit: 50 });
+			expect(result.success).toBe(true);
+		});
+
+		it("rejects invalid limit type", () => {
+			const { validationSchema } = useFilterForm();
+
+			const result = validationSchema.safeParse({ pattern: "", limit: "invalid" });
+			expect(result.success).toBe(false);
+		});
+
+		it("rejects invalid pattern type", () => {
+			const { validationSchema } = useFilterForm();
+
+			const result = validationSchema.safeParse({ pattern: 123, limit: 100 });
+			expect(result.success).toBe(false);
 		});
 	});
 
 	describe("form submission", () => {
-		it("submits valid form data successfully", async () => {
-			const TestComponent = defineComponent({
-				setup() {
-					return useFilterForm();
-				},
-				template: "<div></div>",
-			});
+		it("calls onSuccess callback with form data on submit", async () => {
+			const onSuccessMock = vi.fn();
+			const { onSubmit, fields } = useFilterForm({ onSuccess: onSuccessMock });
 
-			const wrapper = mount(TestComponent);
-			const { form } = wrapper.vm;
+			fields.pattern = "test:*";
+			fields.limit = 50;
 
-			form.setFieldValue("pattern", "test:*");
-			form.setFieldValue("limit", 50);
+			const mockEvent = {
+				data: { pattern: "test:*", limit: 50 },
+			} as FormSubmitEvent<TRetrieveFilters>;
 
-			const submitFn = vi.fn();
-			const handleSubmit = form.handleSubmit(submitFn);
-			await handleSubmit(new Event("submit"));
-			await flushPromises();
+			await onSubmit(mockEvent);
 
-			expect(submitFn).toHaveBeenCalledWith(
-				expect.objectContaining({
-					pattern: "test:*",
-					limit: 50,
-				}),
-				expect.anything(),
-			);
-			wrapper.unmount();
+			expect(onSuccessMock).toHaveBeenCalledWith({ pattern: "test:*", limit: 50 });
 		});
 
-		it("returns submitted values after submit event", async () => {
-			const TestComponent = defineComponent({
-				setup() {
-					return useFilterForm();
-				},
-				template: "<div></div>",
-			});
+		it("does not throw when onSuccess is not provided", async () => {
+			const { onSubmit, fields } = useFilterForm();
 
-			const wrapper = mount(TestComponent);
-			const { form } = wrapper.vm;
+			fields.pattern = "cache:*";
+			fields.limit = 25;
 
-			form.setFieldValue("pattern", "cache:*");
-			form.setFieldValue("limit", 25);
+			const mockEvent = {
+				data: { pattern: "cache:*", limit: 25 },
+			} as FormSubmitEvent<TRetrieveFilters>;
 
-			// Use form's handleSubmit directly
-			const submitFn = vi.fn();
-			const handleSubmit = form.handleSubmit(submitFn);
-			await handleSubmit(new Event("submit"));
-			await flushPromises();
-
-			expect(form.values.pattern).toBe("cache:*");
-			expect(form.values.limit).toBe(25);
-			wrapper.unmount();
+			await expect(onSubmit(mockEvent)).resolves.not.toThrow();
 		});
 	});
 
-	describe("form validity", () => {
-		it("isFormValid updates when form values change", async () => {
-			const TestComponent = defineComponent({
-				setup() {
-					return useFilterForm();
-				},
-				template: "<div></div>",
-			});
+	describe("options", () => {
+		it("accepts empty options object", () => {
+			expect(() => useFilterForm({})).not.toThrow();
+		});
 
-			const wrapper = mount(TestComponent);
-			const { form, isFormValid } = wrapper.vm;
-
-			// Initially valid
-			expect(isFormValid).toBe(true);
-
-			// Update values
-			form.setFieldValue("pattern", "new-pattern");
-			await flushPromises();
-
-			// Should still be valid
-			expect(isFormValid).toBe(true);
-			wrapper.unmount();
+		it("accepts undefined options", () => {
+			expect(() => useFilterForm()).not.toThrow();
 		});
 	});
 });

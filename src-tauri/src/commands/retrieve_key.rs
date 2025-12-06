@@ -8,7 +8,7 @@ use std::time::Duration;
 use tauri::State;
 use tokio::sync::Mutex;
 
-#[derive(serde::Serialize)]
+#[derive(serde::Serialize, Debug)]
 pub struct RetrieveKeyResponse {
     details: KeyInfo,
     content: JsonValue,
@@ -167,7 +167,6 @@ mod tests {
         assert_eq!(key_info.key, "");
         assert_eq!(key_info.key_type, "");
         assert_eq!(key_info.ttl, 0);
-        assert_eq!(key_info.memory_usage, 0);
     }
 
     #[test]
@@ -176,13 +175,11 @@ mod tests {
             key: "test".to_string(),
             key_type: "string".to_string(),
             ttl: 100,
-            memory_usage: 50,
         };
         let json = serde_json::to_value(&key_info).unwrap();
         assert_eq!(json["key"], "test");
         assert_eq!(json["key_type"], "string");
         assert_eq!(json["ttl"], 100);
-        assert_eq!(json["memory_usage"], 50);
     }
 
     #[test]
@@ -191,13 +188,11 @@ mod tests {
             key: "test".to_string(),
             key_type: "string".to_string(),
             ttl: 100,
-            memory_usage: 50,
         };
         let cloned = key_info.clone();
         assert_eq!(key_info.key, cloned.key);
         assert_eq!(key_info.key_type, cloned.key_type);
         assert_eq!(key_info.ttl, cloned.ttl);
-        assert_eq!(key_info.memory_usage, cloned.memory_usage);
     }
 
     #[test]
@@ -206,10 +201,24 @@ mod tests {
             key: "test".to_string(),
             key_type: "string".to_string(),
             ttl: 100,
-            memory_usage: 50,
         };
         let debug_str = format!("{:?}", key_info);
         assert!(debug_str.contains("test"));
         assert!(debug_str.contains("string"));
+    }
+
+    #[test]
+    fn test_retrieve_key_response_serialization() {
+        let response = RetrieveKeyResponse {
+            details: KeyInfo {
+                key: "mykey".to_string(),
+                key_type: "string".to_string(),
+                ttl: -1,
+            },
+            content: json!("hello world"),
+        };
+        let json = serde_json::to_value(&response).unwrap();
+        assert_eq!(json["details"]["key"], "mykey");
+        assert_eq!(json["content"], "hello world");
     }
 }
