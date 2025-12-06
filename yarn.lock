@@ -2703,7 +2703,7 @@ reka-ui@2.6.0:
     defu "^6.1.4"
     ohash "^2.0.11"
 
-reka-ui@^2.0.0, reka-ui@^2.6.0:
+reka-ui@^2.0.0, reka-ui@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/reka-ui/-/reka-ui-2.6.1.tgz#08f6b8a8ee774887b6bcde3d8ea54b608acfe82c"
   integrity sha512-XK7cJDQoNuGXfCNzBBo/81Yg/OgjPwvbabnlzXG2VsdSgNsT6iIkuPBPr+C0Shs+3bb0x0lbPvgQAhMSCKm5Ww==
