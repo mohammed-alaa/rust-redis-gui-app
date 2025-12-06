@@ -24,7 +24,7 @@
 		"@vueuse/core": "^14.1.0",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
-		"lucide-vue-next": "^0.555.0",
+		"lucide-vue-next": "^0.556.0",
 		"pinia": "^3.0.4",
 		"reka-ui": "^2.6.1",
 		"tailwind-merge": "^3.4.0",
@@ -50,7 +50,7 @@
 		"typescript": "^5.9.3",
 		"vite": "^7.2.6",
 		"vitest": "^4.0.15",
-		"vue-tsc": "^3.1.5"
+		"vue-tsc": "^3.1.6"
 	},
 	"packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
