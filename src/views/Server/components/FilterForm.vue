@@ -1,37 +1,39 @@
 <script setup lang="ts">
-import {
-	FormField,
-	FormItem,
-	FormControl,
-	FormMessage,
-} from "@components/ui/form";
-import { Input } from "@components/ui/input";
+import { type Reactive } from "vue";
+import { type ZodSchema, type output } from "zod";
+import { type FormSubmitEvent } from "@nuxt/ui";
 
-defineEmits<{
-	"submit:filters": [event: Event];
+const props = defineProps<{
+	validationSchema: ZodSchema<TRetrieveFilters>;
+	fields: Reactive<TRetrieveFilters>;
 }>();
+
+const emit = defineEmits<{
+	"submit:filters": [
+		e: FormSubmitEvent<output<typeof props.validationSchema>>,
+	];
+}>();
+
+function onSubmit(event: FormSubmitEvent<output<ZodSchema<TRetrieveFilters>>>) {
+	emit("submit:filters", event);
+}
 </script>
 
 <template>
-	<form
+	<UForm
+		class="space-y-4"
 		data-testid="filter-keys-form"
-		class="flex flex-col gap-4 filter-form"
-		@submit.prevent="$emit('submit:filters', $event)"
+		:schema="validationSchema"
+		:state="fields"
+		@submit="onSubmit"
 	>
-		<FormField bails name="pattern" v-slot="{ componentField }">
-			<FormItem>
-				<FormControl>
-					<Input
-						type="text"
-						placeholder="Filter by pattern (e.g. user:*)"
-						data-testid="filter-keys-form-pattern-field"
-						v-bind="componentField"
-					/>
-				</FormControl>
-				<FormMessage
-					data-testid="filter-keys-form-pattern-field-error"
-				/>
-			</FormItem>
-		</FormField>
-	</form>
+		<UFormField name="pattern">
+			<UInput
+				class="w-full"
+				placeholder="Filter by pattern (e.g. user:*)"
+				data-testid="filter-keys-form-pattern-field"
+				v-model="fields.pattern"
+			/>
+		</UFormField>
+	</UForm>
 </template>

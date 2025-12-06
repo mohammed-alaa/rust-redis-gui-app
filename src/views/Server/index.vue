@@ -14,7 +14,22 @@ const serverStore = useServerStore();
 const { activeServer, isConnected } = storeToRefs(serverStore);
 const keyStore = useKeyStore();
 const { keys, currentKey } = storeToRefs(keyStore);
-const { form, onSubmit: onFiltersSubmitted } = useFilterForm();
+const {
+	fields,
+	validationSchema,
+	onSubmit: onFiltersSubmitted,
+} = useFilterForm({
+	onSuccess: async (values) => {
+		try {
+			await keyStore.retrieveKeys(values);
+		} catch (error) {
+			toast.add({
+				title: `${error}`,
+				color: "error",
+			});
+		}
+	},
+});
 
 onBeforeUnmount(() => {
 	serverStore.closeServer().catch(() => {
@@ -24,18 +39,6 @@ onBeforeUnmount(() => {
 		});
 	});
 });
-
-async function onSubmit(event: Event) {
-	try {
-		const values = await onFiltersSubmitted(event);
-		await keyStore.retrieveKeys(values!);
-	} catch (error) {
-		toast.add({
-			title: `${error}`,
-			color: "error",
-		});
-	}
-}
 
 async function onKeyClick(key: TKey["key"]) {
 	try {
@@ -48,7 +51,7 @@ async function onKeyClick(key: TKey["key"]) {
 	}
 }
 
-keyStore.retrieveKeys(form.values).catch((error) =>
+keyStore.retrieveKeys(fields).catch((error) =>
 	toast.add({
 		title: `${error}`,
 		color: "error",
@@ -100,7 +103,11 @@ keyStore.retrieveKeys(form.values).catch((error) =>
 			</Teleport>
 
 			<div class="flex flex-col gap-2 keys-table-container">
-				<FilterForm @submit:filters="onSubmit" />
+				<FilterForm
+					:fields="fields"
+					:validation-schema="validationSchema"
+					@submit:filters="onFiltersSubmitted"
+				/>
 				<KeysTable :keys="keys" @click:key="onKeyClick" />
 			</div>
 			<CurrentKeyDetails v-bind="currentKey" />
