@@ -12,6 +12,6 @@ export class KeyService {
 
 	/** Retrieve a specific key's details from Redis */
 	static async retrieveKey(key: TKey["key"]) {
-		return invoke<TKey>(COMMANDS.RETRIEVE_KEY, { key });
+		return invoke<TCurrentKey>(COMMANDS.RETRIEVE_KEY, { key });
 	}
 }

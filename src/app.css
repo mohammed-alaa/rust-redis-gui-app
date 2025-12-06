@@ -1,6 +1,42 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+:root {
+	--ui-header-height: --spacing(10);
+	--ui-keys-table-header-height: --spacing(10);
+}
+
+@layer components {
+	.keys-view-container {
+		--keys-views-container-height: 100vh - var(--ui-header-height);
+		max-height: calc(var(--keys-views-container-height));
+
+		.keys-table-container,
+		.key-details {
+			max-height: calc(
+				/*spacing(4) is vertical padding*/
+					var(--keys-views-container-height) - --spacing(4) * 2
+			);
+		}
+
+		.key-details {
+			--key-details-height: var(--keys-views-container-height) -
+				--spacing(4) * 2;
+
+			.filter-form {
+				max-height: var(--ui-keys-table-header-height);
+			}
+
+			.keys-table {
+				max-height: calc(
+					var(--key-details-height) -
+						var(--ui-keys-table-header-height)
+				);
+			}
+		}
+	}
+}
+
 /*
 	Old Shadcn components CSS
 	TODO: cleanup based on components still in use

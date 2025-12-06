@@ -20,11 +20,6 @@ export default defineConfig(() => ({
 						base: "select-none",
 					},
 				},
-				pageHeader: {
-					slots: {
-						root: "py-2 px-4",
-					},
-				},
 				tooltip: {
 					slots: {
 						content: "z-50",
