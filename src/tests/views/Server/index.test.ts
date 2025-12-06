@@ -3,11 +3,8 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import { mount } from "@vue/test-utils";
 import { describe, it, vi, beforeEach, afterEach, expect } from "vitest";
 import { clearMocks } from "@tauri-apps/api/mocks";
-import { toast } from "vue-sonner";
 import Server from "@views/Server/index.vue";
 import { useServerFactory } from "@test-utils/useServerFactory";
-
-vi.spyOn(toast, "error");
 
 describe("Server View", () => {
 	let servers: TServer[];
