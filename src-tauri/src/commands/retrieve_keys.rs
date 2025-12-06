@@ -23,7 +23,7 @@ async fn _retrieve_keys(
         AppError::RedisFailed
     })?;
 
-    let config = AsyncConnectionConfig::new().set_connection_timeout(Duration::from_secs(6));
+    let config = AsyncConnectionConfig::new().set_connection_timeout(Some(Duration::from_secs(6)));
     let mut connection = redis_client
         .get_multiplexed_async_connection_with_config(&config)
         .await
@@ -58,7 +58,10 @@ async fn _retrieve_keys(
             }
 
             _keys.push(KeyInfo {
-                key,
+                key: key.map_err(|_| {
+                    log::error!("Error retrieving key during scan");
+                    AppError::RedisFailed
+                })?,
                 ..KeyInfo::default()
             });
         }

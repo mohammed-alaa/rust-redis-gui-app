@@ -14,7 +14,7 @@ pub async fn test_connection(server: &Server) -> Result<Client, AppError> {
             AppError::RedisFailed
         })?;
 
-    let config = AsyncConnectionConfig::new().set_connection_timeout(Duration::from_secs(6));
+    let config = AsyncConnectionConfig::new().set_connection_timeout(Some(Duration::from_secs(6)));
     let mut conn = client
         .get_multiplexed_async_connection_with_config(&config)
         .await

@@ -32,7 +32,7 @@ async fn _retrieve_key(
         AppError::RedisFailed
     })?;
 
-    let config = AsyncConnectionConfig::new().set_connection_timeout(Duration::from_secs(6));
+    let config = AsyncConnectionConfig::new().set_connection_timeout(Some(Duration::from_secs(6)));
     let mut connection = redis_client
         .get_multiplexed_async_connection_with_config(&config)
         .await
