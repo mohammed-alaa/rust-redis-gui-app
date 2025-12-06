@@ -7,7 +7,7 @@ import { onBeforeUnmount } from "vue";
 import { useFilterForm } from "./composables/useFilterForm";
 import KeysTable from "./components/KeysTable.vue";
 import FilterForm from "./components/FilterForm.vue";
-import CurrentKeyDetailts from "./components/CurrentKeyDetailts.vue";
+import CurrentKeyDetails from "./components/CurrentKeyDetails.vue";
 
 const toast = useToast();
 const serverStore = useServerStore();
@@ -103,7 +103,7 @@ keyStore.retrieveKeys(form.values).catch((error) =>
 				<FilterForm @submit:filters="onSubmit" />
 				<KeysTable :keys="keys" @click:key="onKeyClick" />
 			</div>
-			<CurrentKeyDetailts v-bind="currentKey" />
+			<CurrentKeyDetails v-bind="currentKey" />
 		</template>
 		<template v-else>
 			<Teleport to="#header-title"> Server </Teleport>
