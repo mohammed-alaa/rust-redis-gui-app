@@ -1,34 +1,32 @@
-import { computed } from "vue";
-import { useForm } from "vee-validate";
-import { toTypedSchema } from "@vee-validate/zod";
+import { reactive } from "vue";
 import { z } from "zod";
+import { type FormSubmitEvent } from "@nuxt/ui";
 
-export function useFilterForm() {
-	const formSchema = toTypedSchema(
-		z.object({
-			pattern: z.string(),
-			limit: z.number(),
-		}),
-	);
+interface TOptions {
+	onSuccess?: (data: TRetrieveFilters) => void;
+}
 
-	const form = useForm<TRetrieveFilters>({
-		validationSchema: formSchema,
-		initialValues: {
-			pattern: "",
-			limit: 100,
-		},
+export function useFilterForm({ onSuccess }: TOptions = {}) {
+	const validationSchema = z.object({
+		pattern: z.string(),
+		limit: z.number(),
 	});
 
-	const isFormValid = computed(() => form.meta.value.valid);
+	const fields = reactive<TRetrieveFilters>({
+		pattern: "",
+		limit: 100,
+	});
 
-	async function submit(values: TRetrieveFilters) {
-		return Promise.resolve(values);
+	async function onSubmit(
+		event: FormSubmitEvent<z.output<typeof validationSchema>>,
+	) {
+		onSuccess?.(event.data);
 	}
 
 	return {
-		form,
-		isFormValid,
+		fields,
+		validationSchema,
 
-		onSubmit: form.handleSubmit(submit),
+		onSubmit,
 	};
 }
