@@ -69,4 +69,7 @@ export default defineConfig(() => ({
 			"@services": resolve(__dirname, "./src/services"),
 		},
 	},
+	optimizeDeps: {
+		exclude: ["@vueuse/core"],
+	},
 }));
