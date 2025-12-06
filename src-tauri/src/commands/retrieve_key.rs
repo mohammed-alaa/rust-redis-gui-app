@@ -8,7 +8,7 @@ use std::time::Duration;
 use tauri::State;
 use tokio::sync::Mutex;
 
-#[derive(serde::Serialize)]
+#[derive(serde::Serialize, Debug)]
 pub struct RetrieveKeyResponse {
     details: KeyInfo,
     content: JsonValue,
@@ -147,4 +147,78 @@ pub async fn retrieve_key(
     key: String,
 ) -> Result<RetrieveKeyResponse, AppError> {
     _retrieve_key(state.inner(), key).await
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_retrieve_key_no_redis_client() {
+        let app_state = Mutex::new(AppState::new());
+        let result = _retrieve_key(&app_state, "test_key".to_string()).await;
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), AppError::RedisFailed);
+    }
+
+    #[test]
+    fn test_key_info_default() {
+        let key_info = KeyInfo::default();
+        assert_eq!(key_info.key, "");
+        assert_eq!(key_info.key_type, "");
+        assert_eq!(key_info.ttl, 0);
+    }
+
+    #[test]
+    fn test_key_info_serialization() {
+        let key_info = KeyInfo {
+            key: "test".to_string(),
+            key_type: "string".to_string(),
+            ttl: 100,
+        };
+        let json = serde_json::to_value(&key_info).unwrap();
+        assert_eq!(json["key"], "test");
+        assert_eq!(json["key_type"], "string");
+        assert_eq!(json["ttl"], 100);
+    }
+
+    #[test]
+    fn test_key_info_clone() {
+        let key_info = KeyInfo {
+            key: "test".to_string(),
+            key_type: "string".to_string(),
+            ttl: 100,
+        };
+        let cloned = key_info.clone();
+        assert_eq!(key_info.key, cloned.key);
+        assert_eq!(key_info.key_type, cloned.key_type);
+        assert_eq!(key_info.ttl, cloned.ttl);
+    }
+
+    #[test]
+    fn test_key_info_debug() {
+        let key_info = KeyInfo {
+            key: "test".to_string(),
+            key_type: "string".to_string(),
+            ttl: 100,
+        };
+        let debug_str = format!("{:?}", key_info);
+        assert!(debug_str.contains("test"));
+        assert!(debug_str.contains("string"));
+    }
+
+    #[test]
+    fn test_retrieve_key_response_serialization() {
+        let response = RetrieveKeyResponse {
+            details: KeyInfo {
+                key: "mykey".to_string(),
+                key_type: "string".to_string(),
+                ttl: -1,
+            },
+            content: json!("hello world"),
+        };
+        let json = serde_json::to_value(&response).unwrap();
+        assert_eq!(json["details"]["key"], "mykey");
+        assert_eq!(json["content"], "hello world");
+    }
 }
