@@ -5,7 +5,10 @@ import { KeyService } from "@services/KeyService";
 
 export const useKeyStore = defineStore("key-store", () => {
 	const keys = ref<TKey[]>([]);
-	const currentKey = ref<TKey | null>(null);
+	const currentKey = ref<TCurrentKey>({
+		details: null,
+		content: null,
+	});
 
 	const { isLoading, withLoading } = useLoading();
 
@@ -19,7 +22,7 @@ export const useKeyStore = defineStore("key-store", () => {
 
 	async function retrieveKey(key: TKey["key"]) {
 		currentKey.value = await KeyService.retrieveKey(key);
-		return Promise.resolve<TKey>(currentKey.value);
+		return Promise.resolve<TCurrentKey>(currentKey.value);
 	}
 
 	return {

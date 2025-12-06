@@ -32,7 +32,7 @@ describe("KeyService", () => {
 			expect(Array.isArray(keys)).toBe(true);
 		});
 
-		it("retrieves keys with filter", async () => {
+		it("retrieves keys with pattern", async () => {
 			mockIPC(async (cmd, args) => {
 				if (cmd === COMMANDS.RETRIEVE_KEYS) {
 					if ((args as TRetrieveKeysFilters).pattern === "user:*") {
@@ -136,19 +136,25 @@ describe("KeyService", () => {
 				ttl: -1,
 				// memory_usage: 128,
 			};
+			const mockContent: TCurrentKey["content"] = {
+				value: "Sample content for user:1",
+			};
 
 			mockIPC(async (cmd, args) => {
 				if (cmd === COMMANDS.RETRIEVE_KEY) {
 					if ((args as { key: string }).key === "user:1") {
-						return Promise.resolve<TKey>(mockKey);
+						return Promise.resolve<TCurrentKey>({
+							details: mockKey,
+							content: mockContent,
+						});
 					}
 				}
 			});
 
 			const key = await KeyService.retrieveKey("user:1");
 			expect(key).toBeDefined();
-			expect(key.key).toBe("user:1");
-			expect(key.key_type).toBe("string");
+			expect(key.details).toBe(mockKey);
+			expect(key.content).toBe(mockContent);
 		});
 
 		it("handles key not found", async () => {
