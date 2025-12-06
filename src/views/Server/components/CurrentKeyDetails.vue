@@ -12,9 +12,9 @@ withDefaults(
 </script>
 
 <template>
-	<div class="break-all overflow-y-auto key-details">
-		{{ details }}
+	<div class="whitespace-pre-wrap break-all overflow-y-auto key-details">
+		<div>{{ details }}</div>
 		<br />
-		{{ content }}
+		<div>{{ content }}</div>
 	</div>
 </template>
