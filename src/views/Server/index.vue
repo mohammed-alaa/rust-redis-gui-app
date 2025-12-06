@@ -63,61 +63,51 @@ keyStore.retrieveKeys(form.values).catch((error) =>
 		</RouterLink>
 	</Teleport>
 
-	<UPage>
-		<UContainer class="flex flex-col gap-4">
-			<template v-if="isConnected">
-				<Teleport to="#header-title">
-					Server - {{ activeServer!.name }}
-				</Teleport>
-				<Teleport to="#header-title-icon">
-					<UPopover
-						arrow
-						mode="hover"
-						:content="{
-							side: 'right',
-						}"
-					>
-						<UButton
-							icon="tabler:info-circle"
-							color="info"
-							class="rounded-full"
-							size="sm"
-							variant="subtle"
-						/>
+	<UContainer class="grid grid-cols-2 py-4 gap-4 keys-view-container">
+		<template v-if="isConnected">
+			<Teleport to="#header-title">
+				Server - {{ activeServer!.name }}
+			</Teleport>
+			<Teleport to="#header-title-icon">
+				<UPopover
+					arrow
+					mode="hover"
+					:content="{
+						side: 'right',
+					}"
+				>
+					<UButton
+						icon="tabler:info-circle"
+						color="info"
+						class="rounded-full"
+						size="sm"
+						variant="subtle"
+					/>
 
-						<template #content>
-							<UContainer class="py-2">
-								<p>
-									<span>Address: </span>
-									<strong>
-										{{ activeServer!.address }}:{{
-											activeServer!.port
-										}}
-									</strong>
-								</p>
-							</UContainer>
-						</template>
-					</UPopover>
-				</Teleport>
+					<template #content>
+						<UContainer class="py-2">
+							<p>
+								<span>Address: </span>
+								<strong>
+									{{ activeServer!.address }}:{{
+										activeServer!.port
+									}}
+								</strong>
+							</p>
+						</UContainer>
+					</template>
+				</UPopover>
+			</Teleport>
 
-				<div class="grid grid-cols-2 h-full gap-2 flex-wrap max-h-full">
-					<div class="flex flex-col gap-2">
-						<FilterForm @submit:filters="onSubmit" />
-						<KeysTable
-							class="flex-1"
-							:keys="keys"
-							@click:key="onKeyClick"
-						/>
-					</div>
-					<div>
-						<CurrentKeyDetailts v-bind="currentKey" />
-					</div>
-				</div>
-			</template>
-			<template v-else>
-				<Teleport to="#header-title"> Server </Teleport>
-				<p>No active server</p>
-			</template>
-		</UContainer>
-	</UPage>
+			<div class="flex flex-col gap-2 keys-table-container">
+				<FilterForm @submit:filters="onSubmit" />
+				<KeysTable :keys="keys" @click:key="onKeyClick" />
+			</div>
+			<CurrentKeyDetailts v-bind="currentKey" />
+		</template>
+		<template v-else>
+			<Teleport to="#header-title"> Server </Teleport>
+			<p>No active server</p>
+		</template>
+	</UContainer>
 </template>

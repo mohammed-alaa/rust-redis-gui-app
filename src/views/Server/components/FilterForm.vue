@@ -15,7 +15,7 @@ defineEmits<{
 <template>
 	<form
 		data-testid="filter-keys-form"
-		class="flex flex-col gap-4"
+		class="flex flex-col gap-4 filter-form"
 		@submit.prevent="$emit('submit:filters', $event)"
 	>
 		<FormField bails name="pattern" v-slot="{ componentField }">

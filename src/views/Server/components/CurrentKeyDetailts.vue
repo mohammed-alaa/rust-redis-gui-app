@@ -12,7 +12,9 @@ withDefaults(
 </script>
 
 <template>
-	{{ details }}
-	<br />
-	{{ content }}
+	<div class="break-all overflow-y-auto key-details">
+		{{ details }}
+		<br />
+		{{ content }}
+	</div>
 </template>

@@ -17,12 +17,12 @@ defineProps<{
 </script>
 
 <template>
-	<div class="overflow-auto rounded-md border" style="max-height: 400px">
+	<div class="rounded-md border overflow-y-auto keys-table">
 		<Table class="table-fixed">
 			<colgroup>
 				<col width="10%" />
 				<col width="70%" />
-				<col width="10%" />
+				<col width="20%" />
 			</colgroup>
 			<TableHeader sticky class="bg-muted shadow">
 				<TableRow>
