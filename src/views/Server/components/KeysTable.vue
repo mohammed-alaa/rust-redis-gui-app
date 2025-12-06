@@ -17,7 +17,7 @@ defineProps<{
 </script>
 
 <template>
-	<div class="rounded-md border overflow-y-auto keys-table">
+	<div class="rounded-md border border-default overflow-y-auto keys-table">
 		<Table class="table-fixed">
 			<colgroup>
 				<col width="10%" />
