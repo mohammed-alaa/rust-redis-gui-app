@@ -1,70 +1,45 @@
-use log::{LevelFilter, SetLoggerError};
-use log4rs::{
-    config::{Appender, Logger, Root},
-    encode::pattern::PatternEncoder,
-    Config, Handle,
+use log::LevelFilter;
+use tauri_plugin_log::{
+    fern::colors::{Color, ColoredLevelConfig},
+    Builder,
 };
+use time::{macros::format_description, OffsetDateTime};
 
-#[cfg(any(test, dev))]
-use log4rs::append::console::ConsoleAppender;
-#[cfg(any(test, dev))]
-fn build_console_logger() -> (String, LevelFilter, Appender) {
-    let name = "console".to_string();
-    let logger = log4rs::config::Appender::builder().build(
-        name.clone(),
-        Box::new(
-            ConsoleAppender::builder()
-                .encoder(Box::new(PatternEncoder::new(
-                    "[{d(%Y-%m-%d %H:%M:%S)} - {h({l})}] - {m}{n}",
-                )))
-                .build(),
-        ),
-    );
+/// Initializes the application logger with environment-based configuration.
+///
+/// Configures logging to write to a file in the log directory with colored output.
+/// Log level is set to Debug in development mode and Warn in production.
+/// Log messages are formatted with a timestamp and colored log level.
+///
+/// # Returns
+/// A `Builder` that should be built and registered as a Tauri plugin.
+pub fn init_logger() -> Builder {
+    tauri_plugin_log::Builder::new()
+        .target(tauri_plugin_log::Target::new(
+            tauri_plugin_log::TargetKind::LogDir {
+                file_name: Some("logs".to_string()),
+            },
+        ))
+        .level(match tauri::is_dev() {
+            true => LevelFilter::Debug,
+            false => LevelFilter::Warn,
+        })
+        .format(|out, message, record| {
+            let now = OffsetDateTime::now_local().unwrap_or_else(|_| OffsetDateTime::now_utc());
+            let format = format_description!("[year]-[month]-[day] [hour]:[minute]:[second]");
 
-    (name, LevelFilter::Debug, logger)
-}
+            let colors = ColoredLevelConfig::new()
+                .info(Color::Green)
+                .warn(Color::Yellow)
+                .error(Color::Red)
+                .debug(Color::Blue);
 
-#[cfg(all(not(test), not(dev)))]
-use log4rs::append::file::FileAppender;
-#[cfg(all(not(test), not(dev)))]
-use std::path::Path;
-#[cfg(all(not(test), not(dev)))]
-fn build_file_logger() -> (String, LevelFilter, Appender) {
-    let name = "file".to_string();
-    let logger = log4rs::config::Appender::builder().build(
-        name.clone(),
-        Box::new(
-            FileAppender::builder()
-                .append(true)
-                .encoder(Box::new(PatternEncoder::new(
-                    "[{d(%Y-%m-%d %H:%M:%S)} - {l}] - {m}{n}",
-                )))
-                .build(Path::new("app.log"))
-                .unwrap(),
-        ),
-    );
-
-    (name, LevelFilter::Warn, logger)
-}
-
-pub fn init_logger() -> Result<Handle, SetLoggerError> {
-    let (name, minimum_level, logger) = {
-        #[cfg(any(test, dev))]
-        {
-            build_console_logger()
-        }
-
-        #[cfg(all(not(test), not(dev)))]
-        {
-            build_file_logger()
-        }
-    };
-
-    let config = Config::builder()
-        .appender(logger)
-        .logger(Logger::builder().build(&name, minimum_level))
-        .build(Root::builder().appender(&name).build(minimum_level))
-        .unwrap();
-
-    log4rs::init_config(config)
+            out.finish(format_args!(
+                "[{} - {}] {}",
+                now.format(&format)
+                    .unwrap_or_else(|_| now.unix_timestamp().to_string()),
+                colors.color(record.level()),
+                message
+            ));
+        })
 }
