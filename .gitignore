@@ -26,6 +26,3 @@ dist-ssr
 *.db
 
 coverage/
-
-auto-imports.d.ts
-components.d.ts
