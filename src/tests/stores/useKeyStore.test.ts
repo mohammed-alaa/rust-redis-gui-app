@@ -80,7 +80,7 @@ describe("useKeyStore", () => {
 			mockIPC((cmd, args) => {
 				if (
 					cmd === COMMANDS.RETRIEVE_KEY &&
-					(args!.key as TKey["key"]) === "key1"
+					((args as TRetrieveFilters)!.key as TKey["key"]) === "key1"
 				) {
 					return mockKey;
 				}
@@ -114,10 +114,7 @@ describe("useKeyStore", () => {
 			await expect(loadingKey).rejects.toEqual({
 				code: APP_ERROR_CODES.REDIS_FAILED,
 			});
-			expect(keyStore.currentKey).toEqual({
-				details: null,
-				content: null,
-			} as TCurrentKey);
+			expect(keyStore.currentKey).toEqual(undefined);
 		});
 	});
 });

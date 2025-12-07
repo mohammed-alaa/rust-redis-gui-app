@@ -61,12 +61,12 @@ keyStore.retrieveKeys(fields).catch((error) =>
 
 <template>
 	<Teleport to="#header-icon">
-		<RouterLink :to="{ name: 'home' }">
+		<RouterLink :to="{ name: 'home' }" data-testid="go-home-link">
 			<UButton aria-label="Go home" icon="tabler:arrow-left" size="sm" />
 		</RouterLink>
 	</Teleport>
 
-	<UContainer class="grid grid-cols-2 py-4 gap-4 keys-view-container">
+	<UContainer class="grid py-4 gap-4 keys-view-container">
 		<template v-if="isConnected">
 			<Teleport to="#header-title">
 				Server - {{ activeServer!.name }}
@@ -102,14 +102,12 @@ keyStore.retrieveKeys(fields).catch((error) =>
 				</UPopover>
 			</Teleport>
 
-			<div class="flex flex-col gap-2 keys-table-container">
-				<FilterForm
-					:fields="fields"
-					:validation-schema="validationSchema"
-					@submit:filters="onFiltersSubmitted"
-				/>
-				<KeysTable :keys="keys" @click:key="onKeyClick" />
-			</div>
+			<FilterForm
+				:fields="fields"
+				:validation-schema="validationSchema"
+				@submit:filters="onFiltersSubmitted"
+			/>
+			<KeysTable :keys="keys" @click:key="onKeyClick" />
 			<CurrentKeyDetails v-bind="currentKey" />
 		</template>
 		<template v-else>

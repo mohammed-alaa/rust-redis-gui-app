@@ -25,7 +25,7 @@ fn build_console_logger() -> (String, LevelFilter, Appender) {
 }
 
 #[cfg(all(not(test), not(dev)))]
-use log4rs::file::FileAppender;
+use log4rs::append::file::FileAppender;
 #[cfg(all(not(test), not(dev)))]
 use std::path::Path;
 #[cfg(all(not(test), not(dev)))]

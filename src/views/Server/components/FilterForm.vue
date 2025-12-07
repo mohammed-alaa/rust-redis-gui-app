@@ -21,7 +21,7 @@ function onSubmit(event: FormSubmitEvent<output<ZodSchema<TRetrieveFilters>>>) {
 
 <template>
 	<UForm
-		class="space-y-4"
+		class="space-y-4 filter-form"
 		data-testid="filter-keys-form"
 		:schema="validationSchema"
 		:state="fields"

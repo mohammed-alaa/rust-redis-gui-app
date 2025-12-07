@@ -5,10 +5,7 @@ import { KeyService } from "@services/KeyService";
 
 export const useKeyStore = defineStore("key-store", () => {
 	const keys = ref<TKey[]>([]);
-	const currentKey = ref<TCurrentKey>({
-		details: null,
-		content: null,
-	});
+	const currentKey = ref<TCurrentKey>();
 
 	const { isLoading, withLoading } = useLoading();
 

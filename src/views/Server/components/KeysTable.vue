@@ -6,6 +6,7 @@ import {
 	TableRow,
 	TableHeader,
 	TableCell,
+	TableEmpty,
 } from "@components/ui/table";
 
 defineEmits<{
@@ -41,6 +42,7 @@ defineProps<{
 				>
 					<TableRow
 						class="cursor-pointer"
+						data-testid="keys-table-row"
 						@click="$emit('click:key', key.key)"
 					>
 						<TableCell class="text-center">
@@ -64,6 +66,11 @@ defineProps<{
 								</TableCell> -->
 					</TableRow>
 				</template>
+				<TableEmpty colspan="100%" v-if="!keys.length">
+					<p data-testid="keys-table-no-keys-message">
+						No keys found.
+					</p>
+				</TableEmpty>
 			</TableBody>
 		</Table>
 	</div>

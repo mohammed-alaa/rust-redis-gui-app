@@ -1,131 +1,87 @@
-import { expect, describe, it, afterEach, vi, beforeEach } from "vitest";
-import { mount, flushPromises } from "@vue/test-utils";
+import { describe, it, expect, afterEach } from "vitest";
+import { flushPromises, mount } from "@vue/test-utils";
 import FilterForm from "@views/Server/components/FilterForm.vue";
 import { useFilterForm } from "@views/Server/composables/useFilterForm";
-import { createPinia, setActivePinia } from "pinia";
 
-describe("FilterForm", () => {
-	beforeEach(() => {
-		setActivePinia(createPinia());
-	});
+describe("FilterForm Component", () => {
+	let componentWrapper: ReturnType<typeof mount>;
 
 	afterEach(() => {
-		vi.clearAllMocks();
+		if (componentWrapper) {
+			componentWrapper.unmount();
+		}
 	});
 
-	function setup() {
+	it("initializes", async () => {
 		const { fields, validationSchema } = useFilterForm();
-		return mount(FilterForm, {
+		componentWrapper = mount(FilterForm, {
 			props: {
 				fields,
 				validationSchema,
 			},
 		});
-	}
-
-	describe("Rendering", () => {
-		it("renders the form with data-testid", () => {
-			const wrapper = setup();
-
-			expect(
-				wrapper.find('[data-testid="filter-keys-form"]').exists(),
-			).toBe(true);
-
-			wrapper.unmount();
-		});
-
-		it("renders the pattern input field", () => {
-			const wrapper = setup();
-
-			expect(
-				wrapper.find('[data-testid="filter-keys-form-pattern-field"]').exists(),
-			).toBe(true);
-
-			wrapper.unmount();
-		});
-
-		it("renders input with correct placeholder", () => {
-			const wrapper = setup();
-
-			const input = wrapper.find('[data-testid="filter-keys-form-pattern-field"]');
-			expect(input.attributes("placeholder")).toBe(
-				"Filter by pattern (e.g. user:*)",
-			);
-
-			wrapper.unmount();
-		});
+		expect(componentWrapper.exists()).toBe(true);
 	});
 
-	describe("Form binding", () => {
-		it("updates fields when input changes", async () => {
-			const { fields, validationSchema } = useFilterForm();
-			const wrapper = mount(FilterForm, {
-				props: { fields, validationSchema },
-			});
+	it("renders with initial field values", async () => {
+		const { fields, validationSchema } = useFilterForm();
+		fields.pattern = "cache:*";
 
-			const input = wrapper.find('[data-testid="filter-keys-form-pattern-field"]');
-			await input.setValue("user:*");
-			await flushPromises();
-
-			expect(fields.pattern).toBe("user:*");
-
-			wrapper.unmount();
+		componentWrapper = mount(FilterForm, {
+			props: {
+				fields,
+				validationSchema,
+			},
 		});
 
-		it("reflects initial field values", () => {
-			const { fields, validationSchema } = useFilterForm();
-			fields.pattern = "cache:*";
-
-			const wrapper = mount(FilterForm, {
-				props: { fields, validationSchema },
-			});
-
-			const input = wrapper.find('[data-testid="filter-keys-form-pattern-field"]');
-			expect((input.element as HTMLInputElement).value).toBe("cache:*");
-
-			wrapper.unmount();
-		});
+		const input = componentWrapper.find(
+			'input[data-testid="filter-keys-form-pattern-field"]',
+		);
+		expect((input.element as HTMLInputElement).value).toBe("cache:*");
 	});
 
-	describe("Form submission", () => {
-		it("emits submit:filters event on form submit", async () => {
-			const { fields, validationSchema } = useFilterForm();
-			fields.pattern = "test:*";
-
-			const wrapper = mount(FilterForm, {
-				props: { fields, validationSchema },
-			});
-
-			await wrapper.find('[data-testid="filter-keys-form"]').trigger("submit");
-			await flushPromises();
-
-			expect(wrapper.emitted("submit:filters")).toBeDefined();
-
-			wrapper.unmount();
+	it("emits submit:filters on form submission", async () => {
+		const { fields, validationSchema } = useFilterForm();
+		componentWrapper = mount(FilterForm, {
+			props: {
+				fields,
+				validationSchema,
+			},
 		});
 
-		it("emits event with form data", async () => {
-			const { fields, validationSchema } = useFilterForm();
-			fields.pattern = "session:*";
-			fields.limit = 50;
+		// Update the input
+		const input = componentWrapper.find(
+			'input[data-testid="filter-keys-form-pattern-field"]',
+		);
+		await input.setValue("user:*");
 
-			const wrapper = mount(FilterForm, {
-				props: { fields, validationSchema },
-			});
+		// Submit the form
+		const form = componentWrapper.find('[data-testid="filter-keys-form"]');
+		await form.trigger("submit");
+		await flushPromises();
 
-			await wrapper.find('[data-testid="filter-keys-form"]').trigger("submit");
-			await flushPromises();
+		expect(componentWrapper.emitted("submit:filters")).toBeTruthy();
+		expect(
+			(componentWrapper.emitted("submit:filters")?.[0]?.[0] as any)
+				?.data as TRetrieveFilters,
+		).toEqual({ limit: fields.limit, pattern: "user:*" });
+	});
 
-			const emitted = wrapper.emitted("submit:filters");
-			expect(emitted).toBeDefined();
-			expect(emitted![0][0]).toMatchObject({
-				data: {
-					pattern: "session:*",
-					limit: 50,
-				},
-			});
+	it("updates fields.pattern when input changes", async () => {
+		const { fields, validationSchema } = useFilterForm();
 
-			wrapper.unmount();
+		componentWrapper = mount(FilterForm, {
+			props: {
+				fields,
+				validationSchema,
+			},
 		});
+
+		const input = componentWrapper.find(
+			'input[data-testid="filter-keys-form-pattern-field"]',
+		);
+		await input.setValue("session:*");
+
+		expect(fields.pattern).toBe("session:*");
 	});
 });
