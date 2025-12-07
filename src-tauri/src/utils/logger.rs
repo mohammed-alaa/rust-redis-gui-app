@@ -36,7 +36,8 @@ pub fn init_logger() -> Builder {
 
             out.finish(format_args!(
                 "[{} - {}] {}",
-                now.format(&format).unwrap_or_default(),
+                now.format(&format)
+                    .unwrap_or_else(|_| now.unix_timestamp().to_string()),
                 colors.color(record.level()),
                 message
             ));
