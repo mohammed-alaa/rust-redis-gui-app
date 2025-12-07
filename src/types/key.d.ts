@@ -19,6 +19,6 @@ declare global {
 
 	interface TCurrentKey {
 		details?: TKey | null;
-		content?: TKeyContent | null;
+		content?: TKeyContent | undefined;
 	}
 }

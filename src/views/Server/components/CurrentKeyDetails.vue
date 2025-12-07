@@ -2,19 +2,19 @@
 withDefaults(
 	defineProps<{
 		details?: TKey | null;
-		content?: TKeyContent | null;
+		content?: TKeyContent | undefined;
 	}>(),
 	{
 		details: null,
-		content: null,
+		content: undefined,
 	},
 );
 </script>
 
 <template>
 	<div class="whitespace-pre-wrap break-all overflow-y-auto key-details">
-		<div>{{ details }}</div>
-		<br />
-		<div>{{ content }}</div>
+		<!-- <div>{{ details }}</div> -->
+		<!-- <br /> -->
+		<UTextarea :model-value="content" />
 	</div>
 </template>
