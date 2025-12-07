@@ -16,7 +16,7 @@ declare global {
 	interface TKeyContent extends any {}
 
 	interface TCurrentKey {
-		details: TKey | null;
-		content: TKeyContent | null;
+		details: TKey;
+		content: TKeyContent;
 	}
 }

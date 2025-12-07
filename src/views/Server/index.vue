@@ -61,7 +61,7 @@ keyStore.retrieveKeys(fields).catch((error) =>
 
 <template>
 	<Teleport to="#header-icon">
-		<RouterLink :to="{ name: 'home' }">
+		<RouterLink :to="{ name: 'home' }" data-testid="go-home-link">
 			<UButton aria-label="Go home" icon="tabler:arrow-left" size="sm" />
 		</RouterLink>
 	</Teleport>

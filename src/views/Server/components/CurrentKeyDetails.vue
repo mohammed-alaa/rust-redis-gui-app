@@ -1,20 +1,14 @@
 <script setup lang="ts">
-withDefaults(
-	defineProps<{
-		details?: TKey | null;
-		content?: TKeyContent | null;
-	}>(),
-	{
-		details: null,
-		content: null,
-	},
-);
+defineProps<{
+	details?: TKey;
+	content?: TKeyContent;
+}>();
 </script>
 
 <template>
 	<div class="whitespace-pre-wrap break-all overflow-y-auto key-details">
 		<!-- <div>{{ details }}</div> -->
 		<!-- <br /> -->
-		<UTextarea :model-value="content" />
+		<UTextarea :model-value="JSON.stringify(content)" />
 	</div>
 </template>

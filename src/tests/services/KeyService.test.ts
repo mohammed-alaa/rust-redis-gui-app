@@ -35,7 +35,7 @@ describe("KeyService", () => {
 		it("retrieves keys with pattern", async () => {
 			mockIPC(async (cmd, args) => {
 				if (cmd === COMMANDS.RETRIEVE_KEYS) {
-					if ((args as TRetrieveKeysFilters).pattern === "user:*") {
+					if ((args as TRetrieveFilters).pattern === "user:*") {
 						return Promise.resolve<TKey[]>([
 							{
 								key: "user:1",
@@ -69,7 +69,7 @@ describe("KeyService", () => {
 		it("retrieves keys with limit", async () => {
 			mockIPC(async (cmd, args) => {
 				if (cmd === COMMANDS.RETRIEVE_KEYS) {
-					const limit = (args as TRetrieveKeysFilters).limit;
+					const limit = (args as TRetrieveFilters).limit;
 					const allKeys: TKey[] = [];
 					for (let i = 1; i <= 10; i++) {
 						allKeys.push({

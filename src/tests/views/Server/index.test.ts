@@ -2,19 +2,22 @@ import { createPinia } from "pinia";
 import { createRouter, createWebHashHistory } from "vue-router";
 import { mount } from "@vue/test-utils";
 import { describe, it, vi, beforeEach, afterEach, expect } from "vitest";
-import { clearMocks } from "@tauri-apps/api/mocks";
+import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
 import Server from "@views/Server/index.vue";
 import { useServerFactory } from "@test-utils/useServerFactory";
+import { useServerStore } from "@stores/useServerStore";
+import { useKeyStore } from "@stores/useKeyStore";
+import { COMMANDS } from "@constants";
 
 describe("Server View", () => {
-	let __servers: TServer[];
+	// let __servers: TServer[];
 	let componentWrapper: ReturnType<typeof mount>;
 
 	beforeEach(() => {
-		__servers = Array.from(
-			{ length: 3 },
-			() => useServerFactory().validServer().server,
-		);
+		// __servers = Array.from(
+		// 	{ length: 3 },
+		// 	() => useServerFactory().validServer().server,
+		// );
 
 		componentWrapper = mount(Server, {
 			global: {
@@ -55,12 +58,87 @@ describe("Server View", () => {
 			componentWrapper.unmount();
 		}
 
-		__servers = [];
+		// __servers = [];
 		clearMocks();
 		vi.clearAllMocks();
 	});
 
-	it("should render correctly", async () => {
-		expect(componentWrapper.exists()).toBe(true);
+	describe("it renders correctly", () => {
+		it("handles inactive/invalid server", async () => {
+			expect(componentWrapper.exists()).toBe(true);
+			expect(
+				componentWrapper.find('[data-testid="go-home-link"]').exists(),
+			).toBe(true);
+		});
+
+		it("handled active/valid server", async () => {
+			const server = useServerFactory().validServer().server;
+			const keysFilters: TRetrieveFilters = {
+				limit: 10,
+				pattern: "*",
+			};
+
+			const keys: TKey[] = [
+				{
+					key: "key1",
+					key_type: "string",
+					ttl: -1,
+				},
+				{
+					key: "key2",
+					key_type: "list",
+					ttl: 1800,
+				},
+			];
+			mockIPC(async (cmd) => {
+				if (cmd === COMMANDS.OPEN_SERVER) {
+					return Promise.resolve(server);
+				} else if (cmd === COMMANDS.RETRIEVE_KEYS) {
+					return Promise.resolve(keys);
+				}
+			});
+
+			const serverStore = useServerStore();
+			const keyStore = useKeyStore();
+
+			await vi.waitFor(async () => serverStore.openServer(server.id));
+			await vi.waitFor(async () => keyStore.retrieveKeys(keysFilters));
+
+			expect(componentWrapper.exists()).toBe(true);
+
+			const rows = componentWrapper.findAll(
+				'[data-testid="keys-table-row"]',
+			);
+			expect(rows.length).toBe(keys.length);
+		});
+
+		it("renders no keys available state", async () => {
+			const server = useServerFactory().validServer().server;
+			const keysFilters: TRetrieveFilters = {
+				limit: 10,
+				pattern: "*",
+			};
+
+			mockIPC(async (cmd) => {
+				if (cmd === COMMANDS.OPEN_SERVER) {
+					return Promise.resolve(server);
+				} else if (cmd === COMMANDS.RETRIEVE_KEYS) {
+					return Promise.resolve([]);
+				}
+			});
+
+			const serverStore = useServerStore();
+			const keyStore = useKeyStore();
+
+			await vi.waitFor(async () => serverStore.openServer(server.id));
+			await vi.waitFor(async () => keyStore.retrieveKeys(keysFilters));
+
+			expect(componentWrapper.exists()).toBe(true);
+
+			const noKeysMessage = componentWrapper.find(
+				'[data-testid="keys-table-no-keys-message"]',
+			);
+			expect(noKeysMessage.exists()).toBe(true);
+		});
 	});
 });
