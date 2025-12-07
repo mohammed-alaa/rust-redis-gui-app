@@ -71,7 +71,7 @@ describe("Server View", () => {
 			).toBe(true);
 		});
 
-		it("handled active/valid server", async () => {
+		it("handles active/valid server", async () => {
 			const server = useServerFactory().validServer().server;
 			const keysFilters: TRetrieveFilters = {
 				limit: 10,
