@@ -13,8 +13,6 @@ use utils::{get_db_base_dir, init_logger};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    init_logger().unwrap();
-
     Builder::default()
         .setup(|app| {
             let base_path = get_db_base_dir(app, tauri::is_dev())?;
@@ -32,6 +30,7 @@ pub fn run() {
         })
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(init_logger().build())
         .invoke_handler(tauri::generate_handler![
             retrieve_keys,
             add_server,
