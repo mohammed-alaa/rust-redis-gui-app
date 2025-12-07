@@ -10,29 +10,31 @@
 	.keys-view-container {
 		--keys-views-container-height: 100vh - var(--ui-header-height);
 		max-height: calc(var(--keys-views-container-height));
+		grid-template-columns: repeat(2, 1fr);
+		grid-template-areas:
+			"keys-filter-form key-details"
+			"keys-table key-details";
 
-		.keys-table-container,
 		.key-details {
+			grid-area: key-details;
+			/*spacing(4) is vertical padding*/
 			max-height: calc(
-				/*spacing(4) is vertical padding*/
-					var(--keys-views-container-height) - --spacing(4) * 2
+				var(--keys-views-container-height) - --spacing(4) * 2
 			);
 		}
 
-		.key-details {
-			--key-details-height: var(--keys-views-container-height) -
-				--spacing(4) * 2;
+		.filter-form {
+			grid-area: keys-filter-form;
+			max-height: var(--ui-keys-table-header-height);
+		}
 
-			.filter-form {
-				max-height: var(--ui-keys-table-header-height);
-			}
-
-			.keys-table {
-				max-height: calc(
-					var(--key-details-height) -
-						var(--ui-keys-table-header-height)
-				);
-			}
+		.keys-table {
+			grid-area: keys-table;
+			/*--spacing(4) * 3: vertical padding + row spacing between filter form and table*/
+			max-height: calc(
+				var(--keys-views-container-height) -
+					var(--ui-keys-table-header-height) - --spacing(4) * 3
+			);
 		}
 	}
 }
