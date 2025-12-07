@@ -8,12 +8,10 @@ declare global {
 		// memory_usage: number;
 	}
 
-	interface TRetrieveFilters {
+	interface TRetrieveFilters extends Record<string, unknown> {
 		pattern: string;
 		limit: number;
 	}
-
-	type TRetrieveKeysFilters = InvokeArgs & TRetrieveFilters;
 
 	interface TKeyContent extends any {}
 

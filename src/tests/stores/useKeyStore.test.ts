@@ -80,7 +80,7 @@ describe("useKeyStore", () => {
 			mockIPC((cmd, args) => {
 				if (
 					cmd === COMMANDS.RETRIEVE_KEY &&
-					(args!.key as TKey["key"]) === "key1"
+					((args as TRetrieveFilters)!.key as TKey["key"]) === "key1"
 				) {
 					return mockKey;
 				}
