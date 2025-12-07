@@ -76,4 +76,3 @@ describe("Icon", () => {
 		expect(wrapper.props("rotate")).toBe(90);
 	});
 });
-
