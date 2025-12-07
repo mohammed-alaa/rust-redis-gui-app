@@ -7,11 +7,11 @@ import Server from "@views/Server/index.vue";
 import { useServerFactory } from "@test-utils/useServerFactory";
 
 describe("Server View", () => {
-	let servers: TServer[];
+	let __servers: TServer[];
 	let componentWrapper: ReturnType<typeof mount>;
 
 	beforeEach(() => {
-		servers = Array.from(
+		__servers = Array.from(
 			{ length: 3 },
 			() => useServerFactory().validServer().server,
 		);
@@ -55,7 +55,7 @@ describe("Server View", () => {
 			componentWrapper.unmount();
 		}
 
-		servers = [];
+		__servers = [];
 		clearMocks();
 		vi.clearAllMocks();
 	});
