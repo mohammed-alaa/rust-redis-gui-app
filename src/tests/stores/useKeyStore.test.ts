@@ -116,7 +116,7 @@ describe("useKeyStore", () => {
 			});
 			expect(keyStore.currentKey).toEqual({
 				details: null,
-				content: undefined,
+				content: null,
 			} as TCurrentKey);
 		});
 	});

@@ -2,11 +2,11 @@
 withDefaults(
 	defineProps<{
 		details?: TKey | null;
-		content?: TKeyContent | undefined;
+		content?: TKeyContent | null;
 	}>(),
 	{
 		details: null,
-		content: undefined,
+		content: null,
 	},
 );
 </script>

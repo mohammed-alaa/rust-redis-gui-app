@@ -7,7 +7,7 @@ export const useKeyStore = defineStore("key-store", () => {
 	const keys = ref<TKey[]>([]);
 	const currentKey = ref<TCurrentKey>({
 		details: null,
-		content: undefined,
+		content: null,
 	});
 
 	const { isLoading, withLoading } = useLoading();
