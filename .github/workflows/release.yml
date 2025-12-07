@@ -25,7 +25,8 @@ jobs:
             - frontend-tests
             - rust-tests
         strategy:
-            fail-fast: false
+        	# To prevent race conditions when uploading artifacts to a release, only one job at a time.
+            max-parallel: 1
             matrix:
                 include:
                     - platform: macos-latest
