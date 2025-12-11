@@ -34,7 +34,7 @@
 	},
 	"devDependencies": {
 		"@iconify/vue": "^5.0.0",
-		"@tailwindcss/vite": "^4.1.17",
+		"@tailwindcss/vite": "^4.1.18",
 		"@tauri-apps/cli": "^2",
 		"@types/node": "^25.0.0",
 		"@vitejs/plugin-vue": "^6.0.2",
