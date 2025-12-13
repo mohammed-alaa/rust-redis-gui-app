@@ -7,7 +7,12 @@ import Server from "@views/Server/index.vue";
 import { useServerFactory } from "@test-utils/useServerFactory";
 import { useServerStore } from "@stores/useServerStore";
 import { useKeyStore } from "@stores/useKeyStore";
-import { COMMANDS } from "@constants";
+import {
+	COMMANDS,
+	KEY_TYPE_FILTER_ALL,
+	KEY_TYPE_FILTER_LIST,
+	KEY_TYPE_FILTER_STRING,
+} from "@constants";
 
 describe("Server View", () => {
 	// let __servers: TServer[];
@@ -75,19 +80,19 @@ describe("Server View", () => {
 			const server = useServerFactory().validServer().server;
 			const keysFilters: TRetrieveFilters = {
 				pattern: "*",
-				key_type: "all",
+				key_type: KEY_TYPE_FILTER_ALL,
 			};
 
 			const keys: TKey[] = [
 				{
 					key: "key1",
-					key_type: "string",
+					key_type: KEY_TYPE_FILTER_STRING,
 					ttl: -1,
 					ttl_formatted: "-",
 				},
 				{
 					key: "key2",
-					key_type: "list",
+					key_type: KEY_TYPE_FILTER_LIST,
 					ttl: 1800,
 					ttl_formatted: "30m",
 				},
@@ -118,7 +123,7 @@ describe("Server View", () => {
 			const server = useServerFactory().validServer().server;
 			const keysFilters: TRetrieveFilters = {
 				pattern: "*",
-				key_type: "all",
+				key_type: KEY_TYPE_FILTER_ALL,
 			};
 
 			mockIPC(async (cmd) => {
