@@ -9,12 +9,12 @@ interface TOptions {
 export function useFilterForm({ onSuccess }: TOptions = {}) {
 	const validationSchema = z.object({
 		pattern: z.string(),
-		limit: z.number(),
+		key_type: z.enum(["all", "string", "hash", "list", "set", "zset"]),
 	});
 
 	const fields = reactive<TRetrieveFilters>({
 		pattern: "",
-		limit: 100,
+		key_type: "all",
 	});
 
 	async function onSubmit(

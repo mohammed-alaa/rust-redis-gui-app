@@ -34,6 +34,7 @@ declare module 'vue' {
     UPage: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Page.vue')['default']
     UPageBody: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/PageBody.vue')['default']
     UPopover: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Popover.vue')['default']
+    USelect: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Select.vue')['default']
     UTextarea: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Textarea.vue')['default']
   }
 }

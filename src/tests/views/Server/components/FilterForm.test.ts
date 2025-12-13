@@ -64,7 +64,7 @@ describe("FilterForm Component", () => {
 		expect(
 			(componentWrapper.emitted("submit:filters")?.[0]?.[0] as any)
 				?.data as TRetrieveFilters,
-		).toEqual({ limit: fields.limit, pattern: "user:*" });
+		).toEqual({ key_type: "all", pattern: "user:*" } as TRetrieveFilters);
 	});
 
 	it("updates fields.pattern when input changes", async () => {
@@ -83,5 +83,23 @@ describe("FilterForm Component", () => {
 		await input.setValue("session:*");
 
 		expect(fields.pattern).toBe("session:*");
+	});
+
+	it("updates fields.key_type when input changes", async () => {
+		const { fields, validationSchema } = useFilterForm();
+
+		componentWrapper = mount(FilterForm, {
+			props: {
+				fields,
+				validationSchema,
+			},
+		});
+
+		const input = componentWrapper.find(
+			'input[data-testid="filter-keys-form-key-type-field"]',
+		);
+		await input.setValue("string");
+
+		expect(fields.pattern).toBe("string");
 	});
 });

@@ -19,7 +19,7 @@ pub struct KeyInfo {
 async fn _retrieve_keys(
     state: &Mutex<AppState>,
     pattern: String,
-    limit: usize,
+    key_type: String,
 ) -> Result<Vec<KeyInfo>, AppError> {
     let state = state.lock().await;
     let redis_client = state.get_redis_client().ok_or_else(|| {
@@ -36,16 +36,20 @@ async fn _retrieve_keys(
             AppError::RedisFailed
         })?;
 
-    let mut scan_options = ScanOptions::default().with_count(limit);
+    let mut scan_options = ScanOptions::default();
     if !pattern.is_empty() {
         scan_options = scan_options.with_pattern(&pattern);
     }
 
+    if key_type != "all" {
+        scan_options = scan_options.with_type(&key_type);
+    }
     log::debug!(
-        "Scanning keys with pattern: '{}' and limit: {}",
+        "Scanning keys with pattern: '{}' - type: {}",
         pattern,
-        limit
+        key_type
     );
+
     let keys: Vec<KeyInfo> = {
         let mut keys_iter = connection
             .scan_options::<String>(scan_options)
@@ -57,10 +61,6 @@ async fn _retrieve_keys(
         let mut _keys: Vec<KeyInfo> = vec![];
 
         while let Some(key) = keys_iter.next_item().await {
-            if _keys.len() >= limit {
-                break;
-            }
-
             _keys.push(KeyInfo {
                 key: key.map_err(|_| {
                     log::error!("Error retrieving key during scan");
@@ -111,13 +111,14 @@ async fn _retrieve_keys(
     Ok(keys)
 }
 
-#[tauri::command]
+// #[tauri::command]
+#[tauri::command(rename_all = "snake_case")]
 pub async fn retrieve_keys(
     state: State<'_, Mutex<AppState>>,
     pattern: String,
-    limit: usize,
+    key_type: String,
 ) -> Result<Vec<KeyInfo>, AppError> {
-    _retrieve_keys(state.inner(), pattern, limit).await
+    _retrieve_keys(state.inner(), pattern, key_type).await
 }
 
 #[cfg(test)]
@@ -153,7 +154,7 @@ mod tests {
         }
 
         let app_state = Mutex::new(app_state);
-        let keys = _retrieve_keys(&app_state, "".to_string(), 10)
+        let keys = _retrieve_keys(&app_state, "".to_string(), "".to_string())
             .await
             .unwrap();
         assert_eq!(keys.len(), 3);
@@ -201,7 +202,7 @@ mod tests {
         }
 
         let app_state = Mutex::new(app_state);
-        let keys = _retrieve_keys(&app_state, "a*".to_string(), 10)
+        let keys = _retrieve_keys(&app_state, "a*".to_string(), "".to_string())
             .await
             .unwrap();
         assert_eq!(keys.len(), 1);
@@ -213,15 +214,16 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_retrieve_keys_with_limit() {
-        const LIMIT: usize = 2;
+    async fn test_retrieve_keys_with_type() {
         let (host, port, container) = run_redis_container(PORT).await;
         let db_connection = Database::new_in_memory().unwrap();
         let mut app_state = AppState::new();
         app_state.set_db_connection(Some(db_connection));
+
         let server = Server::from_payload("Local Server".to_string(), host, port);
         let redis_client = test_connection(&server).await.unwrap();
         app_state.set_redis_client(Some(redis_client));
+
         {
             let mut connection = app_state
                 .get_redis_client()
@@ -236,10 +238,16 @@ mod tests {
         }
 
         let app_state = Mutex::new(app_state);
-        let keys = _retrieve_keys(&app_state, "".to_string(), LIMIT)
+        let keys = _retrieve_keys(&app_state, "".to_string(), "string".to_string())
             .await
             .unwrap();
-        assert_eq!(keys.len(), LIMIT);
+        assert_eq!(keys.len(), 3);
+
+        let keys = _retrieve_keys(&app_state, "".to_string(), "hash".to_string())
+            .await
+            .unwrap();
+        assert_eq!(keys.len(), 0);
+
         container.rm().await.unwrap();
     }
 }

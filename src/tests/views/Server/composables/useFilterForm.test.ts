@@ -20,7 +20,7 @@ describe("useFilterForm", () => {
 		const mockEvent = {
 			data: {
 				pattern: "test*",
-				limit: 50,
+				key_type: "string",
 			},
 		} as unknown as FormSubmitEvent<output<typeof validationSchema>>;
 
