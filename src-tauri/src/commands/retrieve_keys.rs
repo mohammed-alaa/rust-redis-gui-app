@@ -41,7 +41,7 @@ async fn _retrieve_keys(
         scan_options = scan_options.with_pattern(&pattern);
     }
 
-    if key_type != "all" {
+    if key_type != "*" {
         scan_options = scan_options.with_type(&key_type);
     }
     log::debug!(

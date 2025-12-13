@@ -2,16 +2,10 @@
 import { watch, useTemplateRef, type Reactive } from "vue";
 import { type ZodSchema, type output } from "zod";
 import { type FormSubmitEvent } from "@nuxt/ui";
+import { KEY_TYPE_ITEMS_FILTER } from "@constants";
 
 const FORM_EL_REF_NAME = "form-el-ref";
-const ITEMS = [
-	{ label: "All", value: "all" },
-	{ label: "String", value: "string" },
-	{ label: "List", value: "list" },
-	{ label: "Set", value: "set" },
-	{ label: "Sorted Set", value: "zset" },
-	{ label: "Hash", value: "hash" },
-] as Array<{ label: string; value: TRetrieveFilters["key_type"] }>;
+
 const formEl = useTemplateRef<HTMLFormElement>(FORM_EL_REF_NAME);
 const props = defineProps<{
 	validationSchema: ZodSchema<TRetrieveFilters>;
@@ -54,7 +48,7 @@ watch(
 			<USelect
 				arrow
 				data-testid="filter-keys-form-key-type-field"
-				:items="ITEMS"
+				:items="KEY_TYPE_ITEMS_FILTER"
 				v-model="fields.key_type"
 			>
 				Filter by type

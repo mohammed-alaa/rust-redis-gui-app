@@ -44,3 +44,21 @@ export enum APP_ERROR_CODES {
 	 */
 	DATABASE_QUERY_FAILED = 901,
 }
+
+export const KEY_TYPE_FILTER_ALL = "*";
+export const KEY_TYPE_FILTER_STRING = "string";
+export const KEY_TYPE_FILTER_LIST = "list";
+export const KEY_TYPE_FILTER_SET = "set";
+export const KEY_TYPE_FILTER_ZSET = "zset";
+export const KEY_TYPE_FILTER_HASH = "hash";
+export const KEY_TYPE_ITEMS_FILTER: Array<{
+	label: string;
+	value: TRetrieveFilters["key_type"];
+}> = [
+	{ label: "All", value: KEY_TYPE_FILTER_ALL },
+	{ label: "String", value: KEY_TYPE_FILTER_STRING },
+	{ label: "List", value: KEY_TYPE_FILTER_LIST },
+	{ label: "Set", value: KEY_TYPE_FILTER_SET },
+	{ label: "Sorted Set", value: KEY_TYPE_FILTER_ZSET },
+	{ label: "Hash", value: KEY_TYPE_FILTER_HASH },
+];
