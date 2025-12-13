@@ -34,3 +34,6 @@ jobs:
 
             - name: Run Vitest
               run: yarn vitest run
+
+            - name: It actually builds
+              run: yarn build
