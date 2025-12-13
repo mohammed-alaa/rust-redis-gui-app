@@ -1,7 +1,11 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { KeyService } from "@services/KeyService";
 import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
-import { COMMANDS } from "@constants";
+import {
+	COMMANDS,
+	KEY_TYPE_FILTER_ALL,
+	KEY_TYPE_FILTER_STRING,
+} from "@constants";
 
 describe("KeyService", () => {
 	afterEach(() => {
@@ -26,7 +30,7 @@ describe("KeyService", () => {
 
 			const keys = await KeyService.retrieveKeys({
 				pattern: "",
-				key_type: "all",
+				key_type: KEY_TYPE_FILTER_ALL,
 			});
 			expect(keys).toBeDefined();
 			expect(Array.isArray(keys)).toBe(true);
@@ -39,14 +43,14 @@ describe("KeyService", () => {
 						return Promise.resolve<TKey[]>([
 							{
 								key: "user:1",
-								key_type: "string",
+								key_type: KEY_TYPE_FILTER_STRING,
 								ttl: -1,
 								ttl_formatted: "N/A",
 								// memory_usage: 128,
 							},
 							{
 								key: "user:2",
-								key_type: "string",
+								key_type: KEY_TYPE_FILTER_STRING,
 								ttl: -1,
 								ttl_formatted: "N/A",
 								// memory_usage: 256,
@@ -59,7 +63,7 @@ describe("KeyService", () => {
 
 			const keys = await KeyService.retrieveKeys({
 				pattern: "user:*",
-				key_type: "all",
+				key_type: KEY_TYPE_FILTER_ALL,
 			});
 			expect(keys).toBeDefined();
 			expect(Array.isArray(keys)).toBe(true);
@@ -108,7 +112,7 @@ describe("KeyService", () => {
 
 			const keys = await KeyService.retrieveKeys({
 				pattern: "nonexistent:*",
-				key_type: "all",
+				key_type: KEY_TYPE_FILTER_ALL,
 			});
 			expect(keys).toBeDefined();
 			expect(Array.isArray(keys)).toBe(true);
@@ -124,7 +128,10 @@ describe("KeyService", () => {
 			});
 
 			await expect(
-				KeyService.retrieveKeys({ pattern: "", key_type: "all" }),
+				KeyService.retrieveKeys({
+					pattern: "",
+					key_type: KEY_TYPE_FILTER_ALL,
+				}),
 			).rejects.toThrow(errorMessage);
 		});
 	});
@@ -137,7 +144,7 @@ describe("KeyService", () => {
 		it("retrieves a specific key", async () => {
 			const mockKey: TKey = {
 				key: "user:1",
-				key_type: "string",
+				key_type: KEY_TYPE_FILTER_STRING,
 				ttl: -1,
 				ttl_formatted: "N/A",
 				// memory_usage: 128,
