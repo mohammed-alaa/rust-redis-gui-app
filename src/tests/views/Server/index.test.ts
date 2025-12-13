@@ -74,8 +74,8 @@ describe("Server View", () => {
 		it("handles active/valid server", async () => {
 			const server = useServerFactory().validServer().server;
 			const keysFilters: TRetrieveFilters = {
-				limit: 10,
 				pattern: "*",
+				key_type: "all",
 			};
 
 			const keys: TKey[] = [
@@ -117,8 +117,8 @@ describe("Server View", () => {
 		it("renders no keys available state", async () => {
 			const server = useServerFactory().validServer().server;
 			const keysFilters: TRetrieveFilters = {
-				limit: 10,
 				pattern: "*",
+				key_type: "all",
 			};
 
 			mockIPC(async (cmd) => {

@@ -2,6 +2,7 @@ import { describe, expect, expectTypeOf, it, vi } from "vitest";
 import { useFilterForm } from "@views/Server/composables/useFilterForm";
 import { type FormSubmitEvent } from "@nuxt/ui";
 import { type output } from "zod";
+import { KEY_TYPE_FILTER_STRING } from "@constants";
 
 describe("useFilterForm", () => {
 	it("initializes", () => {
@@ -20,7 +21,7 @@ describe("useFilterForm", () => {
 		const mockEvent = {
 			data: {
 				pattern: "test*",
-				limit: 50,
+				key_type: KEY_TYPE_FILTER_STRING,
 			},
 		} as unknown as FormSubmitEvent<output<typeof validationSchema>>;
 

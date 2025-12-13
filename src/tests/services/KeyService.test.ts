@@ -26,7 +26,7 @@ describe("KeyService", () => {
 
 			const keys = await KeyService.retrieveKeys({
 				pattern: "",
-				limit: 100,
+				key_type: "all",
 			});
 			expect(keys).toBeDefined();
 			expect(Array.isArray(keys)).toBe(true);
@@ -41,12 +41,14 @@ describe("KeyService", () => {
 								key: "user:1",
 								key_type: "string",
 								ttl: -1,
+								ttl_formatted: "N/A",
 								// memory_usage: 128,
 							},
 							{
 								key: "user:2",
 								key_type: "string",
 								ttl: -1,
+								ttl_formatted: "N/A",
 								// memory_usage: 256,
 							},
 						]);
@@ -57,7 +59,7 @@ describe("KeyService", () => {
 
 			const keys = await KeyService.retrieveKeys({
 				pattern: "user:*",
-				limit: 100,
+				key_type: "all",
 			});
 			expect(keys).toBeDefined();
 			expect(Array.isArray(keys)).toBe(true);
@@ -66,32 +68,35 @@ describe("KeyService", () => {
 			expect(keys[1].key).toBe("user:2");
 		});
 
-		it("retrieves keys with limit", async () => {
+		it("retrieves keys with key type", async () => {
 			mockIPC(async (cmd, args) => {
 				if (cmd === COMMANDS.RETRIEVE_KEYS) {
-					const limit = (args as TRetrieveFilters).limit;
+					const key_type = (args as TRetrieveFilters).key_type;
 					const allKeys: TKey[] = [];
 					for (let i = 1; i <= 10; i++) {
 						allKeys.push({
 							key: `key:${i}`,
-							key_type: "string",
+							key_type: ["string", "hash", "list", "set", "zset"][
+								i % 5
+							] as TKey["key_type"],
 							ttl: -1,
+							ttl_formatted: "N/A",
 							// memory_usage: 64 * i,
 						});
 					}
-					return Promise.resolve<TKey[]>(allKeys.slice(0, limit));
+					return Promise.resolve<TKey[]>(
+						allKeys.filter((key) => key.key_type === key_type),
+					);
 				}
 			});
 
 			const keys = await KeyService.retrieveKeys({
 				pattern: "",
-				limit: 5,
+				key_type: "string",
 			});
 			expect(keys).toBeDefined();
 			expect(Array.isArray(keys)).toBe(true);
-			expect(keys.length).toBe(5);
-			expect(keys[0].key).toBe("key:1");
-			expect(keys[4].key).toBe("key:5");
+			expect(keys.length).not.toBe(5);
 		});
 
 		it("handles no keys found", async () => {
@@ -103,7 +108,7 @@ describe("KeyService", () => {
 
 			const keys = await KeyService.retrieveKeys({
 				pattern: "nonexistent:*",
-				limit: 100,
+				key_type: "all",
 			});
 			expect(keys).toBeDefined();
 			expect(Array.isArray(keys)).toBe(true);
@@ -119,7 +124,7 @@ describe("KeyService", () => {
 			});
 
 			await expect(
-				KeyService.retrieveKeys({ pattern: "", limit: 100 }),
+				KeyService.retrieveKeys({ pattern: "", key_type: "all" }),
 			).rejects.toThrow(errorMessage);
 		});
 	});
@@ -134,6 +139,7 @@ describe("KeyService", () => {
 				key: "user:1",
 				key_type: "string",
 				ttl: -1,
+				ttl_formatted: "N/A",
 				// memory_usage: 128,
 			};
 			const mockContent: TCurrentKey["content"] = {

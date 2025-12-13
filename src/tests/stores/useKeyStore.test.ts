@@ -17,8 +17,18 @@ describe("useKeyStore", () => {
 	describe("retrieve keys", () => {
 		it("fetches keys correctly", async () => {
 			const mockKeys: TKey[] = [
-				{ key: "key1", key_type: "string", ttl: 3600 },
-				{ key: "key2", key_type: "hash", ttl: -1 },
+				{
+					key: "key1",
+					key_type: "string",
+					ttl: 3600,
+					ttl_formatted: "1h",
+				},
+				{
+					key: "key2",
+					key_type: "hash",
+					ttl: -1,
+					ttl_formatted: "N/A",
+				},
 			];
 
 			mockIPC((cmd) => {
@@ -31,7 +41,7 @@ describe("useKeyStore", () => {
 
 			const loadingKeys = keyStore.retrieveKeys({
 				pattern: "*",
-				limit: 100,
+				key_type: "all",
 			});
 
 			expect(keyStore.isLoading).toBe(true);
@@ -55,7 +65,7 @@ describe("useKeyStore", () => {
 
 			const loadingKeys = keyStore.retrieveKeys({
 				pattern: "*",
-				limit: 100,
+				key_type: "all",
 			});
 
 			expect(keyStore.isLoading).toBe(true);
@@ -75,6 +85,7 @@ describe("useKeyStore", () => {
 				key: "key1",
 				key_type: "string",
 				ttl: 3600,
+				ttl_formatted: "1h",
 			};
 
 			mockIPC((cmd, args) => {

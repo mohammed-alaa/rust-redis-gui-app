@@ -11,7 +11,7 @@ declare global {
 
 	interface TRetrieveFilters extends Record<string, unknown> {
 		pattern: string;
-		limit: number;
+		key_type: TKey["key_type"] | "*";
 	}
 
 	interface TKeyContent extends any {}
