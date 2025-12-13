@@ -2,7 +2,13 @@ import { beforeEach, expect, describe, it, afterEach, vi } from "vitest";
 import { setActivePinia, createPinia } from "pinia";
 import { useKeyStore } from "@stores/useKeyStore";
 import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
-import { APP_ERROR_CODES, COMMANDS } from "@constants";
+import {
+	APP_ERROR_CODES,
+	COMMANDS,
+	KEY_TYPE_FILTER_ALL,
+	KEY_TYPE_FILTER_HASH,
+	KEY_TYPE_FILTER_STRING,
+} from "@constants";
 
 describe("useKeyStore", () => {
 	beforeEach(() => {
@@ -19,13 +25,13 @@ describe("useKeyStore", () => {
 			const mockKeys: TKey[] = [
 				{
 					key: "key1",
-					key_type: "string",
+					key_type: KEY_TYPE_FILTER_STRING,
 					ttl: 3600,
 					ttl_formatted: "1h",
 				},
 				{
 					key: "key2",
-					key_type: "hash",
+					key_type: KEY_TYPE_FILTER_HASH,
 					ttl: -1,
 					ttl_formatted: "N/A",
 				},
@@ -41,7 +47,7 @@ describe("useKeyStore", () => {
 
 			const loadingKeys = keyStore.retrieveKeys({
 				pattern: "*",
-				key_type: "all",
+				key_type: KEY_TYPE_FILTER_ALL,
 			});
 
 			expect(keyStore.isLoading).toBe(true);
@@ -65,7 +71,7 @@ describe("useKeyStore", () => {
 
 			const loadingKeys = keyStore.retrieveKeys({
 				pattern: "*",
-				key_type: "all",
+				key_type: KEY_TYPE_FILTER_ALL,
 			});
 
 			expect(keyStore.isLoading).toBe(true);
@@ -83,7 +89,7 @@ describe("useKeyStore", () => {
 		it("fetches a key correctly", async () => {
 			const mockKey: TKey = {
 				key: "key1",
-				key_type: "string",
+				key_type: KEY_TYPE_FILTER_STRING,
 				ttl: 3600,
 				ttl_formatted: "1h",
 			};
