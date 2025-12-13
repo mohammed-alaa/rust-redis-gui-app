@@ -13,10 +13,10 @@ function onEdit() {
 	newKeyContent.value = JSON.stringify(props.currentKey?.content);
 }
 
-function onCancel() {
-	isEditing.value = false;
-	newKeyContent.value = "";
-}
+// function onCancel() {
+// 	isEditing.value = false;
+// 	newKeyContent.value = "";
+// }
 </script>
 
 <template>
