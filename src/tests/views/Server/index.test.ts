@@ -83,11 +83,13 @@ describe("Server View", () => {
 					key: "key1",
 					key_type: "string",
 					ttl: -1,
+					ttl_formatted: "-",
 				},
 				{
 					key: "key2",
 					key_type: "list",
 					ttl: 1800,
+					ttl_formatted: "30m",
 				},
 			];
 			mockIPC(async (cmd) => {

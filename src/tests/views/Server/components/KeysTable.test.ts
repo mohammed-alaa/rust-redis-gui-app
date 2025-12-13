@@ -20,7 +20,9 @@ describe("KeysTable Component", () => {
 	});
 
 	it("renders with provided keys", async () => {
-		const keys: TKey[] = [{ key: "key1", key_type: "string", ttl: 10 }];
+		const keys: TKey[] = [
+			{ key: "key1", key_type: "string", ttl: 10, ttl_formatted: "10s" },
+		];
 
 		componentWrapper = mount(KeysTable, {
 			props: { keys },
@@ -32,7 +34,9 @@ describe("KeysTable Component", () => {
 	});
 
 	it("emits select:key when a key is selected", async () => {
-		const keys: TKey[] = [{ key: "key1", key_type: "string", ttl: 10 }];
+		const keys: TKey[] = [
+			{ key: "key1", key_type: "string", ttl: 10, ttl_formatted: "10s" },
+		];
 
 		componentWrapper = mount(KeysTable, {
 			props: { keys },
