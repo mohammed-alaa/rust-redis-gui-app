@@ -9,7 +9,7 @@
 @layer components {
 	.keys-view-container {
 		--keys-views-container-height: 100vh - var(--ui-header-height);
-		max-height: calc(var(--keys-views-container-height));
+		height: calc(var(--keys-views-container-height));
 		grid-template-columns: repeat(2, 1fr);
 		grid-template-areas:
 			"keys-filter-form key-details"
@@ -18,23 +18,29 @@
 		.key-details {
 			grid-area: key-details;
 			/*spacing(4) is vertical padding*/
-			max-height: calc(
+			--height: calc(
 				var(--keys-views-container-height) - --spacing(4) * 2
 			);
+			height: var(--height);
+			max-height: var(--height);
 		}
 
 		.filter-form {
 			grid-area: keys-filter-form;
-			max-height: var(--ui-keys-table-header-height);
+			--height: var(--ui-keys-table-header-height);
+			height: var(--height);
+			max-height: var(--height);
 		}
 
 		.keys-table {
 			grid-area: keys-table;
 			/*--spacing(4) * 3: vertical padding + row spacing between filter form and table*/
-			max-height: calc(
+			--height: calc(
 				var(--keys-views-container-height) -
 					var(--ui-keys-table-header-height) - --spacing(4) * 3
 			);
+			height: var(--height);
+			max-height: var(--height);
 		}
 	}
 }
