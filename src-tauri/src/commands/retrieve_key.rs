@@ -1,6 +1,6 @@
 use crate::{
     core::{app_state::AppState, AppError},
-    utils::redis_to_json,
+    utils::{format_ttl_to_human_readable, redis_to_json},
 };
 use redis::{AsyncCommands, AsyncConnectionConfig, Value as RedisValue};
 use serde_json::{json, Value as JsonValue};
@@ -18,7 +18,8 @@ pub struct RetrieveKeyResponse {
 pub struct KeyInfo {
     key: String,
     key_type: String,
-    ttl: isize,
+    ttl: i64,
+    ttl_formatted: String,
     // memory_usage: usize,
 }
 
@@ -52,17 +53,19 @@ async fn _retrieve_key(
         // .arg("USAGE")
         // .arg(key.clone());
         // .query_async::<(String, isize, usize)>(&mut connection)
-        .query_async::<(String, isize)>(&mut connection)
+        .query_async::<(String, i64)>(&mut connection)
         .await
         .map_err(|e| {
             log::error!("Error retrieving key info: {:?}", e);
             AppError::RedisFailed
         })?;
 
+    let ttl = key_info.1;
     let key = KeyInfo {
         key,
+        ttl,
         key_type: key_info.0,
-        ttl: key_info.1,
+        ttl_formatted: format_ttl_to_human_readable(&ttl),
         // memory_usage: key_info.2,
     };
 
@@ -211,8 +214,14 @@ mod tests {
                 .await
                 .unwrap();
 
-            let _: () = connection.hset("test_hash", "field1", "value1").await.unwrap();
-            let _: () = connection.hset("test_hash", "field2", "value2").await.unwrap();
+            let _: () = connection
+                .hset("test_hash", "field1", "value1")
+                .await
+                .unwrap();
+            let _: () = connection
+                .hset("test_hash", "field2", "value2")
+                .await
+                .unwrap();
         }
 
         let app_state = Mutex::new(app_state);
@@ -308,7 +317,7 @@ mod tests {
 
         let set_value = result.content.as_array().unwrap();
         assert_eq!(set_value.len(), 3);
-        
+
         // Set members can be in any order, so we check if all members are present
         let members: Vec<String> = set_value
             .iter()
@@ -382,7 +391,10 @@ mod tests {
                 .await
                 .unwrap();
 
-            let _: () = connection.set_ex("test_ttl", "expiring value", 5000).await.unwrap();
+            let _: () = connection
+                .set_ex("test_ttl", "expiring value", 5000)
+                .await
+                .unwrap();
         }
 
         let app_state = Mutex::new(app_state);
