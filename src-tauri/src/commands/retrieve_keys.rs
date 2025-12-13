@@ -1,4 +1,7 @@
-use crate::core::{app_state::AppState, AppError};
+use crate::{
+    core::{app_state::AppState, AppError},
+    utils::format_ttl_to_human_readable,
+};
 use redis::{AsyncCommands, AsyncConnectionConfig, ScanOptions};
 use std::time::Duration;
 use tauri::State;
@@ -8,7 +11,8 @@ use tokio::sync::Mutex;
 pub struct KeyInfo {
     key: String,
     key_type: String,
-    ttl: isize,
+    ttl: i64,
+    ttl_formatted: String,
     // memory_usage: usize,
 }
 
@@ -82,7 +86,7 @@ async fn _retrieve_keys(
     }
 
     // let types: Vec<(String, isize, usize)> =
-    let types: Vec<(String, isize)> = pipe.query_async(&mut connection).await.map_err(|e| {
+    let types: Vec<(String, i64)> = pipe.query_async(&mut connection).await.map_err(|e| {
         log::error!("Failed to retrieve key types and TTLs: {}", e);
         AppError::RedisFailed
     })?;
@@ -91,11 +95,16 @@ async fn _retrieve_keys(
         .clone()
         .into_iter()
         .zip(types)
-        .map(|(key, key_type)| KeyInfo {
-            key_type: key_type.0,
-            ttl: key_type.1,
-            // memory_usage: key_type.2,
-            ..key
+        .map(|(key, key_type)| {
+            let ttl = key_type.1;
+
+            KeyInfo {
+                ttl,
+                key_type: key_type.0,
+                ttl_formatted: format_ttl_to_human_readable(&ttl),
+                // memory_usage: key_type.2,
+                ..key
+            }
         })
         .collect::<Vec<KeyInfo>>();
 

@@ -59,7 +59,7 @@ defineProps<{
 							</p>
 						</TableCell>
 						<TableCell class="text-center">
-							<p>{{ key.ttl }}</p>
+							<p>{{ key.ttl_formatted }}</p>
 						</TableCell>
 						<!-- <TableCell class="text-center">
 									<p>{{ key.memory_usage }}</p>

@@ -5,6 +5,7 @@ declare global {
 		key: string;
 		key_type: "string" | "hash" | "list" | "set" | "zset";
 		ttl: number;
+		ttl_formatted: string;
 		// memory_usage: number;
 	}
 
