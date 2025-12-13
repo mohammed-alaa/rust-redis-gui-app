@@ -8,15 +8,11 @@ const props = defineProps<{
 	fields: Reactive<TRetrieveFilters>;
 }>();
 
-const emit = defineEmits<{
+defineEmits<{
 	"submit:filters": [
 		e: FormSubmitEvent<output<typeof props.validationSchema>>,
 	];
 }>();
-
-function onSubmit(event: FormSubmitEvent<output<ZodSchema<TRetrieveFilters>>>) {
-	emit("submit:filters", event);
-}
 </script>
 
 <template>
@@ -25,7 +21,7 @@ function onSubmit(event: FormSubmitEvent<output<ZodSchema<TRetrieveFilters>>>) {
 		data-testid="filter-keys-form"
 		:schema="validationSchema"
 		:state="fields"
-		@submit="onSubmit"
+		@submit="$emit('submit:filters', $event)"
 	>
 		<UFormField name="pattern">
 			<UInput
