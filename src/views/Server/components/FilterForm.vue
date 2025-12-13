@@ -44,7 +44,7 @@ watch(
 				v-model="fields.pattern"
 			/>
 		</UFormField>
-		<UFormField name="type">
+		<UFormField name="key_type">
 			<USelect
 				arrow
 				data-testid="filter-keys-form-key-type-field"

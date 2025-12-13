@@ -96,7 +96,7 @@ describe("FilterForm Component", () => {
 		});
 
 		const input = componentWrapper.find(
-			'input[data-testid="filter-keys-form-key-type-field"]',
+			'[data-testid="filter-keys-form-key-type-field"]',
 		);
 		await input.setValue("string");
 
