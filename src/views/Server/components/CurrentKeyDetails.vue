@@ -1,16 +1,35 @@
 <script setup lang="ts">
-defineProps<{
-	details?: TKey;
-	content?: TKeyContent;
+import { ref } from "vue";
+
+const isEditing = ref(false);
+const newKeyContent = ref<string>("");
+
+const props = defineProps<{
+	currentKey?: TCurrentKey;
 }>();
+
+function onEdit() {
+	isEditing.value = true;
+	newKeyContent.value = JSON.stringify(props.currentKey?.content);
+}
+
+function onCancel() {
+	isEditing.value = false;
+	newKeyContent.value = "";
+}
 </script>
 
 <template>
-	<template v-if="details">
+	<template v-if="currentKey">
 		<div class="whitespace-pre-wrap break-all overflow-y-auto key-details">
-			<!-- <div>{{ details }}</div> -->
-			<!-- <br /> -->
-			<UTextarea :model-value="JSON.stringify(content)" />
+			<div>{{ currentKey.details }}</div>
+			<br />
+
+			<UTextarea
+				:readonly="!isEditing"
+				v-model="newKeyContent"
+				@click="onEdit"
+			/>
 		</div>
 	</template>
 	<template v-else>
