@@ -23,7 +23,7 @@ const showKeyTypeColumn = computed(
 	() => KEY_TYPE_FILTER_ALL === props.currentKeyType,
 );
 
-function formatKeyType(key_type: TKey["key_type"]): string {
+function formatKeyTypeShort(key_type: TKey["key_type"]): string {
 	switch (key_type) {
 		case "string":
 			return "String";
@@ -79,7 +79,7 @@ function formatKeyType(key_type: TKey["key_type"]): string {
 								size="sm"
 								color="info"
 								class="w-full justify-center"
-								:label="formatKeyType(key.key_type)"
+								:label="formatKeyTypeShort(key.key_type)"
 							/>
 						</TableCell>
 						<TableCell>
