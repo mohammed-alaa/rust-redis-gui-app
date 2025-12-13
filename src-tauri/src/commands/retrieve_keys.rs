@@ -154,7 +154,7 @@ mod tests {
         }
 
         let app_state = Mutex::new(app_state);
-        let keys = _retrieve_keys(&app_state, "".to_string(), "".to_string())
+        let keys = _retrieve_keys(&app_state, "".to_string(), "*".to_string())
             .await
             .unwrap();
         assert_eq!(keys.len(), 3);
