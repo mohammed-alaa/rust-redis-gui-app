@@ -106,7 +106,11 @@ keyStore.retrieveKeys(fields).catch((error) =>
 				:validation-schema="validationSchema"
 				@submit:filters="onFiltersSubmitted"
 			/>
-			<KeysTable :keys="keys" @click:key="onKeyClick" />
+			<KeysTable
+				:keys="keys"
+				:current-key-type="fields.key_type"
+				@click:key="onKeyClick"
+			/>
 			<CurrentKeyDetails :current-key="currentKey" />
 		</template>
 		<template v-else>
