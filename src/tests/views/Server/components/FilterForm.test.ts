@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 import FilterForm from "@views/Server/components/FilterForm.vue";
 import { useFilterForm } from "@views/Server/composables/useFilterForm";
+import { KEY_TYPE_FILTER_ALL, KEY_TYPE_FILTER_STRING } from "@constants";
 
 describe("FilterForm Component", () => {
 	let componentWrapper: ReturnType<typeof mount>;
@@ -64,7 +65,10 @@ describe("FilterForm Component", () => {
 		expect(
 			(componentWrapper.emitted("submit:filters")?.[0]?.[0] as any)
 				?.data as TRetrieveFilters,
-		).toEqual({ key_type: "all", pattern: "user:*" } as TRetrieveFilters);
+		).toEqual({
+			key_type: KEY_TYPE_FILTER_ALL,
+			pattern: "user:*",
+		} as TRetrieveFilters);
 	});
 
 	it("updates fields.pattern when input changes", async () => {
@@ -98,8 +102,8 @@ describe("FilterForm Component", () => {
 		const input = componentWrapper.find(
 			'[data-testid="filter-keys-form-key-type-field"]',
 		);
-		await input.setValue("string");
+		await input.setValue(KEY_TYPE_FILTER_STRING);
 
-		expect(fields.pattern).toBe("string");
+		expect(fields.pattern).toBe(KEY_TYPE_FILTER_STRING);
 	});
 });
