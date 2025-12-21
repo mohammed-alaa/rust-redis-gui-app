@@ -14,7 +14,7 @@ declare global {
 		key_type: TKey["key_type"] | "*";
 	}
 
-	interface TKeyContent extends any {}
+	type TKeyContent = string | Record<string, any> | string[];
 
 	interface TCurrentKey {
 		details: TKey;

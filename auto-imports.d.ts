@@ -28,6 +28,7 @@ declare global {
   const useAvatarGroup: typeof import('./node_modules/@nuxt/ui/dist/runtime/composables/useAvatarGroup.js').useAvatarGroup
   const useComponentIcons: typeof import('./node_modules/@nuxt/ui/dist/runtime/composables/useComponentIcons.js').useComponentIcons
   const useContentSearch: typeof import('./node_modules/@nuxt/ui/dist/runtime/composables/useContentSearch.js').useContentSearch
+  const useEditorMenu: typeof import('./node_modules/@nuxt/ui/dist/runtime/composables/useEditorMenu.js').useEditorMenu
   const useFieldGroup: typeof import('./node_modules/@nuxt/ui/dist/runtime/composables/useFieldGroup.js').useFieldGroup
   const useFileUpload: typeof import('./node_modules/@nuxt/ui/dist/runtime/composables/useFileUpload.js').useFileUpload
   const useFormField: typeof import('./node_modules/@nuxt/ui/dist/runtime/composables/useFormField.js').useFormField
@@ -47,6 +48,9 @@ declare global {
   // @ts-ignore
   export type { UseComponentIconsProps } from './node_modules/@nuxt/ui/dist/runtime/composables/useComponentIcons.d'
   import('./node_modules/@nuxt/ui/dist/runtime/composables/useComponentIcons.d')
+  // @ts-ignore
+  export type { EditorMenuOptions } from './node_modules/@nuxt/ui/dist/runtime/composables/useEditorMenu.d'
+  import('./node_modules/@nuxt/ui/dist/runtime/composables/useEditorMenu.d')
   // @ts-ignore
   export type { UseFileUploadOptions } from './node_modules/@nuxt/ui/dist/runtime/composables/useFileUpload.d'
   import('./node_modules/@nuxt/ui/dist/runtime/composables/useFileUpload.d')
