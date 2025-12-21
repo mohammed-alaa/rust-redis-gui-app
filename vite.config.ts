@@ -32,6 +32,9 @@ export default defineConfig(() => ({
 						arrow: "z-50",
 					},
 				},
+				container: {
+					base: "max-w-full",
+				},
 			},
 		}),
 		tailwindcss({
