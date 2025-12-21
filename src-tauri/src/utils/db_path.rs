@@ -18,9 +18,25 @@ pub fn get_db_base_dir(app: &App, is_dev: bool) -> Result<PathBuf, String> {
             })?
             .to_path_buf())
     } else {
-        app.path().app_data_dir().map_err(|e| {
+        let app_data_dir = app.path().app_data_dir().map_err(|e| {
             log::error!("Error getting app data directory: {}", e);
             format!("Failed to get app data directory: {}", e)
-        })
+        })?;
+
+        if !app_data_dir.exists() {
+            std::fs::create_dir_all(&app_data_dir).map_err(|e| {
+                log::error!(
+                    "Error creating app data directory at {:?}: {}",
+                    app_data_dir,
+                    e
+                );
+                format!(
+                    "Failed to create app data directory at {:?}: {}",
+                    app_data_dir, e
+                )
+            })?;
+        }
+
+        Ok(app_data_dir)
     }
 }
