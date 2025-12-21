@@ -15,11 +15,12 @@
 				"title": "redis-gui",
 				"width": 800,
 				"height": 600,
-				"contentProtected": true,
+				"contentProtected": false,
 				"dragDropEnabled": false,
 				"zoomHotkeysEnabled": false,
 				"minHeight": 600,
-				"minWidth": 800
+				"minWidth": 800,
+				"allowLinkPreview": false
 			}
 		],
 		"security": {
