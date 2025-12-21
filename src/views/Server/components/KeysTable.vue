@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { KEY_TYPE_FILTER_ALL } from "@constants";
+import { useFormatKeyType } from "@composables";
 import {
 	Table,
 	TableHead,
@@ -9,7 +11,8 @@ import {
 	TableCell,
 	TableEmpty,
 } from "@components/ui/table";
-import { KEY_TYPE_FILTER_ALL } from "@constants";
+
+const { shortFormat } = useFormatKeyType();
 
 defineEmits<{
 	"click:key": [key: TKey["key"]];
@@ -22,27 +25,10 @@ const props = defineProps<{
 const showKeyTypeColumn = computed(
 	() => KEY_TYPE_FILTER_ALL === props.currentKeyType,
 );
-
-function formatKeyTypeShort(key_type: TKey["key_type"]): string {
-	switch (key_type) {
-		case "string":
-			return "String";
-		case "list":
-			return "List";
-		case "set":
-			return "Set";
-		case "zset":
-			return "S-Set";
-		case "hash":
-			return "Hash";
-		default:
-			return key_type;
-	}
-}
 </script>
 
 <template>
-	<div class="rounded-md border border-default overflow-y-auto keys-table">
+	<div class="keys-table">
 		<Table class="table-fixed">
 			<colgroup>
 				<col width="15%" v-show="showKeyTypeColumn" />
@@ -79,7 +65,7 @@ function formatKeyTypeShort(key_type: TKey["key_type"]): string {
 								size="sm"
 								color="info"
 								class="w-full justify-center"
-								:label="formatKeyTypeShort(key.key_type)"
+								:label="shortFormat(key.key_type)"
 							/>
 						</TableCell>
 						<TableCell>
