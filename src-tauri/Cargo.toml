@@ -35,5 +35,5 @@ tauri-plugin-log = { version= "2", features = ["colored"] }
 tauri-plugin-updater = "2"
 
 [dev-dependencies]
-testcontainers = "0.26.2"
+testcontainers = "0.26.3"
 tokio = "1.48.0"
