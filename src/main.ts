@@ -5,4 +5,11 @@ import ui from "@nuxt/ui/vue-plugin";
 import App from "./App.vue";
 import "./app.css";
 
-createApp(App).use(createPinia()).use(router).use(ui).mount("#app");
+createApp(App)
+	.use(createPinia())
+	.use(router)
+	// `as any` fixes type error
+	// "Argument of type Plugin is not assignable to parameter of type"
+	// TODO: Remove `as any` when type error is fixed
+	.use(ui as any)
+	.mount("#app");
