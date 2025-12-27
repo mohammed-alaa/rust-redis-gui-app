@@ -62,6 +62,16 @@
 			}
 		}
 	}
+
+	.in-modal {
+		&.key-header-container {
+			@apply flex flex-col flex-1 h-full gap-3;
+		}
+
+		&.key-value {
+			@apply rounded-md border border-default overflow-y-auto h-full;
+		}
+	}
 }
 
 /*

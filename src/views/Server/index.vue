@@ -5,6 +5,7 @@ import { useServerStore } from "@stores/useServerStore";
 import { useKeyStore } from "@stores/useKeyStore";
 import { onBeforeUnmount } from "vue";
 import { useFilterForm } from "./composables/useFilterForm";
+import { useKeyControl } from "./composables/useKeyControl";
 import KeysTable from "./components/KeysTable.vue";
 import FilterForm from "./components/FilterForm.vue";
 import CurrentKeyDetails from "./components/CurrentKeyDetails.vue";
@@ -30,6 +31,13 @@ const {
 		}
 	},
 });
+const {
+	isViewingInFullscreen,
+	onCopy,
+	onViewInFullscreen,
+	onDeleteKey,
+	onEditKey,
+} = useKeyControl();
 
 onBeforeUnmount(() => {
 	serverStore.closeServer().catch(() => {
@@ -111,7 +119,14 @@ keyStore.retrieveKeys(fields).catch((error) =>
 				:current-key-type="fields.key_type"
 				@click:key="onKeyClick"
 			/>
-			<CurrentKeyDetails :current-key="currentKey" />
+			<CurrentKeyDetails
+				:current-key="currentKey"
+				v-model:fullscreen="isViewingInFullscreen"
+				@fullscreen="onViewInFullscreen"
+				@copy="onCopy"
+				@edit="onEditKey"
+				@delete="onDeleteKey"
+			/>
 		</template>
 		<template v-else>
 			<Teleport to="#header-title"> Server </Teleport>
