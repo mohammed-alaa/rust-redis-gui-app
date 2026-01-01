@@ -22,11 +22,20 @@ export const useKeyStore = defineStore("key-store", () => {
 		return Promise.resolve<TCurrentKey>(currentKey.value);
 	}
 
+	async function deleteKey(key: TKey["key"]) {
+		return withLoading(async () => KeyService.deleteKey(key)).then(
+			async () => {
+				currentKey.value = undefined;
+			},
+		);
+	}
+
 	return {
 		keys,
 		currentKey,
 		isLoading,
 		retrieveKeys,
 		retrieveKey,
+		deleteKey,
 	};
 });

@@ -42,7 +42,19 @@ const {
 	cancelDeleteKey,
 	deleteKey,
 } = useDeleteKey(async (key) => {
-	console.log("key", key);
+	try {
+		await keyStore.deleteKey(key);
+		await keyStore.retrieveKeys(fields);
+		toast.add({
+			title: "Key deleted successfully",
+			color: "success",
+		});
+	} catch (error) {
+		toast.add({
+			title: `${error}`,
+			color: "error",
+		});
+	}
 });
 const { onCopy, onEditKey } = useKeyControl();
 
