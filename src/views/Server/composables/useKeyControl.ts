@@ -22,7 +22,7 @@ export function useKeyControl() {
 		await copy(currentKey.value.details.key);
 		if (copied.value) {
 			toast.add({
-				title: "Key copied to clipboard",
+				icon: "tabler:copy-check-filled",
 				description:
 					"The key has been successfully copied to your clipboard.",
 				color: "success",
