@@ -7,9 +7,11 @@ import { onBeforeUnmount } from "vue";
 import { useFilterForm } from "./composables/useFilterForm";
 import { useKeyControl } from "./composables/useKeyControl";
 import { useFullScreenView } from "./composables/useFullScreenView";
+import { useDeleteKey } from "./composables/useDeleteKey";
 import KeysTable from "./components/KeysTable.vue";
 import FilterForm from "./components/FilterForm.vue";
 import CurrentKeyDetails from "./components/CurrentKeyDetails.vue";
+import DeleteKeyModal from "./components/DeleteKeyModal.vue";
 
 const toast = useToast();
 const serverStore = useServerStore();
@@ -33,7 +35,16 @@ const {
 	},
 });
 const { isViewingInFullscreen, onViewInFullscreen } = useFullScreenView();
-const { onCopy, onDeleteKey, onEditKey } = useKeyControl();
+const {
+	targetKey,
+	isDeleteModalOpen,
+	beginDeleteKey,
+	cancelDeleteKey,
+	deleteKey,
+} = useDeleteKey(async (key) => {
+	console.log("key", key);
+});
+const { onCopy, onEditKey } = useKeyControl();
 
 onBeforeUnmount(() => {
 	serverStore.closeServer().catch(() => {
@@ -53,6 +64,14 @@ async function onKeyClick(key: TKey["key"]) {
 			color: "error",
 		});
 	}
+}
+
+function onDelete() {
+	if (!currentKey.value) {
+		return;
+	}
+
+	beginDeleteKey(currentKey.value!.details.key);
 }
 
 keyStore.retrieveKeys(fields).catch((error) =>
@@ -121,7 +140,7 @@ keyStore.retrieveKeys(fields).catch((error) =>
 				@fullscreen="onViewInFullscreen"
 				@copy="onCopy"
 				@edit="onEditKey"
-				@delete="onDeleteKey"
+				@delete="onDelete"
 			/>
 		</template>
 		<template v-else>
@@ -129,4 +148,11 @@ keyStore.retrieveKeys(fields).catch((error) =>
 			<p>No active server</p>
 		</template>
 	</UContainer>
+
+	<DeleteKeyModal
+		:target-key="targetKey"
+		v-model="isDeleteModalOpen"
+		@delete:cancel="cancelDeleteKey"
+		@delete:confirm="deleteKey"
+	/>
 </template>
