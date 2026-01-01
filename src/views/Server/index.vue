@@ -6,6 +6,7 @@ import { useKeyStore } from "@stores/useKeyStore";
 import { onBeforeUnmount } from "vue";
 import { useFilterForm } from "./composables/useFilterForm";
 import { useKeyControl } from "./composables/useKeyControl";
+import { useFullScreenView } from "./composables/useFullScreenView";
 import KeysTable from "./components/KeysTable.vue";
 import FilterForm from "./components/FilterForm.vue";
 import CurrentKeyDetails from "./components/CurrentKeyDetails.vue";
@@ -31,13 +32,8 @@ const {
 		}
 	},
 });
-const {
-	isViewingInFullscreen,
-	onCopy,
-	onViewInFullscreen,
-	onDeleteKey,
-	onEditKey,
-} = useKeyControl();
+const { isViewingInFullscreen, onViewInFullscreen } = useFullScreenView();
+const { onCopy, onDeleteKey, onEditKey } = useKeyControl();
 
 onBeforeUnmount(() => {
 	serverStore.closeServer().catch(() => {
