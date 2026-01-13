@@ -36,7 +36,7 @@
 		"@iconify/vue": "^5.0.0",
 		"@tailwindcss/vite": "^4.1.18",
 		"@tauri-apps/cli": "^2",
-		"@types/node": "^25.0.7",
+		"@types/node": "^25.0.8",
 		"@vitejs/plugin-vue": "^6.0.3",
 		"@vitest/coverage-v8": "^4.0.17",
 		"@vue/test-utils": "^2.4.6",
