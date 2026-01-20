@@ -5,9 +5,13 @@ import { useServerStore } from "@stores/useServerStore";
 import { useKeyStore } from "@stores/useKeyStore";
 import { onBeforeUnmount } from "vue";
 import { useFilterForm } from "./composables/useFilterForm";
+import { useKeyControl } from "./composables/useKeyControl";
+import { useFullScreenView } from "./composables/useFullScreenView";
+import { useDeleteKey } from "./composables/useDeleteKey";
 import KeysTable from "./components/KeysTable.vue";
 import FilterForm from "./components/FilterForm.vue";
 import CurrentKeyDetails from "./components/CurrentKeyDetails.vue";
+import DeleteKeyModal from "./components/DeleteKeyModal.vue";
 
 const toast = useToast();
 const serverStore = useServerStore();
@@ -30,6 +34,29 @@ const {
 		}
 	},
 });
+const { isViewingInFullscreen, onViewInFullscreen } = useFullScreenView();
+const {
+	targetKey,
+	isDeleteModalOpen,
+	beginDeleteKey,
+	cancelDeleteKey,
+	deleteKey,
+} = useDeleteKey(async (key) => {
+	try {
+		await keyStore.deleteKey(key);
+		await keyStore.retrieveKeys(fields);
+		toast.add({
+			title: "Key deleted successfully",
+			color: "success",
+		});
+	} catch (error) {
+		toast.add({
+			title: `${error}`,
+			color: "error",
+		});
+	}
+});
+const { onCopy, onEditKey } = useKeyControl();
 
 onBeforeUnmount(() => {
 	serverStore.closeServer().catch(() => {
@@ -49,6 +76,14 @@ async function onKeyClick(key: TKey["key"]) {
 			color: "error",
 		});
 	}
+}
+
+function onDelete() {
+	if (!currentKey.value) {
+		return;
+	}
+
+	beginDeleteKey(currentKey.value!.details.key);
 }
 
 keyStore.retrieveKeys(fields).catch((error) =>
@@ -111,11 +146,25 @@ keyStore.retrieveKeys(fields).catch((error) =>
 				:current-key-type="fields.key_type"
 				@click:key="onKeyClick"
 			/>
-			<CurrentKeyDetails :current-key="currentKey" />
+			<CurrentKeyDetails
+				:current-key="currentKey"
+				v-model:fullscreen="isViewingInFullscreen"
+				@fullscreen="onViewInFullscreen"
+				@copy="onCopy"
+				@edit="onEditKey"
+				@delete="onDelete"
+			/>
 		</template>
 		<template v-else>
 			<Teleport to="#header-title"> Server </Teleport>
 			<p>No active server</p>
 		</template>
 	</UContainer>
+
+	<DeleteKeyModal
+		:target-key="targetKey"
+		v-model="isDeleteModalOpen"
+		@delete:cancel="cancelDeleteKey"
+		@delete:confirm="deleteKey"
+	/>
 </template>

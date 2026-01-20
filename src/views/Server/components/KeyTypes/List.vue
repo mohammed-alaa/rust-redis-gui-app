@@ -22,7 +22,7 @@ defineProps<{
 			</colgroup>
 			<TableHeader sticky class="bg-muted shadow">
 				<TableRow>
-					<TableHead class="text-center"> Type </TableHead>
+					<TableHead class="text-center"> Items </TableHead>
 				</TableRow>
 			</TableHeader>
 			<TableBody>
