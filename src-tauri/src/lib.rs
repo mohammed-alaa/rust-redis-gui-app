@@ -4,7 +4,9 @@ mod models;
 mod services;
 mod utils;
 
-use commands::{add_server, close_server, get_servers, open_server, retrieve_key, retrieve_keys};
+use commands::{
+    add_server, close_server, delete_key, get_servers, open_server, retrieve_key, retrieve_keys,
+};
 use core::{AppState, Database};
 use log::error;
 use tauri::{Builder, Manager};
@@ -37,7 +39,8 @@ pub fn run() {
             get_servers,
             open_server,
             close_server,
-            retrieve_key
+            retrieve_key,
+            delete_key,
         ])
         .run(tauri::generate_context!())
         .map_err(|e| {
