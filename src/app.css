@@ -3,8 +3,8 @@
 
 :root {
 	--ui-header-height: --spacing(10);
-	--ui-keys-table-header-height: --spacing(15);
-	--ui-key-details-header-height: --spacing(15);
+	--ui-keys-table-header-height: --spacing(17);
+	--ui-key-details-header-height: --spacing(17);
 }
 
 @layer components {
@@ -46,7 +46,7 @@
 			max-height: var(--key-details-height);
 
 			.key-header-container {
-				@apply flex flex-col gap-2;
+				@apply flex flex-col gap-1;
 				height: var(--ui-key-details-header-height);
 				max-height: var(--ui-key-details-header-height);
 			}
@@ -55,11 +55,21 @@
 				@apply rounded-md border border-default overflow-y-auto;
 				--key-value-height: calc(
 					var(--key-details-height) -
-						var(--ui-key-details-header-height) - --spacing(4) * 1
+						var(--ui-key-details-header-height) - --spacing(4)
 				);
 				height: var(--key-value-height);
 				max-height: var(--key-value-height);
 			}
+		}
+	}
+
+	.in-modal {
+		&.key-header-container {
+			@apply flex flex-col flex-1 h-full gap-3;
+		}
+
+		&.key-value {
+			@apply rounded-md border border-default overflow-y-auto h-full;
 		}
 	}
 }

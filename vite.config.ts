@@ -35,6 +35,11 @@ export default defineConfig(() => ({
 				container: {
 					base: "max-w-full",
 				},
+				modal: {
+					slots: {
+						content: "z-100",
+					},
+				},
 			},
 		}),
 		tailwindcss({

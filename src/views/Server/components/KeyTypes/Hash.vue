@@ -16,7 +16,6 @@ defineProps<{
 
 <template>
 	<div class="key-value">
-		{{ console.log("length", value) }}
 		<Table class="table-fixed">
 			<colgroup>
 				<col width="50%" />
