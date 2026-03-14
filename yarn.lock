@@ -3774,10 +3774,10 @@ reka-ui@^2.0.0:
     defu "^6.1.4"
     ohash "^2.0.11"
 
-reka-ui@^2.9.1:
-  version "2.9.1"
-  resolved "https://registry.yarnpkg.com/reka-ui/-/reka-ui-2.9.1.tgz#7ff426e5aa51056038505d7a0f87e063b4d86a1b"
-  integrity sha512-5Oa77f4VVNgUsMtGZKh3AnMCjJvA4TJ9phcN+TxPfGutdENaqleXO+NvhCkgK02PEHcyys8fqIF9CdcvSq5Flw==
+reka-ui@^2.9.2:
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/reka-ui/-/reka-ui-2.9.2.tgz#20c405a055e4ff4cc0d714de9d159197ebe80a54"
+  integrity sha512-/t4e6y1hcG+uDuRfpg6tbMz3uUEvRzNco6NeYTufoJeUghy5Iosxos5YL/p+ieAsid84sdMX9OrgDqpEuCJhBw==
   dependencies:
     "@floating-ui/dom" "^1.6.13"
     "@floating-ui/vue" "^1.1.6"
