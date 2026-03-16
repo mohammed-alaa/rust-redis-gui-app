@@ -759,35 +759,35 @@
   resolved "https://registry.yarnpkg.com/@oxc-project/types/-/types-0.115.0.tgz#92a599543529bce45f8f2da77f40a124d63349dc"
   integrity sha512-4n91DKnebUS4yjUHl2g3/b2T+IUdCfmoZGhmwsovZCDaJSs+QkVAM+0AqqTxHSsHfeiMuueT75cZaZcT/m0pSw==
 
-"@oxlint-tsgolint/darwin-arm64@0.16.0":
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/@oxlint-tsgolint/darwin-arm64/-/darwin-arm64-0.16.0.tgz#d03363cdf89bf50faac558a7768e05cd2ab2d507"
-  integrity sha512-WQt5lGwRPJBw7q2KNR0mSPDAaMmZmVvDlEEti96xLO7ONhyomQc6fBZxxwZ4qTFedjJnrHX94sFelZ4OKzS7UQ==
+"@oxlint-tsgolint/darwin-arm64@0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@oxlint-tsgolint/darwin-arm64/-/darwin-arm64-0.17.0.tgz#fa642aed18d84f3f6b994f1d0be6d6ae3120b6b4"
+  integrity sha512-z3XwCDuOAKgk7bO4y5tyH8Zogwr51G56R0XGKC3tlAbrAq8DecoxAd3qhRZqWBMG2Gzl5bWU3Ghu7lrxuLPzYw==
 
-"@oxlint-tsgolint/darwin-x64@0.16.0":
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/@oxlint-tsgolint/darwin-x64/-/darwin-x64-0.16.0.tgz#c921618ae28905316c2cc59c3e829ae1a0950655"
-  integrity sha512-VJo29XOzdkalvCTiE2v6FU3qZlgHaM8x8hUEVJGPU2i5W+FlocPpmn00+Ld2n7Q0pqIjyD5EyvZ5UmoIEJMfqg==
+"@oxlint-tsgolint/darwin-x64@0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@oxlint-tsgolint/darwin-x64/-/darwin-x64-0.17.0.tgz#e1d2aacfd695eb3fc2d35d9d2593a91949397f19"
+  integrity sha512-TZgVXy0MtI8nt0MYiceuZhHPwHcwlIZ/YwzFTAKrgdHiTvVzFbqHVdXi5wbZfT/o1nHGw9fbGWPlb6qKZ4uZ9Q==
 
-"@oxlint-tsgolint/linux-arm64@0.16.0":
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/@oxlint-tsgolint/linux-arm64/-/linux-arm64-0.16.0.tgz#9fc38d94e27380a515aa24e1119d696318a8b6aa"
-  integrity sha512-MPfqRt1+XRHv9oHomcBMQ3KpTE+CSkZz14wUxDQoqTNdUlV0HWdzwIE9q65I3D9YyxEnqpM7j4qtDQ3apqVvbQ==
+"@oxlint-tsgolint/linux-arm64@0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@oxlint-tsgolint/linux-arm64/-/linux-arm64-0.17.0.tgz#12ecf028bc97cc141e8b643f2e1a040bd4a0b079"
+  integrity sha512-IDfhFl/Y8bjidCvAP6QAxVyBsl78TmfCHlfjtEv2XtJXgYmIwzv6muO18XMp74SZ2qAyD4y2n2dUedrmghGHeA==
 
-"@oxlint-tsgolint/linux-x64@0.16.0":
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/@oxlint-tsgolint/linux-x64/-/linux-x64-0.16.0.tgz#366088e3a85b6c295fc5b95d2098ee51a2b67b7f"
-  integrity sha512-XQSwVUsnwLokMhe1TD6IjgvW5WMTPzOGGkdFDtXWQmlN2YeTw94s/NN0KgDrn2agM1WIgAenEkvnm0u7NgwEyw==
+"@oxlint-tsgolint/linux-x64@0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@oxlint-tsgolint/linux-x64/-/linux-x64-0.17.0.tgz#5385300da97e513541fd30e7158ced362ca48ebf"
+  integrity sha512-Bgdgqx/m8EnfjmmlRLEeYy9Yhdt1GdFrMr5mTu/NyLRGkB1C9VLAikdxB7U9QambAGTAmjMbHNFDFk8Vx69Huw==
 
-"@oxlint-tsgolint/win32-arm64@0.16.0":
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/@oxlint-tsgolint/win32-arm64/-/win32-arm64-0.16.0.tgz#9ec46fa4ae6a6b90bdd708af64740812172b8ec8"
-  integrity sha512-EWdlspQiiFGsP2AiCYdhg5dTYyAlj6y1nRyNI2dQWq4Q/LITFHiSRVPe+7m7K7lcsZCEz2icN/bCeSkZaORqIg==
+"@oxlint-tsgolint/win32-arm64@0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@oxlint-tsgolint/win32-arm64/-/win32-arm64-0.17.0.tgz#b7b4d74b35fa46e0524b6a22bbab5b8d1f59cbb3"
+  integrity sha512-dO6wyKMDqFWh1vwr+zNZS7/ovlfGgl4S3P1LDy4CKjP6V6NGtdmEwWkWax8j/I8RzGZdfXKnoUfb/qhVg5bx0w==
 
-"@oxlint-tsgolint/win32-x64@0.16.0":
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/@oxlint-tsgolint/win32-x64/-/win32-x64-0.16.0.tgz#861e5c7df0108212e4b61ef6ae38df22104028a1"
-  integrity sha512-1ufk8cgktXJuJZHKF63zCHAkaLMwZrEXnZ89H2y6NO85PtOXqu4zbdNl0VBpPP3fCUuUBu9RvNqMFiv0VsbXWA==
+"@oxlint-tsgolint/win32-x64@0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@oxlint-tsgolint/win32-x64/-/win32-x64-0.17.0.tgz#c567e509d72b7b2e1467eab5564a1eba674f5d79"
+  integrity sha512-lPGYFp3yX2nh6hLTpIuMnJbZnt3Df42VkoA/fSkMYi2a/LXdDytQGpgZOrb5j47TICARd34RauKm0P3OA4Oxbw==
 
 "@oxlint/binding-android-arm-eabi@1.55.0":
   version "1.55.0"
@@ -3377,17 +3377,17 @@ orderedmap@^2.0.0:
   resolved "https://registry.yarnpkg.com/orderedmap/-/orderedmap-2.1.1.tgz#61481269c44031c449915497bf5a4ad273c512d2"
   integrity sha512-TvAWxi0nDe1j/rtMcWcIj94+Ffe6n7zhow33h40SKxmsmozs6dz/e+EajymfoFcHd7sxNn8yHM8839uixMOV6g==
 
-oxlint-tsgolint@^0.16.0:
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/oxlint-tsgolint/-/oxlint-tsgolint-0.16.0.tgz#f17cb4cdf792daff212ece3b9a0ba5cf4a74f532"
-  integrity sha512-4RuJK2jP08XwqtUu+5yhCbxEauCm6tv2MFHKEMsjbosK2+vy5us82oI3VLuHwbNyZG7ekZA26U2LLHnGR4frIA==
+oxlint-tsgolint@^0.17.0:
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/oxlint-tsgolint/-/oxlint-tsgolint-0.17.0.tgz#a6e7d05774ced2ef5620220cdb0769427c348004"
+  integrity sha512-TdrKhDZCgEYqONFo/j+KvGan7/k3tP5Ouz88wCqpOvJtI2QmcLfGsm1fcMvDnTik48Jj6z83IJBqlkmK9DnY1A==
   optionalDependencies:
-    "@oxlint-tsgolint/darwin-arm64" "0.16.0"
-    "@oxlint-tsgolint/darwin-x64" "0.16.0"
-    "@oxlint-tsgolint/linux-arm64" "0.16.0"
-    "@oxlint-tsgolint/linux-x64" "0.16.0"
-    "@oxlint-tsgolint/win32-arm64" "0.16.0"
-    "@oxlint-tsgolint/win32-x64" "0.16.0"
+    "@oxlint-tsgolint/darwin-arm64" "0.17.0"
+    "@oxlint-tsgolint/darwin-x64" "0.17.0"
+    "@oxlint-tsgolint/linux-arm64" "0.17.0"
+    "@oxlint-tsgolint/linux-x64" "0.17.0"
+    "@oxlint-tsgolint/win32-arm64" "0.17.0"
+    "@oxlint-tsgolint/win32-x64" "0.17.0"
 
 oxlint@^1.55.0:
   version "1.55.0"
