@@ -41,7 +41,7 @@
 		"@vitest/coverage-v8": "^4.1.0",
 		"@vue/test-utils": "^2.4.6",
 		"jsdom": "^28.1.0",
-		"oxlint": "^1.55.0",
+		"oxlint": "^1.56.0",
 		"oxlint-tsgolint": "^0.16.0",
 		"tailwindcss": "^4.2.1",
 		"typescript": "^5.9.3",
