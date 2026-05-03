@@ -48,11 +48,16 @@ jobs:
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
-                  node-version: lts/*
-                  cache: yarn
+                  node-version: 24
+
+            - name: Enable Corepack
+              run: corepack enable
+
+            - name: Use Yarn 4
+              run: corepack prepare yarn@4.7.0 --activate
 
             - name: Install frontend deps
-              run: yarn install --frozen-lockfile
+              run: yarn install --immutable
 
             - name: Install Rust
               uses: dtolnay/rust-toolchain@stable

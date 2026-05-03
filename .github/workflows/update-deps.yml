@@ -23,17 +23,19 @@ jobs:
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
-                  cache: yarn
+                  node-version: 24
 
-            - name: Install npm-check-updates
-              run: yarn global add npm-check-updates
+            - name: Enable Corepack
+              run: corepack enable
+
+            - name: Use Yarn 4
+              run: corepack prepare yarn@4.7.0 --activate
 
             - name: Check for outdated packages
               id: ncu
               run: |
                   echo "Running ncu check..."
-                  ncu_output=$(ncu --format group 2>&1 || true)
+                  ncu_output=$(yarn dlx npm-check-updates --format group 2>&1 || true)
 
                   echo "$ncu_output"
 
@@ -52,7 +54,7 @@ jobs:
             - name: Update dependencies
               if: steps.ncu.outputs.has_updates == 'true'
               run: |
-                  ncu -u
+                  yarn dlx npm-check-updates -u
                   yarn install --mode=update-lockfile
 
             - name: Create or update Pull Request
