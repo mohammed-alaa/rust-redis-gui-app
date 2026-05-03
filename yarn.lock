@@ -1944,11 +1944,11 @@ __metadata:
   linkType: hard
 
 "@tauri-apps/plugin-updater@npm:~2":
-  version: 2.10.0
-  resolution: "@tauri-apps/plugin-updater@npm:2.10.0"
+  version: 2.10.1
+  resolution: "@tauri-apps/plugin-updater@npm:2.10.1"
   dependencies:
     "@tauri-apps/api": "npm:^2.10.1"
-  checksum: 10c0/aae5b5f7ac1450c0e9ad586f05154aac647e1a465370741b3084ebf57da8e03c8333ba5c55167e9711532931ac37ee7760a7e142723c2f446997c1f60c1dc36b
+  checksum: 10c0/5d3813851ccbbf90253ad4647dbd97501c2bb75db864175693322fa6eb062b6e1bae03890810ad0bbe7f6da4e020af35e8c787e6999f8c7c645121164587dc29
   languageName: node
   linkType: hard
 
