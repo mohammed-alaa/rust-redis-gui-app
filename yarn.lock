@@ -2808,9 +2808,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vue/language-core@npm:3.2.7":
-  version: 3.2.7
-  resolution: "@vue/language-core@npm:3.2.7"
+"@vue/language-core@npm:3.2.8":
+  version: 3.2.8
+  resolution: "@vue/language-core@npm:3.2.8"
   dependencies:
     "@volar/language-core": "npm:2.4.28"
     "@vue/compiler-dom": "npm:^3.5.0"
@@ -2819,7 +2819,7 @@ __metadata:
     muggle-string: "npm:^0.4.1"
     path-browserify: "npm:^1.0.1"
     picomatch: "npm:^4.0.4"
-  checksum: 10c0/2de1e1f7558847dc7f7ad0c3f093e7a0439cbf9f30404ff2c1f341f466f05a2bb65bec1edd9bc1d8c68f6bd085c6b3ec88df26bb80980ae9fcbee468ef46ce1a
+  checksum: 10c0/8e0d7fdc5a978ea3823f8f62b2a8df6e031b4ad467c8714e2548649713d7ae230c98ed4ae07d6bee76889e58d24a0913e08515f52fee318beded3419dceaf29e
   languageName: node
   linkType: hard
 
@@ -5524,8 +5524,8 @@ __metadata:
     vitest: "npm:^4.1.5"
     vue: "npm:^3.5.33"
     vue-router: "npm:5"
-    vue-tsc: "npm:^3.2.7"
-    zod: "npm:^4.4.2"
+    vue-tsc: "npm:^3.2.8"
+    zod: "npm:^4.4.3"
   languageName: unknown
   linkType: soft
 
@@ -6699,17 +6699,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-tsc@npm:^3.2.7":
-  version: 3.2.7
-  resolution: "vue-tsc@npm:3.2.7"
+"vue-tsc@npm:^3.2.8":
+  version: 3.2.8
+  resolution: "vue-tsc@npm:3.2.8"
   dependencies:
     "@volar/typescript": "npm:2.4.28"
-    "@vue/language-core": "npm:3.2.7"
+    "@vue/language-core": "npm:3.2.8"
   peerDependencies:
     typescript: ">=5.0.0"
   bin:
     vue-tsc: bin/vue-tsc.js
-  checksum: 10c0/60fc2bb348c37f946fb4b5b81ac0e36c7fc02fb43a6877f9769be6b6c51b9edca00d6ef62f2307f287a2ce2387ecba8706a2c80ac3ef1b711847432a027f0730
+  checksum: 10c0/b078917c824731495123f38d9be503b12d4163de8f1a2a36b8a3055e3216b83fc407e2840c4d80e89dd8cc7301247f0856e4201b79063124cba15d189fb063af
   languageName: node
   linkType: hard
 
@@ -6901,9 +6901,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^4.4.2":
-  version: 4.4.2
-  resolution: "zod@npm:4.4.2"
-  checksum: 10c0/aa5097464c41cf22d715cbc29873ae6feaaf56e687b81d140458d7c01201e7b9de1ee46c8567b5458ee3c0068b8a82b2652535b5d39589fcb5562d861c83ded3
+"zod@npm:^4.4.3":
+  version: 4.4.3
+  resolution: "zod@npm:4.4.3"
+  checksum: 10c0/7ea31b558e88f9faf44f31dd185e2e1cbf51fed3081787fb96cc2534749b50c0acfc6da7f0922a7353ed092dd358c7d50c28ea96c94d04af64191bd33152eca3
   languageName: node
   linkType: hard
