@@ -5515,7 +5515,7 @@ __metadata:
     oxlint: "npm:^1.62.0"
     oxlint-tsgolint: "npm:^0.22.1"
     pinia: "npm:^3.0.4"
-    reka-ui: "npm:^2.9.6"
+    reka-ui: "npm:^2.9.7"
     tailwind-merge: "npm:^3.5.0"
     tailwindcss: "npm:^4.2.4"
     tw-animate-css: "npm:^1.4.0"
@@ -5538,7 +5538,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"reka-ui@npm:2.9.6, reka-ui@npm:^2.9.6":
+"reka-ui@npm:2.9.6":
   version: 2.9.6
   resolution: "reka-ui@npm:2.9.6"
   dependencies:
@@ -5575,6 +5575,26 @@ __metadata:
   peerDependencies:
     vue: ">= 3.2.0"
   checksum: 10c0/d41dbf810248e2615d978befaeccc0e4fde5ec9e0df915e9cf39ce4db98eb6d5c7c219d85be34adf64d62401277b8f2b4ff0679636e9b85261b48acc7ed5b69c
+  languageName: node
+  linkType: hard
+
+"reka-ui@npm:^2.9.7":
+  version: 2.9.7
+  resolution: "reka-ui@npm:2.9.7"
+  dependencies:
+    "@floating-ui/dom": "npm:^1.6.13"
+    "@floating-ui/vue": "npm:^1.1.6"
+    "@internationalized/date": "npm:^3.5.0"
+    "@internationalized/number": "npm:^3.5.0"
+    "@tanstack/vue-virtual": "npm:^3.12.0"
+    "@vueuse/core": "npm:^14.1.0"
+    "@vueuse/shared": "npm:^14.1.0"
+    aria-hidden: "npm:^1.2.4"
+    defu: "npm:^6.1.5"
+    ohash: "npm:^2.0.11"
+  peerDependencies:
+    vue: ">= 3.4.0"
+  checksum: 10c0/351bc101caff839e98efe4fe679bbee9b173059762fde1ce87f8306891b451a8a31628b5394eeedf224759b5771edda25afc93b603d7038b160076a5f92421b7
   languageName: node
   linkType: hard
 
