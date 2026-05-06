@@ -642,6 +642,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@iconify/vue@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "@iconify/vue@npm:5.0.1"
+  dependencies:
+    "@iconify/types": "npm:^2.0.0"
+  peerDependencies:
+    vue: ">=3.0.0"
+  checksum: 10c0/780afb0bb6c098e4b9af1c82bbc7f4b3ad63f7ab01f01cb6abcebba54314a0f11ebe3e749a8dd17e20c9f7b7b94945d44ae5e94b0fe1dafec588ed69b93471e9
+  languageName: node
+  linkType: hard
+
 "@internationalized/date@npm:^3.12.1":
   version: 3.12.1
   resolution: "@internationalized/date@npm:3.12.1"
@@ -5496,7 +5507,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "redis-gui@workspace:."
   dependencies:
-    "@iconify/vue": "npm:^5.0.0"
+    "@iconify/vue": "npm:^5.0.1"
     "@nuxt/ui": "npm:^4.7.1"
     "@tailwindcss/vite": "npm:^4.2.4"
     "@tauri-apps/api": "npm:^2"
