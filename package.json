@@ -36,18 +36,18 @@
 		"@iconify/vue": "^5.0.1",
 		"@tailwindcss/vite": "^4.3.0",
 		"@tauri-apps/cli": "^2",
-		"@types/node": "^25.8.0",
+		"@types/node": "^25.9.0",
 		"@vitejs/plugin-vue": "^6.0.7",
 		"@vitest/coverage-v8": "^4.1.6",
 		"@vue/test-utils": "^2.4.10",
 		"jsdom": "^29.1.1",
 		"oxlint": "^1.65.0",
-		"oxlint-tsgolint": "^0.22.1",
+		"oxlint-tsgolint": "^0.23.0",
 		"tailwindcss": "^4.3.0",
 		"typescript": "^6.0.3",
 		"vite": "^8.0.13",
 		"vitest": "^4.1.6",
-		"vue-tsc": "^3.2.9"
+		"vue-tsc": "^3.3.0"
 	},
 	"packageManager": "yarn@4.7.0"
 }
