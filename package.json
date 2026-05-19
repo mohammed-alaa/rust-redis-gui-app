@@ -42,7 +42,7 @@
 		"@vue/test-utils": "^2.4.10",
 		"jsdom": "^29.1.1",
 		"oxlint": "^1.65.0",
-		"oxlint-tsgolint": "^0.22.1",
+		"oxlint-tsgolint": "^0.23.0",
 		"tailwindcss": "^4.3.0",
 		"typescript": "^6.0.3",
 		"vite": "^8.0.13",
