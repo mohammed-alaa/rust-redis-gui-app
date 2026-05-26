@@ -28,7 +28,7 @@ rusqlite = { version = "0.38.0", features = ["serde_json", "time", "bundled"] }
 refinery = { version = "0.9.1", features = ["int8-versions", "rusqlite"] }
 time = { version = "0.3.47", features = ["formatting", "serde-human-readable", "serde-well-known"] }
 tokio = "1.52.3"
-log = "0.4.29"
+log = "0.4.30"
 tauri-plugin-log = { version= "2", features = ["colored"] }
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
