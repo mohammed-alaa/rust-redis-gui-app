@@ -5,7 +5,7 @@ defineProps<{
 </script>
 
 <template>
-	<div class="key-value">
+	<div class="key-value p-4">
 		<p>{{ value }}</p>
 	</div>
 </template>

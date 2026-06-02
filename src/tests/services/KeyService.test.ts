@@ -184,4 +184,34 @@ describe("KeyService", () => {
 			).rejects.toThrow("Key not found");
 		});
 	});
+
+	describe("Delete key", () => {
+		it("deletes a specific key", async () => {
+			mockIPC(async (cmd, args) => {
+				if (cmd === COMMANDS.DELETE_KEY) {
+					if ((args as { key: string }).key === "user:1") {
+						return Promise.resolve();
+					}
+				}
+			});
+
+			await expect(
+				KeyService.deleteKey("user:1"),
+			).resolves.toBeUndefined();
+		});
+
+		it("handles key not found", async () => {
+			mockIPC(async (cmd, args) => {
+				if (cmd === COMMANDS.DELETE_KEY) {
+					if ((args as { key: string }).key === "nonexistent:key") {
+						return Promise.reject(new Error());
+					}
+				}
+			});
+
+			await expect(
+				KeyService.deleteKey("nonexistent:key"),
+			).rejects.toThrowError(Error);
+		});
+	});
 });

@@ -21,6 +21,8 @@ export const COMMANDS = {
 	CLOSE_SERVER: "close_server",
 	/** Retrieve details of a specific key from the server. */
 	RETRIEVE_KEY: "retrieve_key",
+	/** Delete a specific key from the server. */
+	DELETE_KEY: "delete_key",
 };
 
 /**

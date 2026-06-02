@@ -11,4 +11,9 @@ export class KeyService {
 	static async retrieveKey(key: TKey["key"]) {
 		return invoke<TCurrentKey>(COMMANDS.RETRIEVE_KEY, { key });
 	}
+
+	/** Delete a key from Redis */
+	static async deleteKey(key: TKey["key"]) {
+		return invoke<void>(COMMANDS.DELETE_KEY, { key });
+	}
 }
